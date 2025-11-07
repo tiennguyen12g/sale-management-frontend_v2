@@ -13,7 +13,7 @@ declare global {
 }
 
 export default function FacebookLoginButton() {
-  const { user, setUser, setPages, clearFacebookData, fetchFacebookPages, saveFacebookUser, checkFacebookStatus } = useFacebookStore();
+  const { user, setUser, setPages, clearFacebookData, saveFacebookUser, checkFacebookStatus } = useFacebookStore();
   const [loading, setLoading] = useState(false);
 
   const handleLogin = () => {
@@ -30,10 +30,10 @@ export default function FacebookLoginButton() {
             console.log("👤 User:", userData);
 
             //✅ Fetch pages and save user using store methods
-            const pageRes = await fetchFacebookPages(userAccessToken);
-            if (pageRes.status === "success" && pageRes.data) {
-              setPages(pageRes.data);
-            }
+            // const pageRes = await fetchFacebookPages(userAccessToken);
+            // if (pageRes.status === "success" && pageRes.data) {
+            //   setPages(pageRes.data);
+            // }
 
             await saveFacebookUser(userData);
 
@@ -48,9 +48,6 @@ export default function FacebookLoginButton() {
     );
   };
 
-  // useEffect(() => {
-  //   checkFacebookStatus();
-  // }, [checkFacebookStatus]);
   const handleLogout = () => {
     console.log('Logging out from Facebook...');
     clearFacebookData();

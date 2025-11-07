@@ -4,29 +4,27 @@ import styles from "./AddUserInfo.module.scss";
 const cx = classNames.bind(styles);
 
 import { AddStaff_API, EditStaffInfo_API } from "../configs/api";
-import { useStaffStore } from "../zustand/staffStore";
-import { useAuthStore } from "../zustand/authStore";
-import type { StaffInfoType, StaffDataType, StaffRole } from "../zustand/staffStore";
+import { useStaffStore, type IStaff } from "../zustand/staffStore";
+import { useAuthStore, type UserInfoType } from "../zustand/authStore";
 import { SalaryByPosition } from "../zustand/staffStore";
 import type { ListBankType, BankInfoType } from "../assets/fullVietNamBanks";
 import CustomSelectGlobal from "../ultilitis/CustomSelectGlobal";
 import Select from "react-select";
 import { fullVietNamBanks } from "../assets/fullVietNamBanks";
 interface AddUserInfoProps {
-  fullUserData: StaffDataType; // optional (empty when creating)
+  fullUserData: IStaff; // optional (empty when creating)
   setIsOpenAddForm: Dispatch<React.SetStateAction<boolean>>;
-  setFullUserData: Dispatch<React.SetStateAction<StaffDataType>>;
+  setFullUserData: Dispatch<React.SetStateAction<IStaff>>;
   listBanks: ListBankType;
 }
 
 export default function AddUserInfo({ setIsOpenAddForm, fullUserData, setFullUserData, listBanks }: AddUserInfoProps) {
-  const { addStaff, updateStaff } = useStaffStore();
-  const { getAuthHeader, setYourStaffInfo } = useAuthStore();
+  const { updateYourStaffProfile } = useStaffStore();
+  const { getAuthHeader } = useAuthStore();
   const [selectBank, setSelectBank] = useState<string | null>(null);
 
-
   // ✅ initialize from fullUserData if exists (edit), else defaults (create)
-  const [staffForm, setStaffForm] = useState<StaffDataType | Omit<StaffDataType, "_id">>(fullUserData);
+  const [staffForm, setStaffForm] = useState<IStaff | Omit<IStaff, "_id">>(fullUserData);
 
   // auto-update salary if role changes
   useEffect(() => {
@@ -40,7 +38,7 @@ export default function AddUserInfo({ setIsOpenAddForm, fullUserData, setFullUse
     setStaffForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleInfoChange = (field: keyof StaffInfoType, value: string) => {
+  const handleInfoChange = (field: keyof UserInfoType, value: string) => {
     setStaffForm((prev) => ({
       ...prev,
       staffInfo: { ...prev.staffInfo, [field]: value },
@@ -79,7 +77,7 @@ export default function AddUserInfo({ setIsOpenAddForm, fullUserData, setFullUse
 
         const data = await res.json();
         if (res.ok) {
-          updateStaff(data); // Zustand update
+          updateYourStaffProfile(data); // Zustand update
           setFullUserData(data); // update parent state
           alert("Cập nhật hồ sơ thành công!");
           setIsOpenAddForm(false);
@@ -96,9 +94,8 @@ export default function AddUserInfo({ setIsOpenAddForm, fullUserData, setFullUse
 
         const data = await res.json();
         if (res.ok) {
-          addStaff(data);
           setFullUserData(data);
-          setYourStaffInfo(staffForm)
+          staffForm;
           alert("Tạo hồ sơ thành công!");
           setIsOpenAddForm(false);
         } else {

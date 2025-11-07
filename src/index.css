@@ -1,17 +1,263 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* ========================================
+     FONT & TYPOGRAPHY
+     ======================================== */
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  /* Font Sizes */
+  --font-size-xs: 11px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 32px;
+
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 550;
+  --font-weight-bold: 600;
+  --font-weight-extrabold: 650;
+  --font-weight-black: 700;
+
+  /* Line Heights */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.8;
+
+  /* ========================================
+     COLOR PALETTE - ORANGE FOCUSED
+     ======================================== */
+  
+  /* Primary Orange Colors */
+  --orange-primary: #f05316;
+  --orange-primary-hover: #e04913;
+  --orange-primary-active: #d04010;
+  --orange-primary-light: #fd8c57;
+  --orange-primary-lighter: #ffb088;
+  --orange-primary-lightest: #ffd4c0;
+  --orange-primary-dark: #c63d0e;
+  --orange-primary-darker: #9d300b;
+
+  /* Orange Variations */
+  --orange-50: #fff5f0;
+  --orange-100: #ffe8dc;
+  --orange-200: #ffd4c0;
+  --orange-300: #ffb088;
+  --orange-400: #fd8c57;
+  --orange-450: rgb(247, 103, 37);
+  --orange-500: #f05316;
+  --orange-600: #e04913;
+  --orange-700: #d04010;
+  --orange-800: #c63d0e;
+  --orange-900: #9d300b;
+
+  /* Neutral Colors */
+  --white: #ffffff;
+  --gray-50: #fafafa;
+  --gray-100: #f5f5f5;
+  --gray-200: #f0f0f0;
+  --gray-300: #e6e6e6;
+  --gray-400: #d8d8d8;
+  --gray-500: #b8b8b8;
+  --gray-600: #888888;
+  --gray-700: #666666;
+  --gray-800: #333333;
+  --gray-900: #213547;
+  --black: #000000;
+
+  /* Semantic Colors */
+  --text-primary: #213547;
+  --text-secondary: #666666;
+  --text-tertiary: #888888;
+  --text-disabled: #b8b8b8;
+  --text-on-orange: #ffffff;
+  --text-on-dark: rgba(255, 255, 255, 0.87);
+
+  --bg-primary: #ffffff;
+  --bg-secondary: #fafafa;
+  --bg-tertiary: #f5f5f5;
+  --bg-hover: #f8f9fa;
+  --bg-active: #ffe8dc;
+  --bg-sidebar: var(--orange-primary);
+
+  /* Border Colors */
+  --border-color-light: #e6e6e6;
+  --border-color-base: #d8d8d8;
+  --border-color-medium: #cccccc;
+  --border-color-dark: #999999;
+  --border-color-orange: var(--orange-primary-light);
+
+  /* Status Colors - Order/System Status */
+  --status-success: #009924;
+  --status-success-bg: #d4edda;
+  --status-success-light: #4caf50;
+  
+  --status-warning: #d35400;
+  --status-warning-bg: #fff3cd;
+  
+  --status-error: #e20e20;
+  --status-error-bg: #f8d7da;
+  --status-error-light: #e74c3c;
+  
+  --status-info: #0b08cc;
+  --status-info-bg: #99c5ff;
+  --status-info-light: #b3e1ff;
+  
+  --status-pending: #72ad25;
+  --status-pending-bg: #fff3cd;
+  
+  --status-cancel: #c5c5c7;
+  --status-cancel-bg: #e9ecef;
+  
+  --status-new: #007bff;
+  --status-new-bg: #cce5ff;
+
+  /* Tag/Badge Colors */
+  --tag-purple: #800080;
+  --tag-purple-bg: #e6d9e6;
+  --tag-green: #02a51d;
+  --tag-green-bg: #d4edda;
+  --tag-red: #ff0000;
+  --tag-red-bg: #f8d7da;
+  --tag-gray: #808080;
+  --tag-gray-bg: #e9ecef;
+
+  /* Social Media Icon Colors */
+  --facebook-icon-color: #1877f2;
+  --shopee-icon-color: #ee4d2d;
+  --tiktok-icon-color: #000000;
+
+  /* ========================================
+     SPACING SYSTEM
+     ======================================== */
+  --spacing-xs: 4px;
+  --spacing-sm: 6px;
+  --spacing-md: 8px;
+  --spacing-lg: 12px;
+  --spacing-xl: 16px;
+  --spacing-2xl: 20px;
+  --spacing-3xl: 24px;
+  --spacing-4xl: 30px;
+  --spacing-5xl: 40px;
+  --spacing-6xl: 60px;
+
+  /* ========================================
+     BORDER RADIUS
+     ======================================== */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 12px;
+  --radius-full: 50%;
+
+  /* ========================================
+     SHADOWS
+     ======================================== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 8px 16px rgba(0, 0, 0, 0.2);
+  --shadow-orange: 0 0 0 3px rgba(240, 83, 22, 0.3);
+  --shadow-blue: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
+
+  /* ========================================
+     BUTTONS
+     ======================================== */
+  --btn-padding-sm: 4px 8px;
+  --btn-padding-md: 6px 12px;
+  --btn-padding-lg: 8px 16px;
+  --btn-padding-xl: 10px 20px;
+  
+  --btn-border-radius: var(--radius-md);
+  --btn-font-size: var(--font-size-md);
+  --btn-font-weight: var(--font-weight-medium);
+
+  /* Orange Button (Primary) */
+  --orange-btn-bg-color: var(--orange-primary);
+  --orange-btn-text-color: var(--text-on-orange);
+  --orange-btn-hover: var(--orange-primary-hover);
+  --orange-btn-active: var(--orange-primary-active);
+
+  /* Secondary Button */
+  --btn-secondary-bg: var(--gray-200);
+  --btn-secondary-text: var(--text-primary);
+  --btn-secondary-hover: var(--gray-300);
+
+  /* Success Button */
+  --btn-success-bg: var(--status-success-light);
+  --btn-success-text: var(--white);
+  --btn-success-hover: #219150;
+
+  /* Danger Button */
+  --btn-danger-bg: var(--status-error-light);
+  --btn-danger-text: var(--white);
+  --btn-danger-hover: #c0392b;
+
+  /* ========================================
+     INPUTS & FORMS
+     ======================================== */
+  --input-border-color: var(--border-color-base);
+  --input-border-radius: var(--radius-md);
+  --input-padding: 6px 12px;
+  --input-font-size: var(--font-size-md);
+  --input-focus-border: #007bff;
+  --input-focus-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+
+  /* ========================================
+     TABLES
+     ======================================== */
+  --table-border-color: var(--border-color-base);
+  --table-header-bg: var(--gray-100);
+  --table-header-text: var(--text-primary);
+  --table-row-hover: var(--bg-hover);
+  --table-cell-padding: 8px 10px;
+  --table-header-padding: 8px 10px;
+
+  /* ========================================
+     HEADERS & NAVIGATION
+     ======================================== */
+  --header-bg: var(--white);
+  --header-height: 60px;
+  --header-text-color: var(--text-primary);
+  --orange-header-text-color: var(--orange-primary);
+
+  --sidebar-bg: var(--orange-primary);
+  --sidebar-text: var(--white);
+  --sidebar-width: 200px;
+  --sidebar-collapsed-width: 60px;
+  --sidebar-item-hover: rgba(255, 255, 255, 0.1);
+  --sidebar-item-active: rgba(255, 255, 255, 0.2);
+
+  /* ========================================
+     MODALS & OVERLAYS
+     ======================================== */
+  --modal-bg: var(--white);
+  --modal-overlay-bg: rgba(255, 255, 255, 0.8);
+  --modal-border-radius: var(--radius-lg);
+  --modal-padding: var(--spacing-2xl);
+  --modal-shadow: var(--shadow-xl);
+
+  /* ========================================
+     SCROLLBARS
+     ======================================== */
+  --scrollbar-width: 8px;
+  --scrollbar-track: #f1f1f1;
+  --scrollbar-thumb: #bdbbbb;
+  --scrollbar-thumb-hover: #a5a4a4;
+
+  /* ========================================
+     LEGACY COMPATIBILITY
+     ======================================== */
   --epr-bg-color: #fff;
   --epr-category-label-bg-color: #fff;
   --epr-text-color: #222;
@@ -19,21 +265,25 @@
   --epr-emoji-gap: 8px;
   --epr-hover-bg-color: #f1f3f5;
 
-  --orange-btn-bg-color: #f05316;
-  --orange-btn-text-color: #ffffff;
+  /* Theme Mode */
+  color-scheme: light dark;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
 
-  --table-border-color: #d8d8d8;
-
-  --orange-header-text-color: #f05316;
+  /* Social icon color */
+  --facebook-icon-color: #005eca;
+  --shopee-icon-color: var(--orange-primary);
+  --tiktok-icon-color: #000;
 }
 
 a {
-  font-weight: 500;
-  color: #646cff;
+  font-weight: var(--font-weight-medium);
+  color: var(--orange-primary);
   text-decoration: inherit;
+  transition: color 0.2s ease;
 }
 a:hover {
-  color: #535bf2;
+  color: var(--orange-primary-hover);
 }
 
 body {
@@ -42,42 +292,75 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
 }
 
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  font-size: var(--font-size-3xl);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
 }
 
-button {
-  border-radius: 8px;
+h2 {
+  font-size: var(--font-size-2xl);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+h3 {
+  font-size: var(--font-size-xl);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+h4 {
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.normal-button {
+  border-radius: var(--btn-border-radius);
   border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
+  padding: var(--btn-padding-md);
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--orange-btn-bg-color);
+  color: var(--orange-btn-text-color);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: all 0.2s ease;
 }
-button:hover {
-  /* border-color: #646cff; */
+
+.normal-button:hover {
+  background-color: var(--orange-btn-hover);
 }
-button:focus,
-button:focus-visible {
-  /* outline: 4px auto -webkit-focus-ring-color; */
+
+.normal-button:focus,
+.normal-button:focus-visible {
+  outline: 2px solid var(--orange-primary);
+  outline-offset: 2px;
 }
+
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
   }
   a:hover {
-    color: #747bff;
+    color: var(--orange-primary);
   }
-  button {
-    background-color: #f9f9f9;
+  .normal-button {
+    background-color: var(--orange-btn-bg-color);
+    color: var(--orange-btn-text-color);
   }
 }
 
@@ -156,23 +439,21 @@ button:focus-visible {
   height: 0;
   width: 0;
 } */
-/* Optional - minimal scrollbar */
+/* Scrollbar Styling */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: var(--scrollbar-width);
+  height: var(--scrollbar-width);
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-/* background: linear-gradient(135deg, #ff0000, #0000ff);  */
-/* background: linear-gradient(135deg, #fd744a, #f85718);  */
-background: #bdbbbb;
-  border-radius: 4px;
+  background: var(--scrollbar-thumb);
+  border-radius: var(--radius-sm);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a5a4a4;
+  background: var(--scrollbar-thumb-hover);
 }

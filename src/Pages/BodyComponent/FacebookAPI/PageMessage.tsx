@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect, } from "react";
 import classNames from "classnames/bind";
 import styles from "./PageMessage.module.scss";
 const cx = classNames.bind(styles);
@@ -6,41 +6,34 @@ const cx = classNames.bind(styles);
 import Sidebar from "./SideBar";
 import ChatPanel from "./ChatPanel";
 
-import type { ConversationType, ChatMessageType } from "../../../zustand/facebookStore";
+import type { ConversationType, ChatMessageType } from "../../../zustand/messagingStore";
 import CallPagePermission from "./CallPagePermission";
 import { useAuthStore } from "../../../zustand/authStore";
 import PageSelect from "./PageSelect";
-import { useFacebookStore } from "../../../zustand/facebookStore";
+import { useMessagingStore } from "../../../zustand/messagingStore";
 import InitialMessageShow from "./InitialMessageShow";
+import { useBranchStore } from "../../../zustand/branchStore";
 export default function PageMessage() {
   const [showListPage, setShowListPage] = useState(false);
   const {
     currentConversationInfo,
-    fetchFacebookPages_v2,
-    pageSelected,
-    setPageSelected,
-    fetchFacebookPages,
-    fetchConversationFromPage,
+    fetchConversations,
     conversations,
     messageList,
-    setConversationId,
     selectedConversationId,
-    sendMessageToFacebook,
-  } = useFacebookStore();
+    sendMessage,
+    setSelectedBranch,
+  } = useMessagingStore();
   const {yourStaffId} = useAuthStore();
+  const {selectedBranch} = useBranchStore();
 
-
-
-
-  const [currentPageId, setCurrentPageId] = useState<string | number | null>(null);
   const [currentMessages, setCurrentMessages] = useState<ChatMessageType[]>([]);
+  
+  // Sync selectedBranch to messagingStore
   useEffect(() => {
-    if (pageSelected) {
-      setCurrentPageId(pageSelected.pageId);
-    } else {
-      setCurrentPageId(null);
-    }
-  }, [pageSelected]);
+    setSelectedBranch(selectedBranch);
+  }, [selectedBranch, setSelectedBranch]);
+
   useEffect(() => {
     if (selectedConversationId) {
       const msgs = messageList[selectedConversationId] || [];
@@ -48,45 +41,39 @@ export default function PageMessage() {
     } else {
       setCurrentMessages([]);
     }
-
   }, [selectedConversationId, messageList]);
 
+  // Fetch conversations when branch changes
   useEffect(() => {
-    // Fetch Facebook pages when component mounts
-    fetchFacebookPages_v2();
-  }, [fetchFacebookPages_v2]);
+    if (selectedBranch?._id) {
+      fetchConversations(selectedBranch._id);
+    }
+  }, [selectedBranch?._id, fetchConversations]);
 
-  useEffect(() => {
-    console.log('run');
-    fetchConversationFromPage();
-  }, [fetchConversationFromPage]);
-  console.log('conver', conversations);
   const handleSendMessage = (conversationId: string, msg: ChatMessageType) => {
+    if (!selectedBranch?._id) {
+      console.error("No branch selected");
+      return;
+    }
+
     // update messageList in store
     const existingMessages = messageList[conversationId] || [];
     const updatedMessages = [...existingMessages, msg];
-    useFacebookStore.getState().setMessageList(conversationId, updatedMessages);
+    useMessagingStore.getState().setMessageList(conversationId, updatedMessages);
 
-    // send to Facebook API
-    if (currentPageId ) {
-      sendMessageToFacebook(currentPageId.toString(), conversationId, msg.recipientId || "", {
-        message: msg.content,
-        contentType: msg.contentType,
-        metadata: msg.metadata,
-        _id: msg._id,
-        replyTo: msg.replyTo,
-        
-      });
-    }
+    // send to unified messaging API
+    sendMessage(selectedBranch._id, conversationId, msg.recipientId || "", {
+      message: msg.content,
+      contentType: msg.contentType,
+      _id: msg._id,
+      replyTo: msg.replyTo,
+    });
   };
 
-  const createTags = () => {
-
-  }
 
   return (
     <div className={cx("main")}>
-      {pageSelected === null ? (
+      {selectedBranch === null ? (
         <InitialMessageShow />
       ) : (
         <React.Fragment>
@@ -110,10 +97,9 @@ export default function PageMessage() {
 
             {/* Middle Chat Section */}
             <section className={cx("chat")}>
-              <ChatPanel currentPageId={currentPageId} messagesByConversation={currentMessages} onSendMessage={handleSendMessage} conversationInfo={currentConversationInfo} />
+              <ChatPanel branchId={selectedBranch?._id || null} messagesByConversation={currentMessages} onSendMessage={handleSendMessage} conversationInfo={currentConversationInfo} />
             </section>
 
-            {/* Right Info Panel */}
             {/* Right Info Panel */}
             <aside className={cx("info-panel")}>
               <div>

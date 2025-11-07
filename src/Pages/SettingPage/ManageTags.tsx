@@ -4,11 +4,10 @@ import styles from "./ManageTags.module.scss";
 import { CreateTag, EditTag } from "./CreateTag";
 import { MdDelete } from "react-icons/md";
 import { MdModeEditOutline } from "react-icons/md";
-import { useAuthStore } from "../../../zustand/authStore";
-import { useSettingStore, type ISettings, type TagType } from "../../../zustand/settingStore";
+
+import { useBranchStore, type IBranchSetting, type TagType } from "../../zustand/branchStore";
 import { v4 as uuidv4 } from "uuid";
 const cx = classNames.bind(styles);
-
 
 const test1 = [
   { id: "1", tagName: "Kiểm hàng", color: "#636276" },
@@ -26,27 +25,26 @@ export const exapmleTagList = [
 ];
 
 export default function ManageTags() {
+  const { addTag, deleteTag, updateTag, branchSettings, setUpdateBranchSettings } = useBranchStore();
 
-  const { settings, initSettings, addTag, deleteTag, updateTag } = useSettingStore();
-
-  if(!settings){
+  if (!branchSettings) {
+    console.log('null');
     return null;
   }
-  const [tagList, setTagList] = useState<TagType[]>( settings.shopTagList || []);
+  const [tagList, setTagList] = useState<TagType[]>(branchSettings.shopTagList || []);
 
   const [showModal, setShowModal] = useState(false);
   const [editTag, setEditTag] = useState<TagType | null>(null);
   const [showEdit, setShowEdit] = useState(false);
   const handleAddTag = (arrayNew: TagType[]) => {
-
     // In one time added, I can set multiple tag and click Save. so arrayNew is new array tag .
-  
+
     const newList = [...tagList, ...arrayNew];
 
     setTagList(newList);
-    const newSetting: ISettings = { ...settings, shopTagList: newList };
+    const newSetting: IBranchSetting = { ...branchSettings, shopTagList: newList };
 
-    initSettings(newSetting);
+    setUpdateBranchSettings(newSetting);
     addTag(arrayNew);
   };
 
@@ -54,9 +52,9 @@ export default function ManageTags() {
     if (window.confirm("Bạn có chắc muốn xoá thẻ này?")) {
       const newTagList = tagList.filter((tag) => tag.id !== id);
       setTagList(newTagList);
-      const newSetting = { ...settings, shopTagList: newTagList };
-      initSettings(newSetting);
-       deleteTag(id);
+      const newSetting = { ...branchSettings, shopTagList: newTagList };
+      setUpdateBranchSettings(newSetting);
+      deleteTag(id);
     }
   };
   const handleEditTag = (tagInfo: TagType) => {
@@ -76,9 +74,9 @@ export default function ManageTags() {
       newTagList = [...newList];
       return newList;
     });
-    const newSetting = { ...settings, shopTagList: newTagList };
-   initSettings(newSetting);
-   updateTag(newTagInfo.id, newTagInfo)
+    const newSetting = { ...branchSettings, shopTagList: newTagList };
+    setUpdateBranchSettings(newSetting);
+    updateTag(newTagInfo.id, newTagInfo);
   };
 
   return (

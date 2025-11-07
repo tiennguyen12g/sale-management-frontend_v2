@@ -1,9 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import axiosApiCall from "./axiosApiClient";
-import { useAuthStore,  } from "./authStore";
+import { useAuthStore } from "./authStore";
 import { facebookAPIBase } from "../configs/api";
-import { type TagType } from "./settingStore";
+import { type TagType } from "./branchStore";
+import { useBranchStore, type IBranch } from "./branchStore";
 interface FBUser {
   id: string;
   name: string;
@@ -121,10 +122,7 @@ interface FacebookState {
   clearFacebookData: () => void;
 
   // HTTP methods
-  fetchFacebookPages: (accessToken: string) => Promise<{ status: string; data?: PageInfoType[] }>;
   saveFacebookUser: (userData: FBUser) => Promise<{ status: string; message?: string }>;
-
-  fetchFacebookPages_v2: () => Promise<{ status: string; data?: PageInfoType[] }>;
 
   // Get list conversations from a page
   fetchConversationFromPage: () => Promise<{ status: string; data?: any[] }>;
@@ -192,38 +190,6 @@ export const useFacebookStore = create<FacebookState>()(
         set({ user: null, pages: [], pageSelected: null });
       },
 
-      // ✅ Fetch user's pages from Facebook Graph API
-      fetchFacebookPages: async (accessToken) => {
-        try {
-          const { getAuthHeader } = useAuthStore.getState();
-          const res = await axiosApiCall.get(
-            `https://graph.facebook.com/v24.0/me/accounts?fields=id,name,picture{url},access_token&access_token=${accessToken}`,
-            { headers: { ...getAuthHeader() } }
-          );
-
-          const pages = res.data.data || [];
-          console.log("pades", pages);
-          // set({ pages });
-          return { status: "success", data: pages };
-        } catch (err: any) {
-          console.error("❌ Failed to fetch pages:", err);
-          return { status: "failed", message: err.message };
-        }
-      },
-      fetchFacebookPages_v2: async () => {
-        try {
-          const { getAuthHeader } = useAuthStore.getState();
-          const res = await axiosApiCall.get(`${facebookAPIBase}/pages`, { headers: { ...getAuthHeader() } });
-          // console.log("res", res);
-
-          const pages = res.data || [];
-          set({ pages });
-          return { status: "success", data: pages };
-        } catch (err: any) {
-          console.error("❌ Failed to fetch pages:", err);
-          return { status: "failed", message: err.message };
-        }
-      },
       fetchConversationFromPage: async () => {
         try {
           const { getAuthHeader } = useAuthStore.getState();
@@ -331,10 +297,29 @@ export const useFacebookStore = create<FacebookState>()(
       saveFacebookUser: async (userData) => {
         try {
           const { getAuthHeader } = useAuthStore.getState();
-          await axiosApiCall.post(`${facebookAPIBase}/save-user`, userData, {
+          const res = await axiosApiCall.post(`${facebookAPIBase}/save-user`, userData, {
             headers: { "Content-Type": "application/json", ...getAuthHeader() },
-            // withCredentials: true,
           });
+          console.log("res", res);
+          const data = res.data;
+          console.log("data", data, data.data);
+          const branches: IBranch[] = data.data.branches || [];
+          console.log("branches", branches);
+          const currentBranch = useBranchStore.getState().branches || [];
+          // 1. Combine both arrays into one
+          const combinedBranches = [...currentBranch, ...branches];
+
+          // 2. Use a Map to keep track of unique _id values, keeping the last one encountered
+          const uniqueBranchesMap = new Map();
+          for (const branch of combinedBranches) {
+            // This overwrites any previous entry with the same _id, ensuring uniqueness
+            uniqueBranchesMap.set(branch._id, branch);
+          }
+
+          // 3. Convert the Map values back into an array
+          const uniqueBranches = Array.from(uniqueBranchesMap.values());
+          useBranchStore.getState().setUpdateBranches(uniqueBranches);
+
           return { status: "success" };
         } catch (err: any) {
           console.error("❌ Failed to save Facebook user:", err);
@@ -359,12 +344,6 @@ export const useFacebookStore = create<FacebookState>()(
             window.FB.api("/me", { fields: "id,name,email,picture" }, async (profile: any) => {
               const userData = { ...profile, accessToken };
               set({ user: userData });
-
-              // Fetch user's pages
-              const pageRes = await get().fetchFacebookPages(accessToken);
-              if (pageRes.status === "success" && pageRes.data) {
-                set({ pages: pageRes.data });
-              }
 
               // Optional: sync to backend
               await get().saveFacebookUser(userData);
@@ -409,11 +388,11 @@ export const useFacebookStore = create<FacebookState>()(
           return { status: "success", data: res.data };
         } catch (err: any) {
           console.error("❌ Failed to send message to Facebook:", err);
-          set({errorSend: err.message})
+          set({ errorSend: err.message });
           return { status: "failed", message: err.message };
         }
       },
-        sendMessageWithGroupMediaToFacebook: async (pageId, conversationId, recipientId, messageObj) => {
+      sendMessageWithGroupMediaToFacebook: async (pageId, conversationId, recipientId, messageObj) => {
         try {
           const { getAuthHeader } = useAuthStore.getState();
           const res = await axiosApiCall.post(
@@ -493,7 +472,7 @@ export const useFacebookStore = create<FacebookState>()(
                 return {
                   ...conv,
                   tags: tagInfo,
-                }
+                };
               } else {
                 return conv;
               }
@@ -504,8 +483,8 @@ export const useFacebookStore = create<FacebookState>()(
         }
       },
       updateErrorSend: (error: any) => {
-        set({errorSend: error})
-      }
+        set({ errorSend: error });
+      },
     }),
     {
       name: "facebook-storage",

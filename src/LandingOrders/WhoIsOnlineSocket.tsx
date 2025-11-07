@@ -13,8 +13,9 @@ type StaffStatus = {
   lastSeen?: string | null;
 };
 
+// This component using for thw owner check all staff onlinr/offline
 export default function WhoIsOnlineSocket() {
-    const {staffList} = useStaffStore();
+  const staffList: any[] = []; 
   const [staffs, setStaffs] = useState<Record<string, StaffStatus>>({});
   const [socket, setSocket] = useState<Socket | null>(null);
   // Initialize staff list when loaded from store

@@ -1,5 +1,5 @@
-const backendAPI = "http://localhost:3000/api-v1";
-const socketAPI = "http://localhost:3005"
+const backendAPI = "http://localhost:4000/api-v1";
+const socketAPI = "http://localhost:4005"
 
 // Login - Register
 const Login_API = `${backendAPI}/auth/login`;
@@ -9,12 +9,37 @@ const ChangePassword_API = `${backendAPI}/auth/change-password`;
 
 // Staffs
 const AddStaff_API = `${backendAPI}/staff/add`;
-const EditStaffInfo_API = `${backendAPI}/staff`;
+const EditStaffInfo_API = `${backendAPI}/staff`; // Use with /:staffID/:company_id
 const GetStaffList_API= `${backendAPI}/staff`;
-const UploadStaffSalary_API= `${backendAPI}/staff/upload-salary`;
-const UploadStaffAttendance_API= `${backendAPI}/staff/upload-attendance`;
-const UploadStaffDailyRecord_API= `${backendAPI}/staff/upload-daily-records`;
-const UpdateSalary_API = `${backendAPI}/staff/update-salary`;
+const GetStaffProfile_API = `${backendAPI}/staff`; // Use with /:staffID/:company_id
+const UploadStaffSalary_API= `${backendAPI}/staff/upload-salary`; // Use with /:company_id
+const UploadStaffAttendance_API= `${backendAPI}/staff/upload-attendance`; // Use with /:company_id
+const UploadStaffDailyRecord_API= `${backendAPI}/staff/upload-daily-records`; // Use with /:company_id
+const UpdateSalary_API = `${backendAPI}/staff/update-salary`; // Use with /:company_id
+const DeleteStaff_API = `${backendAPI}/staff`; // Use with /:staffID/:company_id
+
+// Invitations
+const SearchStaff_API = `${backendAPI}/invitations/search`;
+const CreateInvitation_API = `${backendAPI}/invitations`;
+const GetSentInvitations_API = `${backendAPI}/invitations/sent`;
+const GetReceivedInvitations_API = `${backendAPI}/invitations/received`;
+const AcceptInvitation_API = `${backendAPI}/invitations`; // Use with /:invitationId/accept
+const RejectInvitation_API = `${backendAPI}/invitations`; // Use with /:invitationId/reject
+const DeleteInvitation_API = `${backendAPI}/invitations`; // Use with /:invitationId
+
+// Unified Messaging (all platforms)
+const MessagingAPIBase = `${backendAPI}/messaging`;
+const GetConversations_API = `${backendAPI}/messaging/conversations`; // Use with /:branch_id
+const GetMessages_API = `${backendAPI}/messaging/messages`; // Use with /:branch_id/:conversationId
+const SendMessage_API = `${backendAPI}/messaging/send-message`;
+const SendMediaGroup_API = `${backendAPI}/messaging/send-media-group`;
+const SendMedia_API = `${backendAPI}/messaging/send-media`;
+const UpdateConversation_API = `${backendAPI}/messaging/conversations`; // Use with /:conversationId
+
+// Notifications
+const GetNotifications_API = `${backendAPI}/notifications`;
+const MarkNotificationRead_API = `${backendAPI}/notifications`; // Use with /:notificationId/read
+const MarkAllNotificationsRead_API = `${backendAPI}/notifications/read-all`;
 
 // Operating Costs
 const GetOperatingCost_API = `${backendAPI}/operating-costs`;
@@ -83,6 +108,25 @@ export {
     AddStaff_API,
     EditStaffInfo_API,
     GetStaffList_API,
+    GetStaffProfile_API,
+    DeleteStaff_API,
+    SearchStaff_API,
+    CreateInvitation_API,
+    GetSentInvitations_API,
+    GetReceivedInvitations_API,
+    AcceptInvitation_API,
+    RejectInvitation_API,
+    DeleteInvitation_API,
+    GetNotifications_API,
+    MarkNotificationRead_API,
+    MarkAllNotificationsRead_API,
+    MessagingAPIBase,
+    GetConversations_API,
+    GetMessages_API,
+    SendMessage_API,
+    SendMediaGroup_API,
+    SendMedia_API,
+    UpdateConversation_API,
     UploadStaffAttendance_API,
     UploadStaffSalary_API,
     UploadStaffDailyRecord_API,

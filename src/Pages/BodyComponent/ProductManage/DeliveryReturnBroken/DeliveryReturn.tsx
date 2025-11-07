@@ -9,7 +9,6 @@ import type { CarrierNameType, VoucherType, OrderStatusType, OrderType, ProductO
 
 import { CarrierFee, VoucherValue, ordersData } from "./DeliveryReturnType";
 import EditOrder from "./EditOrder";
-import ShopOrders from "../../../../LandingOrders/ShopOrders";
 import { useShopOrderStore } from "../../../../zustand/shopOrderStore";
 import { useProductStore } from "../../../../zustand/productStore";
 import ProductSummaryTable from "./ProductSummaryTable";

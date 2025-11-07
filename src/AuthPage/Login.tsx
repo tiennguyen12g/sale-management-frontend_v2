@@ -26,14 +26,19 @@ export default function Login() {
 
       const data = await res.json();
 
+      console.log('logindata', data);
       if (!res.ok) {
         setError(data.message || "Đăng nhập thất bại");
         return;
       }
-      login(data.token, data.user, data.yourStaffInfo, data.settings); // 🔑 store token + user
+      
+      // 🔑 store token + user
+      login(data.token, data.user, data.company, data.branches, data.list_branch_management);
+      
+      // ✅ Redirect after login
+      // Zustand updates are synchronous, so we can navigate immediately
+      navigate("/initial");
 
-      // localStorage.setItem("token", data.token);
-      navigate("/ho-so-ca-nhan"); // ✅ Redirect after login
     } catch (err) {
       console.log('err', err);
       setError("Có lỗi, vui lòng thử lại");
@@ -55,7 +60,7 @@ export default function Login() {
 
         <div className={cx("form-group")}>
           <label>Password:</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password"/>
         </div>
 
         <button type="submit" className={cx("btn")}>

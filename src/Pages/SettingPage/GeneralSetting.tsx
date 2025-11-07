@@ -21,7 +21,7 @@ export default function GeneralSetting() {
     const res = await fetch(ChangePassword_API, {
       method: "PUT",
       headers: { "Content-Type": "application/json", ...getAuthHeader() },
-      body: JSON.stringify({ userId: user.id, oldPassword, newPassword }),
+      body: JSON.stringify({ userId: user._id, oldPassword, newPassword }),
     });
     const data = await res.json();
     if (res.ok) {
@@ -65,9 +65,6 @@ export default function GeneralSetting() {
           </div>
           <p>
             <strong>Email:</strong> {user.email}
-          </p>
-          <p>
-            <strong>Quyền:</strong> {user.staffRole}
           </p>
           <p>
             <strong>Ngày đăng kí:</strong> {user.registeredDate}

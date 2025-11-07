@@ -7,19 +7,6 @@ type MenuState = {
   setActiveSubmenu: (submenu: string) => void;
 };
 
-// export const useMenuStore = create<MenuState>((set) => ({
-//   openMenu: "dashboard",
-//   activeSubmenu: "dashboard", // import; delivery; money, costs, ads, salary
-//   setOpenMenu: (menu) =>
-//     set((state) => ({
-//       openMenu: state.openMenu === menu ? "" : menu, // toggle logic
-//     })),
-//   setActiveSubmenu: (submenu) =>
-//     set(() => ({
-//       activeSubmenu: submenu,
-//     })),
-
-// }));
 
 export const useMenuStore = create<MenuState>()(
   persist(

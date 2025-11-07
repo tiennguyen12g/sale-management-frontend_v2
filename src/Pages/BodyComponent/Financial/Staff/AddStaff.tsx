@@ -8,7 +8,7 @@ import { useStaffStore } from "../../../../zustand/staffStore";
 import { useAuthStore } from "../../../../zustand/authStore";
 export default function AddStaff({ setIsOpenAddForm }: { setIsOpenAddForm: Dispatch<React.SetStateAction<boolean>> }) {
   // --- state for Add Staff form ---
-  const { addStaff } = useStaffStore();
+  const { addStaffToCompany } = useStaffStore();
   const { getAuthHeader } = useAuthStore();
 
   const [staffForm, setStaffForm] = useState({
@@ -76,7 +76,6 @@ export default function AddStaff({ setIsOpenAddForm }: { setIsOpenAddForm: Dispa
 
       const data = await res.json();
       if (res.ok) {
-        addStaff(data); // ✅ update Zustand store
         alert("Staff added successfully!");
       } else {
         alert("Error: " + data.message);

@@ -7,9 +7,8 @@ const cx = classNames.bind(styles);
 import { Register_API } from "../configs/api";
 import type { StaffRole } from "../zustand/staffStore";
 import { SalaryByPosition } from "../zustand/staffStore";
-import { AddStaff_API } from "../configs/api";
 export default function Register() {
-  const [username, setUsername] = useState("none");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [existedEmail, setExistedEmail] = useState<string | null>(null);
   const [password, setPassword] = useState("");
@@ -29,7 +28,11 @@ export default function Register() {
     try {
 
       const userInfos = {
-        username, email, password, staffRole, isCreateProfile: false, 
+        email, 
+        password, 
+
+        username,
+        isCreateProfile: false, 
         registeredDate: new Date().toISOString().split("T")[0],
       }
       const res = await fetch(Register_API, {
@@ -104,7 +107,7 @@ if(email !== existedEmail){
         {errorNotify && <div className={cx("error")}>{errorNotify}</div>}
 
         <div className={cx("form-group")}>
-          <label>Tên nickname:</label>
+          <label>Tên hiển thị:</label>
           <input
             type="text"
             value={username}
@@ -127,15 +130,6 @@ if(email !== existedEmail){
           <label>Nhập lại Password:</label>
           <input type="password" value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} required />
         </div>
-        {/* <div className={cx("form-group")}>
-          <label>Vai trò:</label>
-          <select value={staffRole} onChange={(e) => setStaffRole(e.target.value as StaffRole)}>
-            <option value="Sale-Staff">Nhân viên Sale</option>
-            <option value="Packer">Nhân viên đóng gói</option>
-            <option value="Manager">Nhân viên quản lí</option>
-            <option value="director">Admin</option>
-          </select>
-        </div> */}
 
         <button type="submit" className={cx("btn")} disabled={errorNotify !== "" ? true : false} style={{cursor: errorNotify !== "" ? "not-allowed" : "pointer"}}>
           Đăng kí

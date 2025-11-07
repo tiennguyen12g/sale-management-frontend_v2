@@ -35,7 +35,7 @@ import { useShopOrderStore, type OrderDataFromServerType, type OriginalOrder, ty
 import { type ProductType, type ProductDetailsType } from "../zustand/productStore";
 
 // Components
-import CreateExcel from "./CreateExcel";
+
 import CreateExcel_v2 from "./CreateExcel_v2";
 import VnAddressSelect_Old from "../ultilitis/VnAddress/VnAddressOld";
 import UploadExcelBox from "../ultilitis/UploadExcelBox";
@@ -136,30 +136,17 @@ interface ShopOrdersProps {
 const iconSize = 20;
 export default function ShopOrders_v3({ productDetail, dataOrders, productName, setGetFinalData }: ShopOrdersProps) {
   const { updateOrder, deleteOrder, addOrder, updateMultipleOrders, uploadOrdersExcel, deleteManyOrder } = useShopOrderStore();
-  const { user, logout } = useAuthStore();
+  const {yourStaffProfileInWorkplace} = useStaffStore();
+  const {yourStaffId} = useAuthStore();
   const [showNotification, setShowNotification] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string>("");
-  const { staffList, updateStaffID } = useStaffStore();
-  const [staffName, setStaffName] = useState<string[]>(["Không"]);
-  const [staffID, setStaffID] = useState("none");
+  const [staffName, setStaffName] = useState<string[]>([yourStaffProfileInWorkplace?.staffInfo.name || "Không"]);
+  const [staffID, setStaffID] = useState(yourStaffId || "none");
   const [userId, setUserId] = useState("none");
-  const staffRole: StaffRole | "none" = user?.staffRole || "none";
+  const staffRole: StaffRole | "none" = yourStaffProfileInWorkplace?.role || "none";
   // const [menuCollapsed, setMenuCollapsed] = useState(false);
   const [activeTable, setActiveTable] = useState("personal-ads-acc");
 
-  useEffect(() => {
-    if (staffList[0]?.staffInfo?.name) {
-      setStaffName([staffList[0].staffInfo.name]);
-    }
-    if (staffList[0]?.staffID) {
-      setStaffID(staffList[0].staffID);
-      updateStaffID(staffList[0].staffID);
-    }
-    if (staffList[0]?.userId) {
-      setUserId(staffList[0].userId);
-      updateStaffID(staffList[0].staffID);
-    }
-  }, [staffList]);
 
   let serverOriginalOrderData: OriginalOrder[] = [];
   let serverFinalOrderData: FinalOrder[] = [];
@@ -753,7 +740,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
             <button className={cx("btn-decor")} onClick={() => setOpenUpdateDeliveryBox(true)}>
               Cập nhật vận chuyển hàng loạt
             </button>
-            {staffRole === "admin" && (
+            {staffRole === "Director" && (
               <button className={cx("btn-decor")} onClick={() => DeleteAllSelectOrder()}>
                 Delete all select order
               </button>
@@ -938,7 +925,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
                                 {/* ✏️ */}
                                 <MdModeEditOutline size={22} color="#1175e7" />
                               </button>
-                              {staffRole === "admin" && (
+                              {staffRole === "Director" && (
                                 <button onClick={() => handleDeleteOrder(o.orderCode)}>
                                   <MdDelete color="red" size={22} style={{ marginLeft: 10 }} />
                                 </button>
@@ -1192,13 +1179,13 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
                   <label>
                     Vận chuyển:
                     <select value={editing.deliveryStatus} onChange={(e) => setEditing({ ...editing, deliveryStatus: e.target.value })}>
-                      {staffRole !== "admin" &&
+                      {staffRole !== "Director" &&
                         DeliveryOptionsForStaffSelectManual.map((s) => (
                           <option key={s} value={s}>
                             {s}
                           </option>
                         ))}
-                      {staffRole === "admin" &&
+                      {staffRole === "Director" &&
                         DeliveryOptions.map((s) => (
                           <option key={s} value={s}>
                             {s}
@@ -1503,13 +1490,13 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
                   <label>
                     Vận chuyển:
                     <select value={newOrder.deliveryStatus} onChange={(e) => setNewOrder({ ...newOrder, deliveryStatus: e.target.value })}>
-                      {staffRole !== "admin" &&
+                      {staffRole !== "Director" &&
                         DeliveryOptionsForStaffSelectManual.map((s) => (
                           <option key={s} value={s}>
                             {s}
                           </option>
                         ))}
-                      {staffRole === "admin" &&
+                      {staffRole === "Director" &&
                         DeliveryOptions.map((s) => (
                           <option key={s} value={s}>
                             {s}

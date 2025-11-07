@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useMemo } from "react";
 import classNames from "classnames/bind";
-import styles from "./NewLayoutTemplate.module.scss";
+import styles from "./LayoutWithSubmenu.module.scss";
 const cx = classNames.bind(styles);
 
 import { useProductStore } from "../zustand/productStore";
 import { useShopOrderStore } from "../zustand/shopOrderStore";
 import { useStaffStore } from "../zustand/staffStore";
+import { useAuthStore } from "../zustand/authStore";
 import ShopOrders_v3 from "../LandingOrders/ShopOrders_v3";
 import CreateExcel_v2 from "../LandingOrders/CreateExcel_v2";
 import StaffNotification from "../LandingOrders/StaffNotification";
 // Icons
-import { HiSearch } from "react-icons/hi";
-import { FcFilledFilter } from "react-icons/fc";
 import { IoIosArrowDropleft } from "react-icons/io";
 import { IoIosArrowDropright } from "react-icons/io";
 import { MdInsertChart } from "react-icons/md";
@@ -19,14 +18,14 @@ import { CgDesktop } from "react-icons/cg";
 
 const iconSize = 20;
 import { LuSquareMenu } from "react-icons/lu";
-export default function NewLayoutTemplate() {
+export default function LayoutWithSubmenu() {
   const [menuCollapsed, setMenuCollapsed] = useState(true);
   const [viewMode, setViewMode] = useState<"table" | "excel">("table");
   const [getFinalData, setGetFinalData] = useState<any>([])
   // const {user, token} = useAuthStore();
   const { products, fetchProducts } = useProductStore();
   const { orders } = useShopOrderStore();
-  const { staffID } = useStaffStore();
+  const {yourStaffId} = useAuthStore();
   const [currentProduct, setCurrentProduct] = useState<string | undefined>(undefined);
 
   // fetch products
@@ -65,7 +64,7 @@ export default function NewLayoutTemplate() {
         </div>
         <div className={cx("sidebar-header")}>
           <div className={cx("logo-section")}>
-            <StaffNotification staffID={staffID !== null ? staffID : ""} menuCollapsed={menuCollapsed} />
+            <StaffNotification staffID={yourStaffId !== null ? yourStaffId : ""} menuCollapsed={menuCollapsed} />
           </div>
         </div>
         <div className={cx("sidebar-menu")}>

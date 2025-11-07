@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { getSocket } from "../zustand/socketService";
 import { useFacebookStore } from "../zustand/facebookStore";
 import { useAuthStore } from "../zustand/authStore";
-
+import { useMessagingStore } from "../zustand/messagingStore";
 export default function GlobalSocket() {
   const { yourStaffId } = useAuthStore();
 
@@ -19,7 +19,8 @@ export default function GlobalSocket() {
 
     socket.on("message:new", (data) => {
       console.log("📨 Real-time message:", data);
-      useFacebookStore.getState().addIncomingMessage(data);
+      // useFacebookStore.getState().addIncomingMessage(data);
+      useMessagingStore.getState().addIncomingMessage(data)
     });
     socket.on("conversation-new", (conversation) => {
       console.log("📨 Real-time conversation:", conversation);

@@ -38,11 +38,9 @@
 
 .calendar-grid {
   display: grid;
-  grid-template-columns: repeat(7, 50px);
-  gap: 4px;
-  width: fit-content;
+  grid-template-columns: repeat(7, minmax(50px, 1fr));
+  gap: 5px;
   margin: 0 auto;
-  width: 400px;
 }
 
 .day-header {
@@ -53,7 +51,6 @@
 }
 
 .day-cell {
-// width: 40px;
   height: 40px;
   background: #fff;
   border: 1px solid #e5e7eb;

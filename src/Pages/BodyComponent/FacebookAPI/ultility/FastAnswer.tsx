@@ -3,7 +3,7 @@ import classNames from "classnames/bind";
 import styles from "./FastAnswer.module.scss";
 const cx = classNames.bind(styles);
 
-import { useSettingStore, type FastMessageType , type MediaLinkedType} from "../../../../zustand/settingStore";
+import { type TagType, type MediaLinkedType , useBranchStore , type FastMessageType} from "../../../../zustand/branchStore";
 
 interface FastAnswerProps {
   inputValue: string;
@@ -11,8 +11,8 @@ interface FastAnswerProps {
 }
 
 export default function FastAnswer({ inputValue, onSelect }: FastAnswerProps) {
-  const { settings } = useSettingStore();
-  const fastMessages: FastMessageType[] = settings?.fastMessages || [];
+  const { branchSettings } = useBranchStore();
+  const fastMessages: FastMessageType[] = branchSettings?.fastMessages || [];
 
   const [filtered, setFiltered] = useState<FastMessageType[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);

@@ -1,80 +1,43 @@
 import "./App.css";
+
+// Libraries
 import { useEffect } from "react";
-import MainPage from "./Pages/MainPage";
 import { Routes, Route, useLocation } from "react-router-dom";
-import ShopOrders from "./LandingOrders/ShopOrders";
+
+// Components
+import MainPage from "./Pages/MainPage";
 import Login from "./AuthPage/Login";
 import Register from "./AuthPage/Register";
 import ProtectedRoute from "./AuthPage/ProtectedRoute";
-import LandingManagement from "./LandingOrders/LandingManagement";
-import LandingManagement_v2 from "./LandingOrders/LandingManagement2";
-import UserPage from "./AuthPage/UserPage";
+import UserPage from "./StaffPage/StaffPage";
 import GlobalSocket from "./ultilitis/GlobalSocket";
-import ProductManage from "./Pages/BodyComponent/ProductManage/ProductManage";
-import Finance from "./Pages/BodyComponent/Financial/Finance";
 import ProductTable_v2 from "./Pages/BodyComponent/ProductManage/ProductDetails/ProductTable_v2";
 import NoRoute from "./ultilitis/NoRoute";
-import StaffMenu from "./Pages/MenuComponent/StaffMenu";
-import StaffMenuLayout from "./Pages/MenuComponent/StaffMenuLayout";
 import PageMessage from "./Pages/BodyComponent/FacebookAPI/PageMessage";
 import { FacebookSDKLoader } from "./Pages/BodyComponent/FacebookAPI/FacebookSDKLoader";
-import TestUI from "./zustand/test";
-import InitialFetchData from "./ultilitis/InitialFetchData";
-import { useAuthStore } from "./zustand/authStore";
-import AdsAccountLayout from "./Pages/BodyComponent/AdsAccount/AdsAaccount";
-import NewLayout from "./NewLayout/NewLayout";
 import AdsAccountManagement from "./Pages/BodyComponent/Financial/AdsCosts/AdsAccountManagement";
 import SettingPage from "./Pages/SettingPage/SettingPage";
-import NewLayoutTemplate from "./NewLayout/NewLayoutTemplate";
+import InitialPage from "./Pages/InitialPage/InitialPage";
+
+//Hooks
 import { useSettingStore } from "./zustand/settingStore";
+import { useAuthStore } from "./zustand/authStore";
+import { useHydrateAuth } from "./zustand/hydrationHook";
+// Layout
+import Layout1 from "./Layout/Layout1";
+import LayoutWithSubmenu from "./Layout/LayoutWithSubmenu";
+import CreateShopModal from "./TestAPI/createShop";
 function App() {
   const location = useLocation();
-
   // Routes where StaffMenu should NOT appear
   const hideStaffMenuOn = ["/login", "/register", "/home"];
-
+  const hydrated = useHydrateAuth();
+  if (!hydrated) {
+    return <div>Loading...</div>;
+  }
+  // initialLoadFromLocal();
   // Check if current path starts with any excluded route
   const shouldShowStaffMenu = !hideStaffMenuOn.some((path) => location.pathname.startsWith(path));
-
-  const { yourStaffId, setYourStaffId, yourStaffInfo, setYourStaffInfo} = useAuthStore();
-  const {settings, initSettings,} = useSettingStore();
-
-  // ✅ Only run once on mount to initialize yourStaffId from localStorage
-  useEffect(() => {
-    if (!yourStaffId || !yourStaffInfo) {
-      const stored = localStorage.getItem("yourStaffInfo");
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          if (parsed?.staffID) {
-            setYourStaffId(parsed.staffID);
-            setYourStaffInfo(parsed)
-            console.log("✅ Loaded yourStaffId from localStorage:", parsed.staffID);
-          }
-        } catch (err) {
-          console.warn("⚠️ Failed to parse yourStaffInfo:", err);
-        }
-      }
-    }
-  }, [yourStaffId, setYourStaffId]);
-  useEffect(() => {
-    console.log("out", settings);
-    if (!settings) {
-      console.log("hdd", settings);
-      const settingStore = localStorage.getItem("settings");
-      if (settingStore) {
-        try {
-          const parsed = JSON.parse(settingStore);
-          if (parsed) {
-            initSettings(parsed);
-            console.log("✅ Loaded yourStaffId from localStorage:", parsed);
-          }
-        } catch (err) {
-          console.warn("⚠️ Failed to parse settings:", err);
-        }
-      }
-    }
-  }, [settings, initSettings]);
 
   return (
     <div className="app-main">
@@ -84,19 +47,28 @@ function App() {
       <FacebookSDKLoader appId="2051002559051142" />
 
       {/* ✅ Only show StaffMenu when allowed */}
-      {/* {shouldShowStaffMenu && <StaffMenu />} */}
 
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        {/* <Route path="/new-layout" element={<NewLayout />}/> */}
+        <Route path="/test" element={<CreateShopModal />} />
+
+        {/* Initial Page - Shop Selection */}
+        <Route
+          path="/initial"
+          element={
+            <ProtectedRoute>
+              <InitialPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Protected routes */}
         <Route
           path="/home/*"
           element={
-            <ProtectedRoute requiredRole="admin">
+            <ProtectedRoute>
               <MainPage />
             </ProtectedRoute>
           }
@@ -105,9 +77,9 @@ function App() {
           path="/quan-li-don-hang/*"
           element={
             <ProtectedRoute>
-              <NewLayout>
-                <NewLayoutTemplate />
-              </NewLayout>
+              <Layout1>
+                <LayoutWithSubmenu />
+              </Layout1>
             </ProtectedRoute>
           }
         />
@@ -116,9 +88,9 @@ function App() {
           path="/ho-so-ca-nhan"
           element={
             <ProtectedRoute>
-              <NewLayout>
+              <Layout1>
                 <UserPage />
-              </NewLayout>
+              </Layout1>
             </ProtectedRoute>
           }
         />
@@ -127,9 +99,9 @@ function App() {
           path="/danh-sach-san-pham"
           element={
             <ProtectedRoute>
-              <NewLayout>
+              <Layout1>
                 <ProductTable_v2 />
-              </NewLayout>
+              </Layout1>
             </ProtectedRoute>
           }
         />
@@ -138,10 +110,9 @@ function App() {
           path="/tin-nhan-page"
           element={
             <ProtectedRoute>
-              <NewLayout>
+              <Layout1>
                 <PageMessage />
-                {/* <TestUI /> */}
-              </NewLayout>
+              </Layout1>
             </ProtectedRoute>
           }
         />
@@ -150,10 +121,9 @@ function App() {
           path="/tai-khoan-ads"
           element={
             <ProtectedRoute>
-              <NewLayout>
+              <Layout1>
                 <AdsAccountManagement />
-                {/* <TestUI /> */}
-              </NewLayout>
+              </Layout1>
             </ProtectedRoute>
           }
         />
@@ -161,13 +131,12 @@ function App() {
           path="/cai-dat"
           element={
             <ProtectedRoute>
-              <NewLayout>
+              <Layout1>
                 <SettingPage />
-              </NewLayout>
+              </Layout1>
             </ProtectedRoute>
           }
         />
-
 
         {/* Catch-all */}
         <Route path="*" element={<NoRoute />} />

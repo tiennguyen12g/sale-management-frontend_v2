@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./AttendanceCalendar.module.scss";
 // import type { EmployeeAttendanceType, Da } from "../DataTest/DataForStaffSalary";
-import { type EmployeeAttendanceType, type DailyRecordType } from "../../../../zustand/staffStore";
+import { type IAttendance, type IDailyRecord } from "../../../../zustand/staffStore";
 import { Tooltip } from "react-tooltip";
 const cx = classNames.bind(styles);
 
@@ -12,8 +12,8 @@ import { FaTimes } from "react-icons/fa";
 
 
 interface Props {
-  attendance: EmployeeAttendanceType[];
-  dailyRecords: DailyRecordType[];
+  attendance: IAttendance[];
+  dailyRecords: IDailyRecord[];
 }
 export default function AttendanceCalendar({ attendance, dailyRecords }: Props) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -27,14 +27,14 @@ export default function AttendanceCalendar({ attendance, dailyRecords }: Props) 
     return d.getFullYear() === year && d.getMonth() === month;
   });
 
-  const attendanceMap: Record<string, EmployeeAttendanceType> = {};
+  const attendanceMap: Record<string, IAttendance> = {};
   monthAttendance.forEach((a) => {
     const d = new Date(a.date);
     const key = formatDateLocal(d);
     attendanceMap[key] = a;
   });
 
-  const dailyMap: Record<string, DailyRecordType> = {};
+  const dailyMap: Record<string, IDailyRecord> = {};
   dailyRecords.forEach((r) => {
     const d = new Date(r.date);
     const key = formatDateLocal(d);
@@ -104,14 +104,14 @@ export default function AttendanceCalendar({ attendance, dailyRecords }: Props) 
             let symbol = null;
 
             if (record) {
-              if (record.checked === "onTime") {
+              if (record.status === "onTime") {
                 statusClass = "onTime";
                 // symbol = "✔";
                 symbol = <FaCheck size={20} color="green" />;
-              } else if (record.checked === "late") {
+              } else if (record.status === "late") {
                 statusClass = "late";
                 symbol = <TiWarning size={20} color="orange" />;
-              } else if (record.checked === "absent") {
+              } else if (record.status === "absent") {
                 statusClass = "absent";
                 // symbol = "✘";
                 symbol = <FaTimes size={20} color="red" />;

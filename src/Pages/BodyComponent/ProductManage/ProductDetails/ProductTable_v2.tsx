@@ -6,12 +6,10 @@ const cx = classNames.bind(styles);
 import { type ProductType, type ProductDetailsType } from "../../../../zustand/productStore";
 import { useProductStore } from "../../../../zustand/productStore";
 import NotificationBox_v2 from "../../../../ultilitis/NotificationBox_v2";
-import { NavLink } from "react-router-dom";
-import StaffTracking from "../../../../LandingOrders/StaffTracking";
 import { useAuthStore } from "../../../../zustand/authStore";
-import { useStaffStore } from "../../../../zustand/staffStore";
+
 interface Props {
-  // productName: string
+
 }
 
 function ProductTable_v2() {
@@ -20,8 +18,7 @@ function ProductTable_v2() {
   // const startAutoFetch = useProductStore((s) => s.startAutoFetch);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [showNotification, setShowNotification] = useState(false);
-  const { logout } = useAuthStore();
-  const { staffID } = useStaffStore();
+  const { logout, yourStaffId } = useAuthStore();
 
   const toggleExpand = (id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
@@ -58,13 +55,6 @@ function ProductTable_v2() {
     <div className={cx("product-table")}>
       {showNotification && statusMsg && <NotificationBox_v2 message={statusMsg} onClose={() => setShowNotification(false)} />}
 
-      {/* <div className={cx("user-page")}>
-        {staffID && <StaffTracking staffID={staffID} />}
-        <NavLink key="user-page" to={`/ho-so-ca-nhan`} style={{ textDecoration: "none" }}>
-          Hồ sơ cá nhân
-        </NavLink>
-        <div onClick={() => handleLogout()}>Đăng xuất</div>
-      </div> */}
       <h3>Danh sách sản phẩm đang bán</h3>
       <table>
         <thead>
@@ -102,10 +92,6 @@ function ProductTable_v2() {
                         <img key={i} src={img.url} alt={img.name} style={{ width: "40px", height: "40px", marginRight: "4px" }} />
                       ))}
                     </td>
-                    {/* <td>
-                  <button onClick={(e) => { e.stopPropagation(); onEdit(p); }}>✏️ Edit</button>
-                  <button onClick={(e) => { e.stopPropagation(); onDelete(p.productId); }}>🗑 Delete</button>
-                </td> */}
                   </tr>
                   {expandedId === p.productId && (
                     <tr className={cx("details-row")}>

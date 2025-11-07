@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import classNames from "classnames/bind";
 import styles from "./SideBar.module.scss";
 const cx = classNames.bind(styles);
-import type { ConversationType } from "../../../zustand/facebookStore";
-import { useFacebookStore, type ChatMessageType } from "../../../zustand/facebookStore";
+import type { ConversationType } from "../../../zustand/messagingStore";
+import { useMessagingStore } from "../../../zustand/messagingStore";
+import { useBranchStore } from "../../../zustand/branchStore";
 import { IoCamera } from "react-icons/io5";
 import { BiSolidVideos } from "react-icons/bi";
 
@@ -13,11 +14,16 @@ interface SidebarProps {
 
 export default function Sidebar({ conversationData }: SidebarProps) {
   console.log("conversationData ", conversationData);
-  const { fetchMessagesFromConversation, selectedConversationId, setConversationId } = useFacebookStore();
+  const { fetchMessages, selectedConversationId, setConversationId } = useMessagingStore();
+  const { selectedBranch } = useBranchStore();
 
   const handleSelectConversation = (id: string, conversationInfo: ConversationType) => {
+    if (!selectedBranch?._id) {
+      console.error("No branch selected");
+      return;
+    }
     setConversationId(id, conversationInfo);
-    fetchMessagesFromConversation(id, conversationInfo.pageId);
+    fetchMessages(selectedBranch._id, id);
   };
 
   return (

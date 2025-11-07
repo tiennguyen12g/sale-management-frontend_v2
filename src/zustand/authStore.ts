@@ -1,93 +1,181 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { type StaffRole } from "./staffStore";
-
-import axiosApiCall from "./axiosApiClient";
-import { backendAPI } from "../configs/api";
-import { useSettingStore } from "./settingStore";
-import { type ISettings } from "./settingStore";
-import { type StaffDataType } from "./staffStore";
-export interface TagType {
-  id: string;
-  tagName: string;
-  color: string;
-  description?: string;
+import { useBranchStore, type IBranch, type IBranchForStaff } from "./branchStore";
+export interface UserInfoType {
+  staffID: string;
+  name: string;
+  birthday: string;
+  address: string;
+  phone: string;
+  relationshipStatus: string;
+  religion: string;
+  description: string;
+  identityId: string;
+  accountLogin: string;
 }
+
+export type LicensePackage = "free" | "paid" | "trial";
+
+export interface IPurchaseHistory {
+  purchased_time: string;
+  value_package: number;
+  duration: number;
+  payment_method: "bank-card" | "crypto-currency";
+}
+
+export interface ILicense {
+  current_plan: LicensePackage;
+  expired_time: string;
+  historys: IPurchaseHistory[];
+}
+
 export interface UserType {
-  id: string;
-  username: string;
+  _id: string;
   email: string;
-  staffRole: StaffRole;
+  password: string;
+  username: string;
   isCreateProfile: boolean;
   registeredDate: string;
   administrator: string;
-}
-interface YourStaffInfoType {
-  staffID: string;
-}
-// -- Fast message config.
-export interface FastMessageType {
-  id: string;
-  keySuggest: string;
-  listImageUrl: { id: string; url: string }[];
-  messageContent: string;
+  blacklist: {
+    banned: boolean;
+    reason: string;
+  };
+  userInfo: UserInfoType;
+  license: ILicense;
 }
 
-// -- Favorit album
-
-export interface FavoritAlbum {
-  id: string;
-  nameImage: string;
-  url: string;
+export interface ICompany {
+  _id: string;
+  owner_id: string;
+  company_name: string;
+  avatar_url?: string;
+  socialAccounts: [];
 }
-
 
 interface AuthState {
   token: string | null;
   user: UserType | null;
+  company: ICompany | null;
+  company_id: string | null;
   yourStaffId: string | null;
-  yourStaffInfo: StaffDataType | null;
-  login: (token: string, user: UserType, yourStaffInfo: StaffDataType, settings: ISettings) => void;
+  userInfo: UserInfoType | null;
+  accessRole: StaffRole;
+  hydrated: boolean; // ← required!
+  login: (
+    token: string,
+    user: UserType,
+    company: ICompany,
+    branches: IBranch[],
+    list_branch_management: IBranchForStaff[]
+  ) => void;
+
   logout: () => void;
   getAuthHeader: () => { Authorization?: string };
   setYourStaffId: (staffID: string) => void;
-  setYourStaffInfo: (info: StaffDataType) => void;
-
+  setUserInfo: (info: UserInfoType) => void;
+  setUpdateAccessRole: (role: StaffRole) => void;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
-  token: localStorage.getItem("token"),
-  user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") as string) : null,
-  yourStaffId: null,
-  yourStaffInfo: null,
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set, get) => ({
+      token: null,
+      user: null,
+      company: null,
+      company_id: null,
+      yourStaffId: null,
+      userInfo: null,
+      accessRole: "Sale-Staff",
+      hydrated: false,
 
-  login: (token, user, yourStaffInfo, settings) => {
-    // const { initSettings} = useSettingStore()
-    console.log('yourStaffInfo', settings);
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("yourStaffInfo", JSON.stringify(yourStaffInfo));
+      login: (token, user, company, branches, list_branch_management) => {
+        // Backend returns user with 'id' field, but interface expects '_id'
+        // Transform user to match interface
+        const transformedUser: UserType = {
+          ...user,
+          _id: (user as any).id || user._id,
+        } as UserType;
 
-    useSettingStore.getState().initSettings(settings);
-    set({ token, user, yourStaffId: yourStaffInfo.staffID});
-  },
+        // Determine accessRole: Director if user owns company, otherwise use role from first branch management
+        let accessRole: StaffRole = "Sale-Staff";
+        const userId = transformedUser._id || (user as any).id;
+        if (company && userId === company.owner_id) {
+          accessRole = "Director";
+        } else if (list_branch_management && list_branch_management.length > 0) {
+          accessRole = list_branch_management[0].role;
+        }
 
-  logout: () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("settings");
-    localStorage.removeItem("yourStaffInfo");
-    set({ token: null, user: null });
-  },
+        // Update branch store
+        const { setUpdateBranches, setUpdateListBranchManagement } = useBranchStore.getState();
+        setUpdateBranches(branches);
+        setUpdateListBranchManagement(list_branch_management);
 
-  getAuthHeader: () => {
-    const token = get().token;
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  },
-  setYourStaffId: (staffID) => {
-    set({ yourStaffId: staffID });
-  },
-  setYourStaffInfo: (info) => {
-    localStorage.setItem("yourStaffInfo", JSON.stringify(info));
-    set({yourStaffInfo: info})
-  }
-}));
+        set({
+          token,
+          user: transformedUser,
+          company,
+          company_id: company?._id || null,
+          userInfo: transformedUser.userInfo,
+          yourStaffId: transformedUser.userInfo?.staffID || null,
+          accessRole,
+        });
+      },
+
+      logout: () => {
+        set({
+          token: null,
+          user: null,
+          company: null,
+          company_id: null,
+          yourStaffId: null,
+          userInfo: null,
+          accessRole: "Sale-Staff",
+        });
+      },
+
+      getAuthHeader: () => {
+        const token = get().token;
+        return token ? { Authorization: `Bearer ${token}` } : {};
+      },
+
+      setYourStaffId: (staffID) => set({ yourStaffId: staffID }),
+
+      setUserInfo: (info) => set({ userInfo: info }),
+
+      setUpdateAccessRole: (role) => set({ accessRole: role }),
+    }),
+    {
+      name: "auth-storage",
+
+      onRehydrateStorage: () => {
+        return (state, error) => {
+          if (error) {
+            console.error("Error rehydrating auth store:", error);
+            return;
+          }
+          // Set hydrated flag after rehydration
+          if (state) {
+            // Also set company_id if it's not set but company exists
+            if (state.company && !state.company_id) {
+              state.company_id = state.company._id;
+            }
+            // Note: hydrated flag is set by hydrationHook
+          }
+        };
+      },
+
+      partialize: (state) => ({
+        token: state.token,
+        user: state.user,
+        userInfo: state.userInfo,
+        yourStaffId: state.yourStaffId,
+        company: state.company,
+        company_id: state.company_id,
+        accessRole: state.accessRole,
+        // Don't persist hydrated flag
+      }),
+    }
+  )
+);

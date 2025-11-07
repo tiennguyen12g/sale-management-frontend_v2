@@ -89,8 +89,8 @@ export default function WhoIsOnline() {
               </td>
             </tr>
           ) : (
-            staffs.map((s) => (
-              <tr key={s.staffID}>
+            staffs.map((s, m) => (
+              <tr key={m}>
                 <td>{s.name ?? "—"}</td>
                 <td>{s.staffID}</td>
                 <td>

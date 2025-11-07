@@ -1,34 +1,25 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
+import { useAuthStore } from "../zustand/authStore";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-    requiredRole?: string; // optional, only check if provided
-
+  requiredRole?: string; // optional, only check if provided
 }
 
-// export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-//   const token = localStorage.getItem("token");
-
-//   if (!token) {
-//     // If no token, redirect to login
-//     return <Navigate to="/login" replace />;
-//   }
-
-//   return <>{children}</>;
-// }
 export default function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
-  const userStr = localStorage.getItem("user");
-  const user = userStr ? JSON.parse(userStr) : null;
+  const { user, token, accessRole } = useAuthStore();
 
-  if (!user) {
+  // Check if user is authenticated
+  if (!user || !token) {
     return <Navigate to="/login" replace />;
   }
 
-  if (requiredRole && user.staffRole !== requiredRole) {
+  // Check role if required
+  if (requiredRole && accessRole !== requiredRole) {
     // user is logged in but not authorized
     return <Navigate to="/landing" replace />;
   }
 
-   return <>{children}</>;
+  return <>{children}</>;
 }

@@ -5,7 +5,6 @@ import styles from "./AllOrders.module.scss"; // reuse styles
 const cx = classNames.bind(styles);
 
 import { useShopOrderStore, type FinalOrder, type OrderDataFromServerType } from "../zustand/shopOrderStore";
-import { sortOrders, formatPhone } from "./ShopOrders"; // reuse helpers
 import UpdateDataOrderForStaff from "./UpdateDataOrderForStaff";
 // same status arrays as ShopOrders2.tsx
 const STATUS_OPTIONS = [
@@ -490,4 +489,23 @@ export default function AllOrders() {
       </div>
     </div>
   );
+}
+export function sortOrders(data: FinalOrder[], sortBy: SortOrder): FinalOrder[] {
+  return [...data].sort((a, b) => {
+    const timeA = new Date(a.time).getTime();
+    const timeB = new Date(b.time).getTime();
+
+    if (sortBy === "latest") {
+      return timeB - timeA; // newest first
+    } else {
+      return timeA - timeB; // oldest first
+    }
+  });
+}
+export function formatPhone(phone: string): string {
+  // Remove all non-digit characters just in case
+  const digits = phone.replace(/\D/g, "");
+
+  // Format: 4 digits . 3 digits . 3 digits
+  return digits.replace(/(\d{4})(\d{3})(\d{3})/, "$1.$2.$3");
 }

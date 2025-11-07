@@ -5,7 +5,7 @@ import { useAuthStore } from "./authStore";
 import { backendAPI } from "../configs/api";
 
 export interface MediaItem {
-    id: string;
+  id: string;
   name: string;
   url: string;
 }
@@ -25,8 +25,8 @@ export const useShopMediaStore = create<ShopMediaState>((set, get) => ({
   videos: [],
   loading: false,
 
-  fetchMedia: async (shopId) => {
-    if (!shopId) return;
+  fetchMedia: async (branch_id) => {
+    if (!branch_id) return;
     if (get().images.length || get().videos.length) return; // ✅ cache
 
     try {
@@ -34,7 +34,7 @@ export const useShopMediaStore = create<ShopMediaState>((set, get) => ({
       const { getAuthHeader } = useAuthStore.getState();
       const res = await axiosApiCall.get(`${backendAPI}/shop-media`, {
         headers: getAuthHeader(),
-        params: { shopId },
+        params: { branch_id },
       });
       const data = res.data?.data || { images: [], videos: [] };
       set({ images: data.images, videos: data.videos, loading: false });
@@ -44,10 +44,10 @@ export const useShopMediaStore = create<ShopMediaState>((set, get) => ({
     }
   },
 
-  addMedia: async (shopId, file, type) => {
+  addMedia: async (branch_id, file, type) => {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("shopId", shopId);
+    formData.append("branch_id", branch_id);
     formData.append("type", type);
 
     const { getAuthHeader } = useAuthStore.getState();
@@ -59,12 +59,12 @@ export const useShopMediaStore = create<ShopMediaState>((set, get) => ({
     if (updated) set({ images: updated.images, videos: updated.videos });
   },
 
-  deleteMedia: async (shopId, type, fileUrl) => {
+  deleteMedia: async (branch_id, type, fileUrl) => {
     const fileName = fileUrl.split("/").pop();
     const { getAuthHeader } = useAuthStore.getState();
     const res = await axiosApiCall.delete(`${backendAPI}/shop-media/${type}/${fileName}`, {
       headers: getAuthHeader(),
-      params: { shopId },
+      params: { branch_id },
     });
     const updated = res.data?.data;
     if (updated) set({ images: updated.images, videos: updated.videos });

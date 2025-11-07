@@ -2,10 +2,7 @@ import React, { useState, useEffect } from "react";
 import classNames from "classnames/bind";
 import styles from "./StaffSalary.module.scss";
 const cx = classNames.bind(styles);
-// import { staffSalaryData } from "../DataTest/DataForStaffSalary";
-// import type { StaffDataType, SalaryHistoryType, EmployeeAttendanceType } from "../DataTest/DataForStaffSalary";
-import type { StaffDataType, SalaryHistoryType, EmployeeAttendanceType, DailyRecordType } from "../../../../zustand/staffStore";
-import AddStaff from "./AddStaff";
+import type {IAttendance, IDailyRecord, IStaff, SalarySummary, IAttendanceCompany} from "../../../../zustand/staffStore";
 import EditStaff from "./EditStaff";
 import EditSalaryHistory from "./EditSalaryHistory";
 import SaleStaffCharts from "../Charts/SaleStaffCharts";
@@ -18,18 +15,28 @@ import UploadExcelBox from "../../../../ultilitis/UploadExcelBox";
 import UpdateSalaryButton from "./UpdateSalary";
 import WhoIsOnline from "../../../../LandingOrders/WhoIsOnline";
 import WhoIsOnlineSocket from "../../../../LandingOrders/WhoIsOnlineSocket";
-import { UploadStaffAttendance_API, UploadStaffSalary_API, UploadStaffDailyRecord_API, UpdateSalary_API } from "../../../../configs/api";
+// Removed direct API imports - now using store functions
 import { StaffRedistributeButton } from "./RedistributeOrder";
 import ManagerNewOrderStats from "./ManageNewOrder";
+import Invitation from "../../../SettingPage/Invitation";
 export interface CalendarDataType {
   staffID: string;
-  attendance: EmployeeAttendanceType[];
-  dailyRecords: DailyRecordType[];
+  attendance: IAttendance[];
+  dailyRecords: IDailyRecord[];
 }
 export default function StaffSalary() {
-  const { staffList, loading, error, appendSalaryHistory, appendAttendance, appendDailyRecord } = useStaffStore();
-  const { getAuthHeader } = useAuthStore();
-  let staffSalaryData = [...staffList];
+  const { staffList, fetchStaffList, uploadSalary, uploadAttendance, uploadDailyRecord, updateSalary, dailyRecordCompany, attendanceCompany } = useStaffStore();
+  const { company_id } = useAuthStore();
+  
+  useEffect(() => {
+    console.log('com', company_id);
+    if(company_id){
+      console.log('run');
+      fetchStaffList(company_id);
+    }
+  }, [fetchStaffList, company_id]);
+  
+  let staffSalaryData: IStaff[] = staffList ? [...staffList] : [];
   const [expandedStaff, setExpandedStaff] = useState<string | null>(null);
   const [filterMode, setFilterMode] = useState<"all" | "month">("all");
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
@@ -47,9 +54,9 @@ export default function StaffSalary() {
   // --- add new staff ---
   const [isOpenAddForm, setIsOpenAddForm] = useState<boolean>(false);
   const [isOpenEditForm, setIsOpenEditForm] = useState<boolean>(false);
-  const [currentStaff, setCurrentStaff] = useState<StaffDataType | undefined>();
+  const [currentStaff, setCurrentStaff] = useState<IStaff | undefined>();
   const [isOpenEditSalary, setIsOpenEditSalary] = useState(false);
-  const [selectedSalary, setSelectedSalary] = useState<SalaryHistoryType | undefined>(undefined);
+  const [selectedSalary, setSelectedSalary] = useState<SalarySummary | undefined>(undefined);
 
   // --- upload excel
   const [isUploadAttendence, setIsUploadAttendence] = useState(false);
@@ -58,7 +65,7 @@ export default function StaffSalary() {
   const [isUpdateSalary, setIsUpdateSalary] = useState(false);
 
   // Calculate aggregates per staff
-  const calculateStaffSummary = (staff: StaffDataType) => {
+  const calculateStaffSummary = (staff: IStaff) => {
     let totalCloseOrder = 0;
     let totalDistributionOrder = 0;
     let totalRevenue = 0;
@@ -69,11 +76,11 @@ export default function StaffSalary() {
       totalCloseOrder += h.totalCloseOrder;
       totalDistributionOrder += h.totalDistributionOrder;
       totalRevenue += h.totalRevenue;
-      if (h.bonus) totalBonus += h.bonus.value;
-      if (h.fine) totalFine += h.fine.value;
+      totalBonus += h.totalBonus || 0;
+      totalFine += h.totalFine || 0;
     });
 
-    const totalSalary = staff.salaryHistory.reduce((acc, h) => acc + h.baseSalary + (h.bonus?.value || 0) - (h.fine?.value || 0), 0);
+    const totalSalary = staff.salaryHistory.reduce((acc, h) => acc + h.baseSalary + (h.totalBonus || 0) - (h.totalFine || 0), 0);
 
     return {
       totalCloseOrder,
@@ -86,10 +93,10 @@ export default function StaffSalary() {
     };
   };
 
-  const getFilteredHistory = (staff: StaffDataType) => {
+  const getFilteredHistory = (staff: IStaff) => {
     if (filterMode === "all") return staff.salaryHistory;
     return staff.salaryHistory.filter((h) => {
-      const [y, m] = h.time.split("-").map(Number);
+      const [y, m] = h.month.split("-").map(Number);
       return y === selectedYear && m === selectedMonth;
     });
   };
@@ -111,8 +118,8 @@ export default function StaffSalary() {
       filtered = staffSalaryData.map((s) => ({
         ...s,
         salaryHistory: s.salaryHistory.filter((h) => {
-          const d = new Date(h.time);
-          return d.getMonth() + 1 === summaryMonth && d.getFullYear() === summaryYear;
+          const [y, m] = h.month.split("-").map(Number);
+          return y === summaryYear && m === summaryMonth;
         }),
       }));
     }
@@ -122,8 +129,8 @@ export default function StaffSalary() {
 
     filtered.forEach((staff) => {
       staff.salaryHistory.forEach((h) => {
-        totalSalary += h.baseSalary + (h.bonus?.value || 0) - (h.fine?.value || 0);
-        totalBonus += h.bonus?.value || 0;
+        totalSalary += h.baseSalary + (h.totalBonus || 0) - (h.totalFine || 0);
+        totalBonus += h.totalBonus || 0;
       });
     });
 
@@ -142,8 +149,10 @@ export default function StaffSalary() {
       const totalDist = s.salaryHistory.reduce((acc, h) => acc + h.totalDistributionOrder, 0);
       const closingRate = totalDist > 0 ? totalClose / totalDist : 0;
 
-      const countAttendanceData = countAttendance(s.attendance);
-      const diligence = countAttendanceData.onTime;
+      // Note: Attendance needs to be fetched separately from backend
+      // For now, using diligenceCount as fallback
+      const diligence = s.diligenceCount || 0;
+      const countAttendanceData = { onTime: diligence, late: 0, absent: 0 };
 
       return {
         ...s,
@@ -172,114 +181,71 @@ export default function StaffSalary() {
   }
 
   const saleStaffData = getSaleStaffData();
+
   const handleUploadSalary = async (file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await fetch(UploadStaffSalary_API, {
-        method: "POST",
-        body: formData,
-        headers: { ...getAuthHeader() },
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        // backend should ideally return which staff got updated + records
-        // example: { staffID: "S001", records: [...] }
-        data.updates.forEach((u: any) => appendSalaryHistory(u.staffID, u.records));
-        alert("Salary history updated!");
-      } else {
-        alert("Error: " + data.message);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Failed to upload salary");
+    if (!company_id) {
+      alert("Error: Company ID is missing");
+      return;
+    }
+    const result = await uploadSalary(company_id, file);
+    if (result?.status === "success") {
+      alert(result.message || "Salary history updated!");
+    } else {
+      alert(result?.message || "Failed to upload salary");
     }
   };
 
   const handleUploadAttendance = async (file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await fetch(UploadStaffAttendance_API, {
-        method: "POST",
-        body: formData,
-        headers: { ...getAuthHeader() },
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        // same logic: append attendance per staff
-        data.updates.forEach((u: any) => appendAttendance(u.staffID, u.records));
-        alert("Attendance updated!");
-      } else {
-        alert("Error: " + data.message);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Failed to upload attendance");
+    if (!company_id) {
+      alert("Error: Company ID is missing");
+      return;
+    }
+    const result = await uploadAttendance(company_id, file);
+    if (result?.status === "success") {
+      alert(result.message || "Attendance updated!");
+    } else {
+      alert(result?.message || "Failed to upload attendance");
     }
   };
 
   const handleUploadDailyRecord = async (file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await fetch(UploadStaffDailyRecord_API, {
-        method: "POST",
-        body: formData,
-        headers: { ...getAuthHeader() },
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        // same logic: append attendance per staff
-        data.updates.forEach((u: any) => appendDailyRecord(u.staffID, u.records));
-        alert("Daily record updated!");
-      } else {
-        alert("Error: " + data.message);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Failed to upload daily record");
+    if (!company_id) {
+      alert("Error: Company ID is missing");
+      return;
+    }
+    const result = await uploadDailyRecord(company_id, file);
+    if (result?.status === "success") {
+      alert(result.message || "Daily record updated!");
+    } else {
+      alert(result?.message || "Failed to upload daily record");
     }
   };
 
+  // Note: Attendance and daily records are stored in separate collections
+  // They need to be fetched separately. For now, we'll use empty arrays
+  // The actual implementation should fetch these from the backend
   let CalendarDatas: CalendarDataType[] = [];
   const aggreegateData = () => {
-    staffSalaryData.forEach((staffData: StaffDataType, i) => {
+    console.log('staffSalaryData', staffSalaryData);
+    CalendarDatas = staffSalaryData.map((staffData: IStaff) => {
       const staffID = staffData.staffID;
-      let attendance: EmployeeAttendanceType[] = [];
-      let dailyRecord: DailyRecordType[] = [];
-      staffData.salaryHistory.forEach((historyData: SalaryHistoryType) => {
-        attendance.push(...historyData.attendance);
-        dailyRecord.push(...historyData.dailyRecords);
-      });
+      // Attendance and dailyRecords should be fetched from backend separately
+      // For now, using empty arrays as placeholder
+      const getAttendance = attendanceCompany.find((data)=> data.staffID === staffID);
+      const getDailyRecord = dailyRecordCompany.find((data) => data.staffID === staffID);
+      console.log('fsdfsf', getAttendance?.attendance);
+      let attendance: IAttendance[] = getAttendance?.attendance || [];
+      let dailyRecord: IDailyRecord[] = getDailyRecord?.dailyRecord || [];
+      
       const obj: CalendarDataType = {
         staffID,
         attendance: attendance,
         dailyRecords: dailyRecord,
       };
-      CalendarDatas.push(obj);
+      return obj;
     });
   };
   aggreegateData();
-  const handleUpdateSalary = async () => {
-    try {
-      const res = await fetch(UpdateSalary_API, {
-        method: "POST",
-        body: JSON.stringify({
-          time: "2025-09",
-          workDays: 26,
-          workHoursPerDay: 8,
-        }),
-      });
-    } catch (error) {}
-    alert(" Waiting a sever miniute!");
-  };
   return (
     <div className={cx("staff-salary-main")}>
       <div className={cx("summary-cards")}>
@@ -318,26 +284,18 @@ export default function StaffSalary() {
           )}
         </div>
       </div>
-      {/* <UpdateSalaryButton /> */}
 
+      {/* //--Table list staff */}
       <h4>👥 Staff Salary Management</h4>
       <div className={cx("group-btn")}>
         <button onClick={() => setIsUpdateSalary(true)}>Update Salary</button>
-        <button onClick={() => setIsOpenAddForm(true)}>Add New Staff</button>
         <button onClick={() => setIsUploadAttendence(true)}>Upload Attendence</button>
         <button onClick={() => setIsUploadSalary(true)}>Upload Salary</button>
         <button onClick={() => setIsUploadDailyRecord(true)}>Upload Daily Record</button>
-        {/* <StaffRedistributeButton /> */}
       </div>
       {isUploadAttendence && <UploadExcelBox onUpload={handleUploadAttendance} onClose={() => setIsUploadAttendence(false)} />}
       {isUploadSalary && <UploadExcelBox onUpload={handleUploadSalary} onClose={() => setIsUploadSalary(false)} />}
       {isUploadDailyRecord && <UploadExcelBox onUpload={handleUploadDailyRecord} onClose={() => setIsUploadDailyRecord(false)} />}
-      {isOpenAddForm && (
-        <div className={cx("add-staff-container")}>
-          <AddStaff setIsOpenAddForm={setIsOpenAddForm} />
-        </div>
-      )}
-
       {isUpdateSalary && <UpdateSalaryButton setIsUpdateSalary={setIsUpdateSalary} />}
 
       <div className={cx("staff-list-info")}>
@@ -466,15 +424,15 @@ export default function StaffSalary() {
                           <div>Fine</div>
                           {/* <div>Edit</div> */}
                         </div>
-                        {getFilteredHistory(staff).map((h: SalaryHistoryType, idx) => (
+                        {getFilteredHistory(staff).map((h: SalarySummary, idx) => (
                           <div key={idx} className={cx("history-row")}>
-                            <div>{h.time}</div>
+                            <div>{h.month}</div>
                             <div>{h.baseSalary.toLocaleString()} ₫</div>
                             <div>{h.totalCloseOrder}</div>
                             <div>{h.totalDistributionOrder}</div>
                             <div>{h.totalRevenue.toLocaleString()} ₫</div>
-                            <div>{h.bonus ? h.bonus.value.toLocaleString() + " ₫" : "-"}</div>
-                            <div>{h.fine ? h.fine.value.toLocaleString() + " ₫" : "-"}</div>
+                            <div>{h.totalBonus ? h.totalBonus.toLocaleString() + " ₫" : "-"}</div>
+                            <div>{h.totalFine ? h.totalFine.toLocaleString() + " ₫" : "-"}</div>
                             {/* <div>
                               <MdModeEdit
                                 size={20}
@@ -487,7 +445,7 @@ export default function StaffSalary() {
                           </div>
                         ))}
                         {isOpenEditSalary && selectedSalary && (
-                          <EditSalaryHistory staffId={staff._id} salary={selectedSalary} setIsOpenEditSalary={setIsOpenEditSalary} />
+                          <EditSalaryHistory staffId={staff._id} salary={selectedSalary as any} setIsOpenEditSalary={setIsOpenEditSalary} />
                         )}
                       </div>
                     </div>
@@ -498,11 +456,20 @@ export default function StaffSalary() {
           })}
         </div>
       </div>
+
+
+      {/* //--Table list invitation that give to other user but does not response yet */}
+
+      {/* //--Table manage today staff working or staff absent */}
       <ManagerNewOrderStats />
+
+      {/* //--Table manage currently staff online */}
       <div style={{ display: "flex", gap: 20 }}>
         <WhoIsOnlineSocket />
         <WhoIsOnline />
       </div>
+
+      {/* //--Table maange staff performance */}
       <div className={cx("sale-staff-table")}>
         <h4>Sale Staff Performance</h4>
 
@@ -553,20 +520,20 @@ export default function StaffSalary() {
         </div>
       </div>
       {/* Define the required variables for SaleStaffCharts */}
-      <SaleStaffCharts staffList={staffSalaryData} />
+      {/* <SaleStaffCharts staffList={staffSalaryData} /> */}
     </div>
   );
 }
 
 export function StaffSalaryCards() {
-  const { staffList, } = useStaffStore();
-  let staffSalaryData = [...staffList];
+  const { staffList } = useStaffStore();
+  let staffSalaryData: IStaff[] = staffList ? [...staffList] : [];
 
   const totals = staffSalaryData.reduce(
     (acc, item) => {
       // Sum all baseSalary + bonus - fine for salary, and all bonus for bonus
-      const staffSalary = item.salaryHistory.reduce((sum, h) => sum + h.baseSalary + (h.bonus?.value || 0) - (h.fine?.value || 0), 0);
-      const staffBonus = item.salaryHistory.reduce((sum, h) => sum + (h.bonus?.value || 0), 0);
+      const staffSalary = item.salaryHistory.reduce((sum: number, h) => sum + h.baseSalary + (h.totalBonus || 0) - (h.totalFine || 0), 0);
+      const staffBonus = item.salaryHistory.reduce((sum: number, h) => sum + (h.totalBonus || 0), 0);
       acc.salary += staffSalary;
       acc.bonus += staffBonus;
       return acc;
@@ -588,7 +555,7 @@ export function StaffSalaryCards() {
   );
 }
 
-function countAttendance(attendance: EmployeeAttendanceType[]) {
+function countAttendance(attendance: IAttendance[]) {
   const now = new Date();
   const currentMonth = now.toISOString().slice(0, 7); // "YYYY-MM"
 
@@ -598,7 +565,10 @@ function countAttendance(attendance: EmployeeAttendanceType[]) {
   // Count each status
   return filtered.reduce(
     (acc, item) => {
-      acc[item.checked] = (acc[item.checked] || 0) + 1;
+      const status = item.status;
+      if (status === "onTime") acc.onTime += 1;
+      else if (status === "late") acc.late += 1;
+      else if (status === "absent") acc.absent += 1;
       return acc;
     },
     { onTime: 0, late: 0, absent: 0 }

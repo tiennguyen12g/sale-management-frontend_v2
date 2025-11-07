@@ -5,8 +5,9 @@ type StaffStat = { staffID: string; name: string; claimed: number; status: "Pres
 
 import { StaffRedistributeButton } from "./RedistributeOrder";
 import { useStaffStore } from "../../../../zustand/staffStore";
+import { useAuthStore } from "../../../../zustand/authStore";
 export default function ManagerNewOrderStats() {
-    const {staffID, userId} = useStaffStore()
+    const {yourStaffId: staffID, user} = useAuthStore();
    const [stats, setStats] = useState<{ unclaimed: number; staffStats: StaffStat[] }>({
     unclaimed: 0,
     staffStats: [],
@@ -25,11 +26,12 @@ export default function ManagerNewOrderStats() {
   }, []);
 
   return (
-    <div style={{ padding: 20, fontFamily: "Arial" }}>
+    <div style={{fontFamily: "Arial" }}>
       <h2>📊 Manager Dashboard</h2>
-      <p>
-        <b>Unclaimed Orders:</b> {stats.unclaimed}
-      </p>
+      <div>
+        <StaffRedistributeButton staffID={staffID || "admin"} userId={user?._id || "admin"}/>
+        <div><b>Unclaimed Orders:</b> {stats.unclaimed}</div>
+      </div>
 
       <table border={1} cellPadding={8} cellSpacing={0} style={{ marginTop: 10, minWidth: "600px" }}>
         <thead>
@@ -41,8 +43,8 @@ export default function ManagerNewOrderStats() {
           </tr>
         </thead>
         <tbody>
-          {stats.staffStats.map((s) => (
-            <tr key={s.staffID} style={{ background: s.status === "Absent" ? "#ffe0e0" : "#e0ffe0" }}>
+          {stats.staffStats.map((s, i) => (
+            <tr key={i} style={{ background: s.status === "Absent" ? "#ffe0e0" : "#e0ffe0" }}>
               <td>{s.staffID}</td>
               <td>{s.name}</td>
               <td>{s.status === "Present" ? "✅ Present" : "❌ Absent"}</td>
@@ -51,7 +53,7 @@ export default function ManagerNewOrderStats() {
           ))}
         </tbody>
       </table>
-      <StaffRedistributeButton staffID={staffID || "admin"} userId={userId || "admin"}/>
+
     </div>
   );
 }

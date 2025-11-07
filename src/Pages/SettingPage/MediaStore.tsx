@@ -4,7 +4,7 @@ import styles from "./MediaStore.module.scss";
 import { useShopMediaStore } from "../../zustand/shopMediaStore";
 import { MdDelete } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
-
+import { useBranchStore } from "../../zustand/branchStore";
 const cx = classNames.bind(styles);
 import { useFacebookStore } from "../../zustand/facebookStore";
 
@@ -21,17 +21,18 @@ interface Props {
 
 export default function MediaStore({ onClose, onSelect, multiSelect = true }: Props) {
   const { images, videos, fetchMedia, addMedia, deleteMedia } = useShopMediaStore();
+  const {selectedBranch} = useBranchStore();
   const [selected, setSelected] = useState<MediaSelectType[]>([]);
   const [notify, setNotify] = useState<string | null>(null);
   const { pageSelected } = useFacebookStore();
-  if (!pageSelected) {
+  if (!selectedBranch) {
     return <div>Shop ID does not found</div>;
   }
-  const shopId = pageSelected.pageId.toString();
+  const branch_id = selectedBranch._id;
 
   useEffect(() => {
-    fetchMedia(shopId.toString());
-  }, [shopId, fetchMedia]);
+    fetchMedia(branch_id);
+  }, [branch_id, fetchMedia]);
   useEffect(() => {
     if (selected.length > 6 && notify === null) {
       setNotify("Giới hạn chọn tối đa 6 ảnh/video");
@@ -84,7 +85,7 @@ export default function MediaStore({ onClose, onSelect, multiSelect = true }: Pr
                   const file = e.target.files?.[0];
                   if (file) {
                     const type = file.type.startsWith("image") ? "image" : "video";
-                    addMedia(shopId, file, type);
+                    addMedia(branch_id, file, type);
                   }
                 }}
               />
@@ -104,7 +105,7 @@ export default function MediaStore({ onClose, onSelect, multiSelect = true }: Pr
                     style={{ border: isSelect ? "4px solid #12da00" : "4px solid transparent" }}
                   >
                     <img src={img.url} alt={img.name} />
-                    <button onClick={() => handleDeleteMedia(shopId, "image", img.url)}>
+                    <button onClick={() => handleDeleteMedia(branch_id, "image", img.url)}>
                       <MdDelete size={22} color="white" />
                     </button>
                   </div>
@@ -124,7 +125,7 @@ export default function MediaStore({ onClose, onSelect, multiSelect = true }: Pr
                     style={{ border: isSelect ? "4px solid #12da00" : "4px solid transparent" }}
                   >
                     <video src={vid.url} controls />
-                    <button onClick={() => handleDeleteMedia(shopId, "video", vid.url)}>
+                    <button onClick={() => handleDeleteMedia(branch_id, "video", vid.url)}>
                       <MdDelete size={22} color="#ffffff" />
                     </button>
                   </div>

@@ -10,8 +10,7 @@ interface CreateTagProps {
   onClose: () => void;
   onSave: (arrayNew: TagType[]) => void;
 }
-import type { TagType } from "./ManageTags";
-
+import { type TagType } from "../../zustand/branchStore";
 export function CreateTag({ onClose, onSave }: CreateTagProps) {
   const [tagName, setTagName] = useState("");
   const [color, setColor] = useState("#00b11d");

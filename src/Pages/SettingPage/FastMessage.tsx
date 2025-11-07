@@ -19,17 +19,17 @@ import MediaStore, { type MediaSelectType } from "./MediaStore";
 import MessageEmoji from "../BodyComponent/FacebookAPI/ultility/MessageEmoji";
 
 // Hooks
-import { useSettingStore, type FastMessageType, type ISettings } from "../../zustand/settingStore";
-
+// import { useSettingStore, type FastMessageType, type ISettings } from "../../zustand/settingStore";
+import { useBranchStore, type FastMessageType, type IBranchSetting } from "../../zustand/branchStore";
 
 export default function FastMessage() {
-  const { settings, addFastMessage, initSettings, deleteFastMessage, updateFastMessage } = useSettingStore();
+  const { branchSettings, addFastMessage, deleteFastMessage, updateFastMessage, setUpdateBranchSettings,selectedBranch, fetchBranchSettings } = useBranchStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showMediaStore, setShowMediaStore] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<MediaSelectType[]>([]);
 
-  const [fastMessageData, setFastMessageData] = useState<FastMessageType[]>(settings ? settings.fastMessages : []);
+  const [fastMessageData, setFastMessageData] = useState<FastMessageType[]>(branchSettings ? branchSettings.fastMessages : []);
   const [shortKey, setShortKey] = useState<string | null>(null);
   const [messageContent, setMessageContent] = useState<string>("");
 
@@ -42,10 +42,12 @@ export default function FastMessage() {
     setSelectedMedia(mediaList);
   };
 
+
+
   const handleSaveFastMessage = () => {
     try {
       console.log("gfgd");
-      if (!shortKey || !settings) return console.log("2");
+      if (!shortKey || !branchSettings) return console.log("2");
       console.log("sda", selectedMedia.length, messageContent);
       if (selectedMedia.length === 0 && messageContent === "") return console.log("3");
       console.log('dfgdfg');
@@ -59,10 +61,10 @@ export default function FastMessage() {
       };
 
       console.log("ffs", newFastMessage);
-      const newSetting: ISettings = { ...settings, fastMessages: [...fastMessageData, newFastMessage] };
+      const newSetting: IBranchSetting = { ...branchSettings, fastMessages: [...fastMessageData, newFastMessage] };
       setFastMessageData([...fastMessageData, newFastMessage]);
 
-      initSettings(newSetting);
+      setUpdateBranchSettings(newSetting);
       addFastMessage(newFastMessage);
 
       setShortKey(null);
@@ -78,15 +80,15 @@ export default function FastMessage() {
   const handleDeleteFastMessage = (id: string) => {
     let userConfirmed = confirm("Bạn có chắc chắn muốn xóa?");
 
-    if (!settings) return;
+    if (!branchSettings) return;
 
     if (userConfirmed) {
       const newFastMessage = fastMessageData.filter((data) => data.id !== id);
 
-      const newSetting: ISettings = { ...settings, fastMessages: newFastMessage };
+      const newSetting: IBranchSetting= { ...branchSettings, fastMessages: newFastMessage };
       setFastMessageData(newFastMessage);
 
-      initSettings(newSetting);
+      setUpdateBranchSettings(newSetting);
       deleteFastMessage(id);
     } else {
       console.log("User clicked Cancel.");
@@ -102,7 +104,7 @@ export default function FastMessage() {
     setShowEdit(true);
   };
   const handleSaveEdit = () => {
-    if (!shortKey || !settings || !editData) return;
+    if (!shortKey || !branchSettings || !editData) return;
 
     if (selectedMedia.length === 0 && messageContent === "") return;
     const updateFastMessageData: FastMessageType = {
@@ -119,10 +121,10 @@ export default function FastMessage() {
       }
     });
 
-    const newSetting: ISettings = { ...settings, fastMessages: newUpdateArray };
+    const newSetting: IBranchSetting = { ...branchSettings, fastMessages: newUpdateArray };
     setFastMessageData(newUpdateArray);
 
-    initSettings(newSetting);
+    setUpdateBranchSettings(newSetting);
     updateFastMessage(editData.id, updateFastMessageData);
 
     setShortKey(null);
