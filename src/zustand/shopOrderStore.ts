@@ -61,11 +61,12 @@ export interface OriginalOrder {
   totalProduct: number;
   totalWeight: number;
   note: string;
-  staff: string;
+  staff_name: string;
   buyerIP: string;
   website: string;
   facebookLink?: string;
   tiktokLink?: string;
+  source_order_from?: string;
 }
 
 export interface FinalOrder {
@@ -81,7 +82,7 @@ export interface FinalOrder {
   note: string;
   status: string;
   confirmed: boolean;
-  staff: string;
+  staff_name: string;
   buyerIP: string;
   website: string;
   deliveryStatus: string;
@@ -89,19 +90,23 @@ export interface FinalOrder {
   historyChanged?: { event: string; time: string }[];
   facebookLink?: string;
   tiktokLink?: string;
-  promotions: Promotions
-
+  promotions: Promotions;
+  source_order_from?: string;
 }
 
 export interface OrderDataFromServerType {
   _id: string;
-  productId: string;
+  company_id: string;
+  branch_id: string;
+  product_id: string;
+  product_code: string;
   orderCode: string;
   staffID: string;
-  original: OriginalOrder;
+  isFromCustomer: boolean;
+  original?: OriginalOrder; // Optional - only exists if isFromCustomer is true
   final: FinalOrder;
   deliveryDetails: DeliveryDetails;
-  stockAdjusted: boolean,
+  stockAdjusted: boolean;
 }
 
 type ApiResult = { status: "success" | "failed"; message?: string };
@@ -109,13 +114,13 @@ type ApiResult = { status: "success" | "failed"; message?: string };
 // ---------- Zustand Store ----------
 interface ShopOrderState {
   orders: OrderDataFromServerType[];
-  fetchOrders: () => Promise<{ status: string; message: string } | undefined>;
-  addOrder: (order: Partial<FinalOrder>) => Promise<{ status: string } | undefined>;
+  fetchOrders: (branchId?: string) => Promise<{ status: string; message: string } | undefined>;
+  addOrder: (order: Partial<FinalOrder> & { branch_id: string; product_code: string; isFromCustomer?: boolean, company_id_own_product: string }) => Promise<{ status: string }>;
   updateOrder: (id: string, updates: OrderDataFromServerType) => Promise<{ status: string } | undefined>;
   deleteOrder: (id: string) => Promise<{ status: string } | undefined>;
   deleteManyOrder: (ids: string[]) => Promise<{ status: string } | undefined>;
   updateMultipleOrders: (ids: string[], updates: Partial<FinalOrder>) => Promise<{ status: string; result: any } | undefined>;
-  uploadOrdersExcel: (file: File) => Promise<{ status: string; count: any }>;
+  uploadOrdersExcel: (file: File, branchId: string, isFromCustomer: boolean) => Promise<{ status: string; count: any }>;
   addOrderDataFromServer: (fullOrder: OrderDataFromServerType) => Promise<void>;
   addArrayOrderDataFromServer: (fullOrder: OrderDataFromServerType[]) => Promise<void>;
   uploadDeliveryExcel: (file: File, shipCompany: string) => Promise<{ status: string; count: any }>;
@@ -125,10 +130,11 @@ export const useShopOrderStore = create<ShopOrderState>((set, get) => ({
   orders: [],
 
   // Fetch all orders
-  fetchOrders: async () => {
+  fetchOrders: async (branchId?: string) => {
     try {
-      const { getAuthHeader,} = useAuthStore.getState();
-      const res = await axiosApiCall.get(GetShopOrders_API, {
+      const { getAuthHeader } = useAuthStore.getState();
+      const url = branchId ? `${GetShopOrders_API}?branch_id=${branchId}` : GetShopOrders_API;
+      const res = await axiosApiCall.get(url, {
         headers: { "Content-Type": "application/json", ...getAuthHeader() },
       });
       set({ orders: res.data });
@@ -140,10 +146,18 @@ export const useShopOrderStore = create<ShopOrderState>((set, get) => ({
   },
 
   // Add new order
-  addOrder: async (order: Partial<FinalOrder & { productId: string }>) => {
+  addOrder: async (order: Partial<FinalOrder> & { branch_id: string; product_code: string; isFromCustomer?: boolean, company_id_own_product: string }) => {
     try {
       const { getAuthHeader } = useAuthStore.getState();
-      const res = await axiosApiCall.post(AddShopOrders_API, order, {
+      
+      // Transform staff to staff_name for backend compatibility
+      const orderData = {
+        ...order,
+        staff_name: (order as any).staff_name || (order as any).staff || "",
+        isFromCustomer: order.isFromCustomer || false,
+      };
+      
+      const res = await axiosApiCall.post(AddShopOrders_API, orderData, {
         headers: { "Content-Type": "application/json", ...getAuthHeader() },
       });
       set({ orders: [...get().orders, res.data] });
@@ -228,11 +242,13 @@ export const useShopOrderStore = create<ShopOrderState>((set, get) => ({
     }
   },
 
-  uploadOrdersExcel: async (file: File) => {
+  uploadOrdersExcel: async (file: File, branchId: string, isFromCustomer: boolean = false) => {
     try {
       const { getAuthHeader } = useAuthStore.getState();
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("branch_id", branchId);
+      formData.append("isFromCustomer", String(isFromCustomer));
 
       const res = await axios.post(`${GetShopOrders_API}/upload-orders`, formData, {
         headers: { ...getAuthHeader(), "Content-Type": "multipart/form-data" },
@@ -275,5 +291,12 @@ export const useShopOrderStore = create<ShopOrderState>((set, get) => ({
       console.error("Failed to upload orders:", err);
       return { status: "failed", count: 0 };
     }
+  },
+  refreshOrders: async () => {
+    // This will be called after mutations to refresh the list
+    // The actual branch_id will be passed by the component
+    const state = get();
+    // Re-fetch with the last used branch (if any)
+    await state.fetchOrders();
   },
 }));

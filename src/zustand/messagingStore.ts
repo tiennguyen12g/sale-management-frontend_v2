@@ -75,7 +75,7 @@ interface MessagingState {
   setMessageList: (conversationId: string, messages: ChatMessageType[]) => void;
 
   // HTTP methods
-  fetchConversations: (branch_id: string) => Promise<{ status: string; data?: ConversationType[] }>;
+  fetchConversations: (branch_id: string, assignedStaffId: string,) => Promise<{ status: string; data?: ConversationType[] }>;
   fetchMessages: (
     branch_id: string,
     conversationId: string,
@@ -154,10 +154,10 @@ export const useMessagingStore = create<MessagingState>((set, get) => ({
     set({ messageList: { ...currentMessageList, [conversationId]: messages } });
   },
 
-  fetchConversations: async (branch_id) => {
+  fetchConversations: async (branch_id, assignedStaffId) => {
     try {
       const { getAuthHeader } = useAuthStore.getState();
-      const res = await axiosApiCall.get(`${GetConversations_API}/${branch_id}`, {
+      const res = await axiosApiCall.get(`${GetConversations_API}/${branch_id}/${assignedStaffId}`, {
         headers: { ...getAuthHeader() },
       });
 
@@ -170,7 +170,7 @@ export const useMessagingStore = create<MessagingState>((set, get) => ({
     }
   },
 
-  fetchMessages: async (branch_id, conversationId, limit = 25) => {
+  fetchMessages: async (branch_id, conversationId, limit = 25, ) => {
     try {
       const { getAuthHeader } = useAuthStore.getState();
       const res = await axiosApiCall.get(`${GetMessages_API}/${branch_id}/${conversationId}?limit=${limit}`, {

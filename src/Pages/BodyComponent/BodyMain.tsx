@@ -6,7 +6,7 @@ const cx = classNames.bind(styles);
 import Overview from "./Overview";
 import Finance from "./Financial/Finance";
 import ProductManage from "./ProductManage/ProductManage";
-import { useMenuStore } from "../StateManagement/MenuActiveState";
+import { useMenuStore } from "../MenuComponent/MenuActiveState";
 export default function BodyMain() {
   const { openMenu, activeSubmenu, setOpenMenu, setActiveSubmenu } = useMenuStore();
 

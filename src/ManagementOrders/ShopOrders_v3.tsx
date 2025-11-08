@@ -30,6 +30,7 @@ import { CgDesktop } from "react-icons/cg";
 
 // Hooks and type
 import { useAuthStore } from "../zustand/authStore";
+import { useBranchStore } from "../zustand/branchStore";
 import { useStaffStore, type StaffRole } from "../zustand/staffStore";
 import { useShopOrderStore, type OrderDataFromServerType, type OriginalOrder, type FinalOrder } from "../zustand/shopOrderStore";
 import { type ProductType, type ProductDetailsType } from "../zustand/productStore";
@@ -39,7 +40,7 @@ import { type ProductType, type ProductDetailsType } from "../zustand/productSto
 import CreateExcel_v2 from "./CreateExcel_v2";
 import VnAddressSelect_Old from "../ultilitis/VnAddress/VnAddressOld";
 import UploadExcelBox from "../ultilitis/UploadExcelBox";
-import StaffNotification from "./StaffNotification";
+import StaffNotification from "../StaffPage/utilities/StaffNotification";
 import { StaffRedistributeButton } from "../Pages/BodyComponent/Financial/Staff/RedistributeOrder";
 import { ClaimMorningButton } from "./ClaimOrderMorning";
 import NotificationBox_v2 from "../ultilitis/NotificationBox_v2";
@@ -49,7 +50,6 @@ import { HiPhoneMissedCall } from "react-icons/hi";
 
 // Ultilitys
 import CustomSelectGlobal from "../ultilitis/CustomSelectGlobal";
-
 
 type VirtualCartType = ProductDetailsType & { quantity: number; isSelected: boolean };
 
@@ -128,16 +128,17 @@ export type SortOrder = "latest" | "oldest";
 
 interface ShopOrdersProps {
   productDetail: ProductType;
-  productName: string;
   dataOrders: OrderDataFromServerType[];
   setGetFinalData: Dispatch<SetStateAction<FinalOrder[]>>;
 }
 
 const iconSize = 20;
-export default function ShopOrders_v3({ productDetail, dataOrders, productName, setGetFinalData }: ShopOrdersProps) {
-  const { updateOrder, deleteOrder, addOrder, updateMultipleOrders, uploadOrdersExcel, deleteManyOrder } = useShopOrderStore();
-  const {yourStaffProfileInWorkplace} = useStaffStore();
-  const {yourStaffId} = useAuthStore();
+export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalData }: ShopOrdersProps) {
+  const { updateOrder, deleteOrder, addOrder, updateMultipleOrders, uploadOrdersExcel, deleteManyOrder, fetchOrders } = useShopOrderStore();
+  const { yourStaffProfileInWorkplace } = useStaffStore();
+  console.log('yourStaffProfileInWorkplace', yourStaffProfileInWorkplace);
+  const { yourStaffId, userInfo } = useAuthStore();
+  const { selectedBranch } = useBranchStore();
   const [showNotification, setShowNotification] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string>("");
   const [staffName, setStaffName] = useState<string[]>([yourStaffProfileInWorkplace?.staffInfo.name || "Không"]);
@@ -147,15 +148,23 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
   // const [menuCollapsed, setMenuCollapsed] = useState(false);
   const [activeTable, setActiveTable] = useState("personal-ads-acc");
 
-
   let serverOriginalOrderData: OriginalOrder[] = [];
   let serverFinalOrderData: FinalOrder[] = [];
   dataOrders.forEach((item) => {
-    serverOriginalOrderData.push(item.original);
+    // Only push original if it exists (orders from customers)
+    if (item.original) {
+      serverOriginalOrderData.push(item.original);
+    } else {
+      // For staff-created orders, use final as original for display purposes
+      serverOriginalOrderData.push({
+        ...item.final,
+        staff_name: item.final.staff_name,
+      } as OriginalOrder);
+    }
     serverFinalOrderData.push(item.final);
   });
 
-  const productId = productDetail.productId;
+  const productCode = productDetail.product_code;
   const [viewMode, setViewMode] = useState<"table" | "excel">("table");
   const [orders, setOrders] = useState<FinalOrder[]>(serverFinalOrderData);
   const [originOrder, setOriginOrder] = useState<OriginalOrder | null>(null);
@@ -190,7 +199,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
     note: "",
     status: "Đơn mới",
     confirmed: false,
-    staff: staffName[0],
+    staff_name: staffName[0],
     buyerIP: "",
     website: "",
     deliveryStatus: "Chưa gửi hàng",
@@ -201,15 +210,16 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
       shipTags: "none",
       discount: 0,
     },
+    source_order_from: "",
   });
   const [discountValue, setDiscountValue] = useState(0);
 
   useEffect(() => {
     setDefaultNewOrder((prev) => {
-      return { ...prev, staff: staffName[0] };
+      return { ...prev, staff_name: staffName[0] };
     });
     setNewOrder((prev) => {
-      return { ...prev, staff: staffName[0] };
+      return { ...prev, staff_name: staffName[0] };
     });
   }, [staffName]);
   const [newOrder, setNewOrder] = useState<FinalOrder>({ ...defaultNewOrder });
@@ -249,9 +259,6 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
     setShowEditingBox(false);
   }, [dataOrders, productDetail, defaultVirtualCart]); // re-run when data/orders or product change
 
-  useEffect(() => {
-    console.log("origin", originOrder);
-  }, [originOrder]);
   const sortedOrdersByTime = sortOrders(orders, sortBy);
   const handleSave = async () => {
     if (!editing) return;
@@ -431,6 +438,11 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
     if (!newOrder) return;
     console.log("new", newOrder);
 
+    if (!selectedBranch?._id) {
+      alert("🚨 Vui lòng chọn chi nhánh trước khi tạo đơn hàng.");
+      return;
+    }
+
     if (!newOrder.customerName || !newOrder.phone || !newOrder.address || newOrder.orderInfo.length === 0 || newOrder.total <= 0) {
       alert("🚨 Vui lòng điền đầy đủ thông tin.");
       return;
@@ -438,15 +450,21 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
 
     const localFormatted = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16).replace("T", " ");
     const newFinalForSend = {
-      productId: productId,
+      branch_id: selectedBranch._id,
+      product_code: productCode,
       staffID: staffID,
+      isFromCustomer: false, // Orders created by staff don't need original
       ...newOrder,
+      staff_name: newOrder.staff_name || staffName[0],
       time: localFormatted,
+      company_id_own_product: selectedBranch.company_id,
     };
     const res = await addOrder(newFinalForSend);
 
     if (res?.status === "success") {
       alert(" ✅ Tạo đơn hàng thành công!");
+      // Refresh orders
+      await fetchOrders(selectedBranch._id);
     } else {
       alert(" 🚨 Tạo đơn hàng lỗi.");
     }
@@ -589,16 +607,20 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
   };
 
   const handleUploadOrderExcel = async (file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    const nameFile = file.name;
+    if (!selectedBranch?._id) {
+      alert("🚨 Vui lòng chọn chi nhánh trước khi upload đơn hàng.");
+      return;
+    }
 
-    const result = await uploadOrdersExcel(file);
+    // For Excel uploads, assume they are from customers (isFromCustomer = true)
+    // You can add a checkbox in the UI to let users choose if needed
+    const result = await uploadOrdersExcel(file, selectedBranch._id, true);
     if (result.status === "success") {
       alert(`✅ Cập nhật ${result.count} đơn thành công`);
+      // Refresh orders
+      await fetchOrders(selectedBranch._id);
     }
     setShowUploadExcel(false);
-    // alert(`✅ Uploaded ${data.count} costs`);
   };
 
   const [copied, setCopied] = useState(false);
@@ -667,57 +689,6 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
   return (
     <div className={cx("landing-orders-main")}>
       {showNotification && <NotificationBox_v2 message={statusMsg} onClose={() => setShowNotification(false)} />}
-      {/* <div className={cx("horizontal-decor")}>
-        <GiDividedSquare />
-        <div className={cx("horizontal-line")}></div>
-        <div className={cx("group-diamon")}>
-          <GiDividedSquare />
-          <GiDividedSquare />
-          <GiDividedSquare />
-        </div>
-        <div className={cx("horizontal-line")}></div>
-        <GiDividedSquare />
-      </div> */}
-
-      {/* Sidebar */}
-      {/* <div className={cx("body-left")} style={{ width: menuCollapsed ? 60 : 180 }}>
-        <div className={cx("collapsed-btn")} onClick={() => setMenuCollapsed(!menuCollapsed)}>
-          {!menuCollapsed ? <IoIosArrowDropleft size={24} color="#ff3300" /> : <IoIosArrowDropright size={24} color="#ff3300" />}
-        </div>
-        <div className={cx("sidebar-header")}>
-          <div className={cx("logo-section")}>
-            <StaffNotification staffID={staffID !== null ? staffID : ""} menuCollapsed={menuCollapsed} />
-          </div>
-        </div>
-        <div className={cx("sidebar-menu")}>
-          <div className={cx("menu-title")}>
-            <LuSquareMenu size={22} />
-            {!menuCollapsed && <span> MENU ____________</span>}
-          </div>
-          <div className={cx("wrap-menu-item")}>
-            <div className={cx("menu-item", `${viewMode === "table" ? "active" : ""}`)} onClick={() => setViewMode("table")}>
-              <div style={{ width: menuCollapsed ? "100%" : "" }}>
-                {" "}
-                <MdInsertChart size={iconSize + 2} />
-              </div>
-              {!menuCollapsed && <span>Xem đơn hàng</span>}
-            </div>
-            <div className={cx("menu-item", `${viewMode === "excel" ? "active" : ""}`)} onClick={() => setViewMode("excel")}>
-              <div style={{ width: menuCollapsed ? "100%" : "" }}>
-                <CgDesktop size={iconSize} />
-              </div>
-              {!menuCollapsed && <span>Tạo Excel</span>}
-            </div>
-          </div>
-        </div>
-        <div className={cx("sidebar-footer")}>
-          <div className={cx("footer-info")}></div>
-        </div>
-      </div> */}
-
-      {/* Body Content */}
-      {/* <div className={cx("body-right")} style={{ width: menuCollapsed ? "calc(100% - 60px)" : "calc(100% - 180px)" }}>
-      </div> */}
       <div className={cx("header")}>
         <div className={cx("header-left")}>
           <div className={cx("header-tabs")}>
@@ -760,10 +731,14 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
           <div className={cx("header-tabs")}>
             <div className={cx("filter-decor")}>
               <FcFilledFilter size={24} />
-              <CustomSelectGlobal options={filterOptions} placeholder="-- Chọn lọc --" onChange={(key) => {
-                setSortBy(key as SortOrder);
-                console.log('1');
-              }} />
+              <CustomSelectGlobal
+                options={filterOptions}
+                placeholder="-- Chọn lọc --"
+                onChange={(key) => {
+                  setSortBy(key as SortOrder);
+                  console.log("1");
+                }}
+              />
             </div>
             <div className={cx("filters")}>
               <div className={cx("filter-checkbox")}>
@@ -835,8 +810,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
 
                     if (o.status === "Chốt") statusClass = "status-done";
                     else if (o.status === "Chưa gọi điện") statusClass = "status-pending";
-                    else if (o.status === "Gọi lần 1" || o.status === "Gọi lần 2" || o.status === "Gọi lần 3")
-                      statusClass = "status-retry";
+                    else if (o.status === "Gọi lần 1" || o.status === "Gọi lần 2" || o.status === "Gọi lần 3") statusClass = "status-retry";
                     else if (o.status === "Khách không mua") statusClass = "status-cancel";
                     else if (o.status === "Đơn mới") statusClass = "status-new-order";
 
@@ -847,12 +821,13 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
                     else if (o.deliveryStatus === "Đang giao hàng") deliveryClass = "text-status-retry";
                     else if (o.deliveryStatus === "Đã gửi hàng") deliveryClass = "text-status-info";
                     else if (o.deliveryStatus === "Đang đóng hàng") deliveryClass = "text-status-packing";
+                    console.log('o.time', o.time);
                     return (
                       <tr key={`o.orderCode-${i}`} className={cx("row")}>
                         <td>
                           <input type="checkbox" value={o.orderCode} onChange={(e) => handleSelectManyOrder(e)} />
                         </td>
-                        <td>{o.time.replace(/^\d{4}-/, "")}</td>
+                        <td>{ConvertTime(o.time)}</td>
                         {/* <td>{o.orderCode} <IoIosCopy style={{cursor: "pointer"}} onClick={() => hanleCopyOrderCode(o.orderCode)}/></td> */}
                         <td style={{ position: "relative" }}>
                           {o.orderCode} <IoIosCopy style={{ cursor: "pointer" }} onClick={() => handleCopyOrderCode(o.orderCode, i)} />
@@ -939,7 +914,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
                         </td>
                         <td>{o.note}</td>
                         <td>{o.website}</td>
-                        <td>{o.staff}</td>
+                        <td>{o.staff_name}</td>
                       </tr>
                     );
                   })}
@@ -953,7 +928,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
       </div>
 
       {/* //--Edit Modal */}
-      {showEditingBox && originOrder && (
+      {showEditingBox && originOrder && editing && (
         <div className={cx("fullfilment-bg")}>
           <div className={cx("modal-overlay")}>
             {/* Show original Data */}
@@ -1024,13 +999,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
                 <div className={cx("group-item")}>
                   <label>
                     Nhân viên:
-                    <select value={originOrder.staff} disabled>
-                      {staffName.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                      ))}
-                    </select>
+                    <input disabled value={originOrder.staff_name} />
                   </label>
                 </div>
               </div>
@@ -1201,7 +1170,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
                   </label>
                   <label>
                     Nhân viên:
-                    <select value={editing.staff} onChange={(e) => setEditing({ ...editing, staff: e.target.value })}>
+                    <select value={editing.staff_name} onChange={(e) => setEditing({ ...editing, staff_name: e.target.value })}>
                       {/* <option value="Không">Không tên</option> */}
                       {staffName.map((s) => (
                         <option key={s} value={s}>
@@ -1518,12 +1487,13 @@ export default function ShopOrders_v3({ productDetail, dataOrders, productName, 
                   </label>
                   <label>
                     Nhân viên:
-                    <select value={newOrder.staff} onChange={(e) => setNewOrder({ ...newOrder, staff: e.target.value })}>
-                      {staffName.map((s) => (
+                    <select disabled={true} value={yourStaffProfileInWorkplace?.staffInfo.name || "Không có tên"} onChange={(e) => setNewOrder({ ...newOrder, staff_name: e.target.value })}>
+                      {/* {staffName.map((s) => (
                         <option key={s} value={s}>
                           {s}
                         </option>
-                      ))}
+                      ))} */}
+                      <option>{yourStaffProfileInWorkplace?.staffInfo.name || "Không có tên"}</option>
                     </select>
                   </label>
                 </div>
@@ -1704,4 +1674,19 @@ function getLocalTime() {
   const result = `${utcYear}-${utcMonth}-${utcDay} ${utcHour}:${utcMinute}`;
   console.log(result);
   return result.toString();
+}
+
+//-- Convert time to "23:29 08-11"
+function ConvertTime(timeString: string){
+// const inputString = "2025-11-08 23:29";
+
+// Regex Explanation:
+// (\d{4})-(\d{2})-(\d{2})  -> Matches and captures Year (Group 1), Month (Group 2), Day (Group 3)
+// \s                     -> Matches the space
+// (\d{2}):(\d{2})        -> Matches and captures Hours (Group 4), Minutes (Group 5)
+// Replacement string uses $n to refer to the capture groups: $4:$5 $3-$2
+const outputString = timeString.replace(/(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2})/, '$4:$5 $3-$2');
+
+// console.log(outputString); // Output: "23:29 08-11"
+return outputString
 }

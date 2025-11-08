@@ -3,7 +3,6 @@ import classNames from "classnames/bind";
 import styles from "./ChatPanel.module.scss";
 const cx = classNames.bind(styles);
 
-
 // Icons
 import { FaRegSmile, FaPaperclip } from "react-icons/fa";
 import { FaImage } from "react-icons/fa6";
@@ -30,7 +29,7 @@ import CustomSelect from "../../../ultilitis/CustomSelect";
 // Hooks
 import { type ConversationType, type ChatMessageType, useMessagingStore } from "../../../zustand/messagingStore";
 import { useAuthStore } from "../../../zustand/authStore";
-import { type TagType, type MediaLinkedType , useBranchStore} from "../../../zustand/branchStore";
+import { type TagType, type MediaLinkedType, useBranchStore } from "../../../zustand/branchStore";
 
 // Libraries
 import { v4 as uuidv4 } from "uuid";
@@ -70,11 +69,17 @@ export default function ChatPanel({ messagesByConversation, onSendMessage, conve
   const hasInitializedRef = useRef(false); // skip "load more" on initial render
   const isAutoScrollingRef = useRef(false); // ignore scroll events while auto-scrolling
   const isFetchingRef = useRef(false); // avoid concurrent fetchMore calls
+  const lastConversationIdRef = useRef<string | null>(null); // track conversation changes
 
   const [loadingOlder, setLoadingOlder] = useState(false);
 
   useEffect(() => {
     if (selectedConversationId && branchId && fetchMessages) {
+      // Reset initialization flag when conversation changes
+      if (lastConversationIdRef.current !== selectedConversationId) {
+        hasInitializedRef.current = false;
+        lastConversationIdRef.current = selectedConversationId;
+      }
       fetchMessages(branchId, selectedConversationId);
     }
   }, [selectedConversationId, fetchMessages, branchId]);
@@ -91,7 +96,7 @@ export default function ChatPanel({ messagesByConversation, onSendMessage, conve
   }, [showEmoji]);
 
   const sendMessage = (type: "text" | "image" | "video" | "sticker", content: string) => {
-    updateErrorSend(null)
+    updateErrorSend(null);
     if (!content.trim()) return;
     if (!selectedConversationId) return;
 
@@ -113,7 +118,7 @@ export default function ChatPanel({ messagesByConversation, onSendMessage, conve
           }
         : undefined,
     };
-    if (fastMegAttachedMedia.length > 1) {
+    if (fastMegAttachedMedia.length > 0) {
       handleSendGroupImage(type, content, newMsg);
     } else {
       console.log("2", newMsg);
@@ -122,21 +127,19 @@ export default function ChatPanel({ messagesByConversation, onSendMessage, conve
       setReplyTo(null);
       setInput("");
     }
-        if (!bodyRef.current) return false;
-        console.log('scroll');
-        bodyRef.current.scrollTo({
+    if (!bodyRef.current) return false;
+    console.log("scroll");
+    bodyRef.current.scrollTo({
       top: bodyRef.current.scrollHeight,
       behavior: "smooth",
-      
     });
-    
   };
 
   //-- Send message with multiple images
   const handleSendGroupImage = async (type: "text" | "image" | "video" | "sticker", content: string, newMsg: ChatMessageType) => {
     if (!selectedConversationId) return;
 
-    console.log("2", newMsg);
+    console.log("3", newMsg);
     const localIdForMedia = uuidv4();
 
     const attachments = fastMegAttachedMedia.map((media) => {
@@ -165,6 +168,7 @@ export default function ChatPanel({ messagesByConversation, onSendMessage, conve
 
     //send to unified messaging API
     if (branchId) {
+      console.log("5");
       sendMediaGroup(branchId, newMsg.recipientId || "", {
         message: newMsg.content,
         fastMegAttachedMedia: fastMegAttachedMedia,
@@ -183,19 +187,25 @@ export default function ChatPanel({ messagesByConversation, onSendMessage, conve
     setInput((prev) => prev + emoji);
   };
 
-  // -- This part for handle flasing / jumping when load new message
+  // -- This part for handle flashing / jumping when load new message
+  // ✅ Scroll to bottom when conversation changes or messages are loaded
   useEffect(() => {
-    if (!bodyRef.current) return;
-
-    // If this is the initial render, do the initial scroll differently:
+    if (!bodyRef.current || !selectedConversationId) return;
+    
+    // If this is the initial load for this conversation, scroll to bottom
     if (!hasInitializedRef.current) {
-      // initial jump-to-bottom without triggering load-more
-      const el = bodyRef.current;
-      el.scrollTop = el.scrollHeight;
-      // give browser time to settle and then mark initialized
-      setTimeout(() => {
-        hasInitializedRef.current = true;
-      }, 120); // small delay
+      // Wait for DOM to update with messages
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (!bodyRef.current) return;
+          const el = bodyRef.current;
+          el.scrollTop = el.scrollHeight;
+          // Mark as initialized after a short delay
+          setTimeout(() => {
+            hasInitializedRef.current = true;
+          }, 100);
+        });
+      });
       return;
     }
 
@@ -207,11 +217,10 @@ export default function ChatPanel({ messagesByConversation, onSendMessage, conve
     el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
 
     // clear auto-scrolling flag after a short delay
-    // (or listen for 'scroll' event and detect when it finishes)
     setTimeout(() => {
       isAutoScrollingRef.current = false;
     }, 300);
-  }, [messagesByConversation.length]); // triggers on new message added
+  }, [messagesByConversation.length, selectedConversationId]); // triggers on new message added or conversation change
 
   // Track if user is near the bottom
   const isNearBottom = () => {
@@ -230,6 +239,24 @@ export default function ChatPanel({ messagesByConversation, onSendMessage, conve
       behavior: "smooth",
     });
   }, [messagesByConversation.length]);
+
+  // ✅ Handle image load - scroll to bottom when shop's image finishes loading
+  const handleImageLoad = (message: ChatMessageType) => {
+    // Auto-scroll if it's a shop message (sent by us) - always scroll for our own messages
+    if (message.senderType === "shop" && bodyRef.current) {
+      requestAnimationFrame(() => {
+        if (!bodyRef.current) return;
+        // Use a small delay to ensure DOM has updated with full image dimensions
+        setTimeout(() => {
+          if (!bodyRef.current) return;
+          bodyRef.current.scrollTo({
+            top: bodyRef.current.scrollHeight,
+            behavior: "smooth",
+          });
+        }, 50);
+      });
+    }
+  };
 
   // 2️⃣ Infinite scroll for older messages
   useEffect(() => {
@@ -462,7 +489,13 @@ export default function ChatPanel({ messagesByConversation, onSendMessage, conve
 
                       {attachments.length === 1 && m.contentType === "image" && m.attachments && !m.attachments[0].payload.sticker_id && (
                         <div className={cx("wrap-image")} onClick={() => setPreviewUrl(m.metadata?.facebookURL || m.content)}>
-                          <img src={m.metadata?.facebookURL || m.content} alt="uploaded" className={cx("img-message")} loading="lazy" />
+                          <img 
+                            src={m.metadata?.facebookURL || m.content} 
+                            alt="uploaded" 
+                            className={cx("img-message")} 
+                            loading={m.senderType === "shop" && m.status === "sending" ? "eager" : "lazy"}
+                            onLoad={() => handleImageLoad(m)}
+                          />
                         </div>
                       )}
                       <div className={cx("wrap-group-image-multi")} data-count={attachments.length}>
@@ -471,7 +504,13 @@ export default function ChatPanel({ messagesByConversation, onSendMessage, conve
                             <React.Fragment key={p}>
                               {attachment.payload?.url && (
                                 <div className={cx("wrap-image-multi")} onClick={() => setPreviewUrl(attachment.payload.url ?? null)}>
-                                  <img src={attachment.payload.url} alt="uploaded" className={cx("img-message")} loading="lazy" />
+                                  <img 
+                                    src={attachment.payload.url} 
+                                    alt="uploaded" 
+                                    className={cx("img-message")} 
+                                    loading={m.senderType === "shop" && m.status === "sending" ? "eager" : "lazy"}
+                                    onLoad={() => handleImageLoad(m)}
+                                  />
                                 </div>
                               )}
                             </React.Fragment>
@@ -513,12 +552,18 @@ export default function ChatPanel({ messagesByConversation, onSendMessage, conve
                       {/* 🎥 Video messages */}
                       {m.contentType === "video" && (
                         <div className={cx("wrap-video")}>
-                          <video src={m.metadata?.facebookURL || m.content} className={cx("video-message")} controls playsInline preload="metadata">
-                            Sorry, your browser doesn’t support embedded videos.
+                          <video 
+                            src={m.metadata?.facebookURL || m.content} 
+                            className={cx("video-message")} 
+                            controls 
+                            playsInline 
+                            preload={m.senderType === "shop" && m.status === "sending" ? "auto" : "metadata"}
+                            onLoadedData={() => handleImageLoad(m)}
+                          >
+                            Sorry, your browser doesn't support embedded videos.
                           </video>
                         </div>
                       )}
-
                     </div>
 
                     {/* ✅ Show reply button when hovering */}
@@ -529,7 +574,7 @@ export default function ChatPanel({ messagesByConversation, onSendMessage, conve
                 </div>
               );
             })}
-            {errorSend && <div className={cx('error-send')}>Tin nhắn tạm không gửi được, thử lại sau!</div>}
+            {errorSend && <div className={cx("error-send")}>Tin nhắn tạm không gửi được, thử lại sau!</div>}
           </div>
           {/* ✅ Fullscreen image overlay */}
           {previewUrl && (

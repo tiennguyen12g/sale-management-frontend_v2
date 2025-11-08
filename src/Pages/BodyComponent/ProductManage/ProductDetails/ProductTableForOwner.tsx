@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import classNames from "classnames/bind";
-import styles from "./ProductTable.module.scss";
+import styles from "./ProductTableForOwner.module.scss";
 
 const cx = classNames.bind(styles);
-import { type ProductType, type ProductDetailsType } from "../../../../zustand/productStore";
+import { type ProductType } from "../../../../zustand/productStore";
 
 interface Props {
   products: ProductType[];
@@ -42,31 +42,35 @@ export default function ProductTable({ products, onEdit, onDelete }: Props) {
               return acc
             }, 0)
             return (
-            <React.Fragment key={p.productId}>
-              <tr onClick={() => toggleExpand(p.productId)}>
+            <React.Fragment key={p._id}>
+              <tr onClick={() => toggleExpand(p._id)}>
                 <td>{i + 1}</td>
-                <td>{p.productId}</td>
+                <td>{p.product_code}</td>
                 <td>{p.name}</td>
                 <td>{p.typeProduct || "-"}</td>
                 <td>{totalItem}</td>
-                <td>{p.sizeAvailable.join(", ")}</td>
-                <td>{p.colorAvailable.join(", ")}</td>
+                <td>{p.sizeAvailable.join(", ") || "-"}</td>
+                <td>{p.colorAvailable.join(", ") || "-"}</td>
                 <td>
-                  {p.imageUrl.map((img, i) => (
-                    <img
-                      key={i}
-                      src={img.url}
-                      alt={img.name}
-                      style={{ width: "40px", height: "40px", marginRight: "4px" }}
-                    />
-                  ))}
+                  {p.imageUrl && p.imageUrl.length > 0 ? (
+                    p.imageUrl.map((img, i) => (
+                      <img
+                        key={i}
+                        src={img.url}
+                        alt={img.name}
+                        style={{ width: "40px", height: "40px", marginRight: "4px", objectFit: "cover" }}
+                      />
+                    ))
+                  ) : (
+                    <span style={{ color: "#999" }}>No image</span>
+                  )}
                 </td>
                 <td>
                   <button onClick={(e) => { e.stopPropagation(); onEdit(p); }}>✏️ Edit</button>
-                  <button onClick={(e) => { e.stopPropagation(); onDelete(p.productId); }}>🗑 Delete</button>
+                  <button onClick={(e) => { e.stopPropagation(); onDelete(p._id); }}>🗑 Delete</button>
                 </td>
               </tr>
-              {expandedId === p.productId && (
+              {expandedId === p._id && (
                 <tr className={cx("details-row")}>
                   <td colSpan={9}>
                     <div className={cx("details-box")}>
@@ -81,6 +85,7 @@ export default function ProductTable({ products, onEdit, onDelete }: Props) {
                             <th>Số lượng</th>
                             <th>Giá (VND)</th>
                             <th>Trọng lượng (g)</th>
+                            <th>Giá vốn (VND)</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -93,6 +98,7 @@ export default function ProductTable({ products, onEdit, onDelete }: Props) {
                               <td>{d.stock}</td>
                               <td>{d.price.toLocaleString()}</td>
                               <td>{d.weight}</td>
+                              <td>{d.breakEvenPrice.toLocaleString()}</td>
                             </tr>
                           ))}
                         </tbody>

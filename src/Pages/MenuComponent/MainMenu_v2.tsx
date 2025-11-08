@@ -15,7 +15,7 @@ import { IoMdCart } from "react-icons/io";
 import { BiSolidCircle } from "react-icons/bi";
 import { FaFacebookSquare } from "react-icons/fa";
 
-import { useMenuStore } from "../StateManagement/MenuActiveState"; // ✅ import zustand store
+import { useMenuStore } from "./MenuActiveState"; // ✅ import zustand store
 import { useAuthStore } from "../../zustand/authStore";
 const cx = classNames.bind(styles);
 

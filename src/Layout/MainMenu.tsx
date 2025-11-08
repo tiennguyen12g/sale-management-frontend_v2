@@ -15,7 +15,7 @@ import { AiFillMessage } from "react-icons/ai";
 import { FaCartPlus } from "react-icons/fa";
 import { useAuthStore } from "../zustand/authStore";
 import { FaUserCircle } from "react-icons/fa";
-import StaffTracking_v2 from "../LandingOrders/StaffTracking_v2";
+import StaffTracking_v2 from "../StaffPage/utilities/StaffTracking_v2";
 
 import { useStaffStore } from "../zustand/staffStore";
 import { useMainMenuStore } from "../zustand/mainMenuCollapsed";

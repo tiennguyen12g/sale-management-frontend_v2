@@ -45,10 +45,10 @@ export default function PageMessage() {
 
   // Fetch conversations when branch changes
   useEffect(() => {
-    if (selectedBranch?._id) {
-      fetchConversations(selectedBranch._id);
+    if (selectedBranch?._id && yourStaffId) {
+      fetchConversations(selectedBranch._id, yourStaffId);
     }
-  }, [selectedBranch?._id, fetchConversations]);
+  }, [selectedBranch?._id, fetchConversations, yourStaffId]);
 
   const handleSendMessage = (conversationId: string, msg: ChatMessageType) => {
     if (!selectedBranch?._id) {

@@ -1,20 +1,20 @@
 import React, { useState, useEffect, memo } from "react";
 import classNames from "classnames/bind";
-import styles from "./ProductTable_v2.module.scss";
+import styles from "./ProductTableForStaff.module.scss";
 
 const cx = classNames.bind(styles);
 import { type ProductType, type ProductDetailsType } from "../../../../zustand/productStore";
 import { useProductStore } from "../../../../zustand/productStore";
+import { useBranchStore } from "../../../../zustand/branchStore";
 import NotificationBox_v2 from "../../../../ultilitis/NotificationBox_v2";
 import { useAuthStore } from "../../../../zustand/authStore";
 
-interface Props {
+interface Props {}
 
-}
-
-function ProductTable_v2() {
+function ProductTableForStaff() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const { products, fetchProducts } = useProductStore();
+  const { selectedBranch } = useBranchStore();
   // const startAutoFetch = useProductStore((s) => s.startAutoFetch);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [showNotification, setShowNotification] = useState(false);
@@ -23,28 +23,47 @@ function ProductTable_v2() {
   const toggleExpand = (id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
   };
-  useEffect(() => {
-    const timer = setInterval(() => {
-      fetchProducts();
-      console.log("fetch");
-    }, 60 * 1000);
 
-    return () => clearInterval(timer); // ✅ return a cleanup function
-  }, []);
-
+  // Fetch products when selectedBranch changes
   useEffect(() => {
+    if (!selectedBranch?._id) {
+      return; // Don't fetch if no branch is selected
+    }
+
     async function GetData() {
-      const res = await fetchProducts();
+      if (!selectedBranch) return;
+      const res = await fetchProducts(selectedBranch._id);
       if (res && res.status === "No valid token") {
         setStatusMsg(res.message);
+        setShowNotification(true);
       }
       if (res && res.status === "failed") {
         setStatusMsg(res.message);
+        setShowNotification(true);
       }
-      setShowNotification(true);
     }
     GetData();
-  }, [fetchProducts]);
+  }, [fetchProducts, selectedBranch?._id]);
+
+  // Auto-refresh products every 60 seconds
+  // useEffect(() => {
+  //   if (!selectedBranch?._id) {
+  //     return;
+  //   }
+
+  //   const timer = setInterval(() => {
+  //     fetchProducts(selectedBranch._id);
+  //     console.log("fetch products for branch:", selectedBranch._id);
+  //   }, 60 * 1000);
+
+  //   return () => clearInterval(timer); // ✅ return a cleanup function
+  // }, [fetchProducts, selectedBranch?._id]);
+  useEffect(() => {
+    if (selectedBranch?._id) {
+      fetchProducts(selectedBranch._id);
+      console.log("fetch products for branch:", selectedBranch._id);
+    }
+  }, [fetchProducts, selectedBranch?._id]);
 
   // const product = products.filter((p) => p.name === productName);
   const handleLogout = () => {
@@ -55,7 +74,11 @@ function ProductTable_v2() {
     <div className={cx("product-table")}>
       {showNotification && statusMsg && <NotificationBox_v2 message={statusMsg} onClose={() => setShowNotification(false)} />}
 
-      <h3>Danh sách sản phẩm đang bán</h3>
+      <h3>Danh sách sản phẩm đang bán{selectedBranch ? ` - ${selectedBranch.display_name}` : ""}</h3>
+      {!selectedBranch && <div style={{ padding: "1rem", color: "#999", textAlign: "center" }}>Vui lòng chọn một chi nhánh để xem danh sách sản phẩm</div>}
+      {selectedBranch && products.length === 0 && !statusMsg && (
+        <div style={{ padding: "1rem", color: "#999", textAlign: "center" }}>Không có sản phẩm nào được gán cho chi nhánh này</div>
+      )}
       <table>
         <thead>
           <tr>
@@ -78,22 +101,26 @@ function ProductTable_v2() {
                 return acc;
               }, 0);
               return (
-                <React.Fragment key={p.productId}>
-                  <tr onClick={() => toggleExpand(p.productId)}>
+                <React.Fragment key={p._id}>
+                  <tr onClick={() => toggleExpand(p._id)}>
                     <td>{i + 1}</td>
-                    <td>{p.productId}</td>
+                    <td>{p.product_code}</td>
                     <td>{p.name}</td>
                     <td>{p.typeProduct || "-"}</td>
                     <td>{totalItem}</td>
-                    <td>{p.sizeAvailable.join(", ")}</td>
-                    <td>{p.colorAvailable.join(", ")}</td>
+                    <td>{p.sizeAvailable.join(", ") || "-"}</td>
+                    <td>{p.colorAvailable.join(", ") || "-"}</td>
                     <td>
-                      {p.imageUrl.map((img, i) => (
-                        <img key={i} src={img.url} alt={img.name} style={{ width: "40px", height: "40px", marginRight: "4px" }} />
-                      ))}
+                      {p.imageUrl && p.imageUrl.length > 0 ? (
+                        p.imageUrl.map((img, i) => (
+                          <img key={i} src={img.url} alt={img.name} style={{ width: "40px", height: "40px", marginRight: "4px", objectFit: "cover" }} />
+                        ))
+                      ) : (
+                        <span style={{ color: "#999" }}>No image</span>
+                      )}
                     </td>
                   </tr>
-                  {expandedId === p.productId && (
+                  {expandedId === p._id && (
                     <tr className={cx("details-row")}>
                       <td colSpan={8}>
                         <div className={cx("details-box")}>
@@ -108,6 +135,7 @@ function ProductTable_v2() {
                                 <th>Số lượng</th>
                                 <th>Giá (VND)</th>
                                 <th>Trọng lượng (g)</th>
+                                <th>Giá vốn (VND)</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -120,6 +148,7 @@ function ProductTable_v2() {
                                   <td>{d.stock}</td>
                                   <td>{d.price.toLocaleString()}</td>
                                   <td>{d.weight}</td>
+                                  <td>{d.breakEvenPrice.toLocaleString()}</td>
                                 </tr>
                               ))}
                             </tbody>
@@ -137,4 +166,4 @@ function ProductTable_v2() {
   );
 }
 
-export default ProductTable_v2;
+export default ProductTableForStaff;

@@ -8,7 +8,7 @@ import type { OrderStatusType, OrderType, } from "./DeliveryReturnType";
 import { CarrierFee, VoucherValue, ordersData } from "./DeliveryReturnType";
 import { useShopOrderStore } from "../../../../zustand/shopOrderStore";
 import { useProductStore } from "../../../../zustand/productStore";
-import AllOrders from "../../../../LandingOrders/AllOrders";
+import AllOrdersForOwner from "../../../../ManagementOrders/AllOrdersForOwner";
 import ProductSummaryTable_v2 from "./ProductSummaryTable_v2";
 import UploadDeliveryStatus from "../../../../ultilitis/UploadDeliveryStatus";
 import PlatformSummaryTable_v2 from "../ProductDetails/PlatformSummaryTable_v2";
@@ -131,7 +131,7 @@ export default function DeliveryReturn_v2() {
       <PlatformSummaryTable_v2 ordersData={storeOrders} />
       <ProductSummaryTable_v2 ordersData={storeOrders} />
 
-      <AllOrders />
+      <AllOrdersForOwner />
       {showUploadExcel && <UploadDeliveryStatus onClose={() => setShowUploadExcel(false)} onUpload={handleDeliveryUploadExcel} />}
     </div>
   );

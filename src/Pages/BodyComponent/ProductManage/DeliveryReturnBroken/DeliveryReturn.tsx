@@ -12,7 +12,7 @@ import EditOrder from "./EditOrder";
 import { useShopOrderStore } from "../../../../zustand/shopOrderStore";
 import { useProductStore } from "../../../../zustand/productStore";
 import ProductSummaryTable from "./ProductSummaryTable";
-import AllOrders from "../../../../LandingOrders/AllOrders";
+import AllOrdersForOwner from "../../../../ManagementOrders/AllOrdersForOwner";
 import ProductSummaryTable_v2 from "./ProductSummaryTable_v2";
 import UploadExcelBox from "../../../../ultilitis/UploadExcelBox";
 import UploadDeliveryStatus from "../../../../ultilitis/UploadDeliveryStatus";
@@ -371,7 +371,7 @@ export default function DeliveryReturn() {
       </div>
       <div>** Estimate the profit of the order.</div> */}
       {/* <ShopOrders productDetail={products} dataOrders={storeOrders} /> */}
-      <AllOrders />
+      <AllOrdersForOwner />
       {showUploadExcel && <UploadDeliveryStatus onClose={() => setShowUploadExcel(false)} onUpload={handleDeliveryUploadExcel} />}
     </div>
   );

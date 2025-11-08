@@ -1,7 +1,7 @@
 // src/components/AllOrders.tsx
 import React, { useEffect, useState, useMemo } from "react";
 import classNames from "classnames/bind";
-import styles from "./AllOrders.module.scss"; // reuse styles
+import styles from "./AllOrdersForOwner.module.scss"; // reuse styles
 const cx = classNames.bind(styles);
 
 import { useShopOrderStore, type FinalOrder, type OrderDataFromServerType } from "../zustand/shopOrderStore";
@@ -32,7 +32,7 @@ const DeliveryOptions = [
 export type SortOrder = "latest" | "oldest";
 // Utility to format date (YYYY-MM-DD)
 const formatDate = (dateStr: string) => new Date(dateStr).toISOString().slice(0, 10);
-export default function AllOrders() {
+export default function AllOrdersForOwner() {
   const { orders: rawOrders } = useShopOrderStore();
 
   // convert OrderDataFromServerType[] → FinalOrder[]

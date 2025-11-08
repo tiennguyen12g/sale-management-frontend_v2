@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getSocket } from "../zustand/socketService";
-import { useAuthStore } from "../zustand/authStore";
+import { getSocket } from "../../zustand/socketService";
+import { useAuthStore } from "../../zustand/authStore";
 
 interface Props {
   staffID?: string;

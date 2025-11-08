@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { socketAPI } from "../configs/api";
+import { socketAPI } from "../../configs/api";
 import { FaCartPlus } from "react-icons/fa";
 import { IoNotifications } from "react-icons/io5";
-import bellNotification from "./icons/bell.gif";
-import { useShopOrderStore } from "../zustand/shopOrderStore";
+import bellNotification from "../../ManagementOrders/icons/bell.gif"
+import { useShopOrderStore } from "../../zustand/shopOrderStore";
 export default function StaffNotification({ staffID, menuCollapsed }: { staffID: string, menuCollapsed: boolean }) {
   const [status, setStatus] = useState("disconnected");
   const [notifications, setNotifications] = useState<any[]>([]);

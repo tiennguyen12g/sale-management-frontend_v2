@@ -15,6 +15,12 @@ export interface IListShop {
   platform_id: string;
   avatar?: string;
 }
+export interface IListProductSelling {
+  product_id: string;
+  product_code: string;
+  name: string;
+}
+
 export interface IBranch {
   _id: string;
   company_id: string;
@@ -31,6 +37,7 @@ export interface IBranch {
 
   // list_attach_shop stays embed because it's bounded small
   list_attach_shop: IListShop[];
+  list_product_selling: IListProductSelling[]
 }
 export interface IBranchForStaff extends IBranch {
   role: StaffRole;

@@ -3,7 +3,7 @@ import MoneyInOut from "./MoneyInOut/MoneyInOut";
 import AdsCosts from "./AdsCosts/AdsCosts";
 import OperatingCosts from "./OperatingCosts/OperatingCosts";
 import StaffSalery from "./Staff/StaffSalery";
-import { useMenuStore } from "../../StateManagement/MenuActiveState";
+import { useMenuStore } from "../../MenuComponent/MenuActiveState";
 import { Routes, Route } from "react-router-dom";
 
 export default function Finance() {

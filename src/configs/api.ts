@@ -65,6 +65,11 @@ const GetProducts_API = `${backendAPI}/products`;
 const AddProduct_API = `${backendAPI}/products/add`;
 const UploadProductImage_API = `${backendAPI}/products/upload`;
 
+// Branch Product Assignment
+const AssignProductsToBranch_API = `${backendAPI}/branch`; // Use with /:branchId/assign-products
+const UpdateBranchProducts_API = `${backendAPI}/branch`; // Use with /:branchId/update-products
+const GetBranchProducts_API = `${backendAPI}/branch`; // Use with /:branchId/products
+
 //Shop Orders
 const GetShopOrders_API = `${backendAPI}/shop-orders`;
 const AddShopOrders_API = `${backendAPI}/shop-orders/add`;
@@ -98,6 +103,9 @@ export {
     backendAPI,
     socketAPI,
     frontend_API,
+    AssignProductsToBranch_API,
+    UpdateBranchProducts_API,
+    GetBranchProducts_API,
 
     // Login-Register
     Login_API,

@@ -11,7 +11,7 @@ import Register from "./AuthPage/Register";
 import ProtectedRoute from "./AuthPage/ProtectedRoute";
 import UserPage from "./StaffPage/StaffPage";
 import GlobalSocket from "./ultilitis/GlobalSocket";
-import ProductTable_v2 from "./Pages/BodyComponent/ProductManage/ProductDetails/ProductTable_v2";
+import ProductTableForStaff from "./Pages/BodyComponent/ProductManage/ProductDetails/ProductTableForStaff";
 import NoRoute from "./ultilitis/NoRoute";
 import PageMessage from "./Pages/BodyComponent/FacebookAPI/PageMessage";
 import { FacebookSDKLoader } from "./Pages/BodyComponent/FacebookAPI/FacebookSDKLoader";
@@ -20,8 +20,6 @@ import SettingPage from "./Pages/SettingPage/SettingPage";
 import InitialPage from "./Pages/InitialPage/InitialPage";
 
 //Hooks
-import { useSettingStore } from "./zustand/settingStore";
-import { useAuthStore } from "./zustand/authStore";
 import { useHydrateAuth } from "./zustand/hydrationHook";
 // Layout
 import Layout1 from "./Layout/Layout1";
@@ -31,13 +29,13 @@ function App() {
   const location = useLocation();
   // Routes where StaffMenu should NOT appear
   const hideStaffMenuOn = ["/login", "/register", "/home"];
-  const hydrated = useHydrateAuth();
+  // Check if current path starts with any excluded route
+  const shouldShowStaffMenu = !hideStaffMenuOn.some((path) => location.pathname.startsWith(path));
+
+    const hydrated = useHydrateAuth();
   if (!hydrated) {
     return <div>Loading...</div>;
   }
-  // initialLoadFromLocal();
-  // Check if current path starts with any excluded route
-  const shouldShowStaffMenu = !hideStaffMenuOn.some((path) => location.pathname.startsWith(path));
 
   return (
     <div className="app-main">
@@ -100,7 +98,7 @@ function App() {
           element={
             <ProtectedRoute>
               <Layout1>
-                <ProductTable_v2 />
+                <ProductTableForStaff />
               </Layout1>
             </ProtectedRoute>
           }

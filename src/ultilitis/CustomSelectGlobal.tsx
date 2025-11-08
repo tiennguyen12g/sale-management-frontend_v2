@@ -4,20 +4,24 @@ import styles from './CustomSelectGlobal.module.scss'
 const cx = classNames.bind(styles)
 
 interface CustomSelectProps {
-  options: {name: string, key: string}[];
+  options: {name: string, key: string, color?: string}[];
   onChange: (value: string) => void;
   placeholder?: string;
   dropdownPosition?: 'top' | 'bottom'; // New prop
+  isUsePlaceHolder?: boolean,
+  isUseBorder?:boolean
 }
 
 const CustomSelectGlobal: React.FC<CustomSelectProps> = ({ 
   options, 
   onChange, 
   placeholder = "-- Chọn thẻ --",
-  dropdownPosition = 'bottom' // Default to bottom
+  dropdownPosition = 'bottom', // Default to bottom
+  isUsePlaceHolder = false,
+  isUseBorder = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState("");
+  const [selected, setSelected] = useState(isUsePlaceHolder ?  placeholder : options[0].name);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,8 +46,9 @@ const CustomSelectGlobal: React.FC<CustomSelectProps> = ({
       <div 
         className={cx('selectTrigger')}
         onClick={() => setIsOpen(!isOpen)}
+        style={{border: isUseBorder ? "1px solid #ddd" : "0px solid #ddd"}}
       >
-        {selected || placeholder}
+        {selected }
         <span className={cx('arrow')}>{isOpen ? '▲' : '▼'}</span>
       </div>
       {isOpen && (
@@ -53,6 +58,7 @@ const CustomSelectGlobal: React.FC<CustomSelectProps> = ({
               key={i}
               className={cx('option')}
               onClick={() => handleSelect(option.key, option.name)}
+              style={{color: option.color ?? 'black'}}
             >
               {option.name}
             </div>

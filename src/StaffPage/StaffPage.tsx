@@ -9,7 +9,7 @@ import type { IStaff, StaffRole, IAttendance } from "../zustand/staffStore";
 import { useAuthStore, type UserInfoType } from "../zustand/authStore";
 import AttendanceCalendar from "../Pages/BodyComponent/Financial/Staff/AttendanceCalendar";
 import { deligenceBonus } from "../configs/DefaultData";
-import StaffHeartbeat from "../LandingOrders/StaffHeartBeat";
+import StaffHeartbeat from "./utilities/StaffHeartBeat";
 import { VietQR } from "vietqr";
 import type { ListBankType } from "../assets/fullVietNamBanks";
 import { fullVietNamBanks } from "../assets/fullVietNamBanks";

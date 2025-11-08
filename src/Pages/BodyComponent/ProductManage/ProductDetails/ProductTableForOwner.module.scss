@@ -1,11 +1,14 @@
 .product-table {
-    margin: 10px 0px;
+    margin: 0px 0px;
+    border-radius: 5px;
+    border: 1px solid #e0e0e0;
+    overflow: hidden;
   table {
     width: 100%;
     border-collapse: collapse;
 
     th, td {
-      border: 1px solid #ddd;
+      border: 1px solid #ddd; // turn on border for each cell
       padding: 8px;
       text-align: left;
     }

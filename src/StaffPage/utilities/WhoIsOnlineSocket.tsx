@@ -3,8 +3,8 @@ import { io, Socket } from "socket.io-client";
 import classNames from "classnames/bind";
 import styles from "./WhoIsOnlineSocket.module.scss";
 const cx = classNames.bind(styles);
-import { useStaffStore } from "../zustand/staffStore";
-import { socketAPI } from "../configs/api";
+import { useStaffStore } from "../../zustand/staffStore";
+import { socketAPI } from "../../configs/api";
 
 type StaffStatus = {
   staffID: string;

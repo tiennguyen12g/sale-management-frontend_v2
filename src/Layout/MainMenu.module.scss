@@ -50,6 +50,9 @@
     align-items: center;
     justify-content: center;
     font-size: 16px;
+    span{
+      font-weight: 525;
+    }
   }
   &:hover {
     background: linear-gradient(135deg, #52aefa, #047de0); // light fresh gradient

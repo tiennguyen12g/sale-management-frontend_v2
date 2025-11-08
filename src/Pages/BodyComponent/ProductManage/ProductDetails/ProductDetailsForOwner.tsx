@@ -1,36 +1,43 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import classNames from "classnames/bind";
-import styles from "./ProductDetails.module.scss";
+import styles from "./ProductDetailsForOwner.module.scss";
 
 const cx = classNames.bind(styles);
 import { FaRegClone } from "react-icons/fa6";
-import ProductTable from "./ProductTable";
+import ProductTable from "./ProductTableForOwner";
+import BranchProductTable from "./BranchProductTable";
 import { type ProductType, type ProductDetailsType } from "../../../../zustand/productStore";
 import { useProductStore } from "../../../../zustand/productStore";
+import { useBranchStore } from "../../../../zustand/branchStore";
 import { UploadProductImage_API } from "../../../../configs/api";
 const ProductTypeName = ["Quần/áo", "Thiết bị điện tử", "Đồ gia dụng", "Đồ ăn", "Tranh ảnh"];
-const templateProduct: Omit<ProductType, "_id"> = {
-  // _id: "",
-  productId: "",
+const templateProduct: Omit<ProductType, "_id" | "company_id"> = {
+  product_code: "",
   name: "",
   typeProduct: "",
   sizeAvailable: [],
   colorAvailable: [],
   productDetailed: [],
   imageUrl: [],
-  endpointUrl: "",
 };
-export default function ProductDetails() {
+export default function ProductDetailsForOwner() {
   const { products, fetchProducts, updateProduct, addProduct, deleteProduct } = useProductStore();
+  const { selectedBranch } = useBranchStore();
   const [showForm, setShowForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
 
-  const [product, setProduct] = useState<Omit<ProductType, "_id">>({ ...templateProduct });
-  const [editProduct, setEditProduct] = useState<ProductType>({ ...templateProduct, _id: "" });
+  const [product, setProduct] = useState<Omit<ProductType, "_id" | "company_id">>({ ...templateProduct });
+  const [editProduct, setEditProduct] = useState<ProductType>({ ...templateProduct, _id: "", company_id: "" });
 
+  // Fetch products when component mounts or selectedBranch changes
+  // For owner: fetch all company products (no branch_id filter)
+  // For staff: fetch products assigned to selectedBranch
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    // Owner sees all company products, staff sees branch products
+    // For now, fetch all products (branch_id will be null/undefined)
+    // Later, you can add logic to filter by branch if needed
+    fetchProducts(null); // Fetch all products for the company
+  }, [fetchProducts, selectedBranch]);
 
   // ---- IMAGE HANDLING ----
   const handleAddImage = (whatBox: "new-form" | "edit-form") => {
@@ -165,14 +172,19 @@ export default function ProductDetails() {
   const handleSubmit = async () => {
     console.log("product", product);
     try {
+      // company_id is automatically set by backend from authenticated user
+      // We don't need to include it in the request
       const res = await addProduct(product);
-      if (res?.status === "failed") throw new Error("Failed to add product");
+      if (res?.status === "failed") {
+        alert(res.message || "Failed to add product");
+        return;
+      }
       alert("Product added successfully!");
       setProduct({ ...templateProduct });
-      // setShowForm(false);
-    } catch (err) {
+      setShowForm(false);
+    } catch (err: any) {
       console.error(err);
-      alert("Error adding product");
+      alert(err.message || "Error adding product");
     }
   };
 
@@ -216,7 +228,7 @@ export default function ProductDetails() {
             <div className={cx("form-group")}>
               <div className={cx("field")}>
                 <label>Mã sản phẩm (không dấu):</label>
-                <input value={product.productId} onChange={(e) => setProduct({ ...product, productId: e.target.value })} />
+                <input value={product.product_code} onChange={(e) => setProduct({ ...product, product_code: e.target.value })} />
               </div>
               <div className={cx("field")}>
                 <label>Tên sản phẩm:</label>
@@ -231,10 +243,6 @@ export default function ProductDetails() {
                     return <option key={i}>{type}</option>;
                   })}
                 </select>
-              </div>
-              <div className={cx("field")}>
-                <label>Endpoint sản phẩm (không dấu):</label>
-                <input value={product.endpointUrl} onChange={(e) => setProduct({ ...product, endpointUrl: e.target.value })} />
               </div>
             </div>
             <div className={cx("form-group")}>
@@ -307,6 +315,7 @@ export default function ProductDetails() {
               <div>Stock</div>
               <div>Price</div>
               <div>Weight(gram)</div>
+              {/* <div>Break Even Price</div> */}
               <div>Clone</div>
               <div>Delete</div>
             </div>
@@ -360,6 +369,13 @@ export default function ProductDetails() {
                   value={detail.weight}
                   onChange={(e) => handleDetailChange("new-form", idx, "weight", Number(e.target.value))}
                 />
+                {/* <input
+                  className={cx("input-breakeven")}
+                  type="number"
+                  placeholder="Giá vốn (VND)"
+                  value={detail.breakEvenPrice}
+                  onChange={(e) => handleDetailChange("new-form", idx, "breakEvenPrice", Number(e.target.value))}
+                /> */}
                 <button className={cx("btn-clone")} onClick={() => handleCloneDetail("new-form", idx)}>
                   <FaRegClone size={20} />
                 </button>
@@ -397,7 +413,7 @@ export default function ProductDetails() {
             <div className={cx("form-group")}>
               <div className={cx("field")}>
                 <label>Mã sản phẩm (không dấu):</label>
-                <input value={editProduct.productId} onChange={(e) => setEditProduct({ ...editProduct, productId: e.target.value })} />
+                <input value={editProduct.product_code} onChange={(e) => setEditProduct({ ...editProduct, product_code: e.target.value })} />
               </div>
               <div className={cx("field")}>
                 <label>Tên sản phẩm:</label>
@@ -412,10 +428,6 @@ export default function ProductDetails() {
                     return <option key={i}>{type}</option>;
                   })}
                 </select>
-              </div>
-              <div className={cx("field")}>
-                <label>Endpoint sản phẩm (không dấu):</label>
-                <input value={editProduct.endpointUrl} onChange={(e) => setEditProduct({ ...editProduct, endpointUrl: e.target.value })} />
               </div>
             </div>
             <div className={cx("form-group")}>
@@ -488,6 +500,7 @@ export default function ProductDetails() {
               <div>Stock</div>
               <div>Price</div>
               <div>Weight(gram)</div>
+              {/* <div>Break Even Price</div> */}
               <div>Clone</div>
               <div>Delete</div>
             </div>
@@ -552,6 +565,13 @@ export default function ProductDetails() {
                   value={detail.weight}
                   onChange={(e) => handleDetailChange("edit-form", idx, "weight", Number(e.target.value))}
                 />
+                {/* <input
+                  className={cx("input-breakeven")}
+                  type="number"
+                  placeholder="Giá vốn (VND)"
+                  value={detail.breakEvenPrice}
+                  onChange={(e) => handleDetailChange("edit-form", idx, "breakEvenPrice", Number(e.target.value))}
+                /> */}
                 <button className={cx("btn-clone")} onClick={() => handleCloneDetail("edit-form", idx)}>
                   <FaRegClone size={20} />
                 </button>
@@ -580,14 +600,18 @@ export default function ProductDetails() {
       {/* // -- Content */}
 
       <div className={cx("product-list")}>
-        <div className={cx('title-header')}>Danh sách sản phẩm</div>
-        <div>
-          <button className={cx("btn-decor", "btn-add")} onClick={() => setShowForm(true)}>
+
+        <div className={cx('wrap-title-btn')}>
+          <div className={cx('title-header')}>Danh sách sản phẩm</div>
+          <button className={cx("btn-assign")} onClick={() => setShowForm(true)}>
             + Thêm sản phẩm
           </button>
         </div>
         <ProductTable products={products} onEdit={handleEdit} onDelete={handleDelete} />
       </div>
+
+      {/* Branch Product Assignment Table */}
+      <BranchProductTable />
     </div>
   );
 }

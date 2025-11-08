@@ -32,3 +32,5 @@ export default defineConfig({
   },
 });
 
+## Git repo
+git push -u salefrontendv2 main

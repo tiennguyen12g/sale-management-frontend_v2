@@ -3,58 +3,61 @@ import classNames from "classnames/bind";
 import styles from "./LayoutWithSubmenu.module.scss";
 const cx = classNames.bind(styles);
 
-import { useProductStore } from "../zustand/productStore";
+import { useProductStore, type ProductType } from "../zustand/productStore";
 import { useShopOrderStore } from "../zustand/shopOrderStore";
 import { useStaffStore } from "../zustand/staffStore";
 import { useAuthStore } from "../zustand/authStore";
-import ShopOrders_v3 from "../LandingOrders/ShopOrders_v3";
-import CreateExcel_v2 from "../LandingOrders/CreateExcel_v2";
-import StaffNotification from "../LandingOrders/StaffNotification";
+import ShopOrders_v3 from "../ManagementOrders/ShopOrders_v3";
+import CreateExcel_v2 from "../ManagementOrders/CreateExcel_v2";
+import StaffNotification from "../StaffPage/utilities/StaffNotification";
 // Icons
 import { IoIosArrowDropleft } from "react-icons/io";
 import { IoIosArrowDropright } from "react-icons/io";
 import { MdInsertChart } from "react-icons/md";
 import { CgDesktop } from "react-icons/cg";
+import { useBranchStore } from "../zustand/branchStore";
 
 const iconSize = 20;
 import { LuSquareMenu } from "react-icons/lu";
 export default function LayoutWithSubmenu() {
   const [menuCollapsed, setMenuCollapsed] = useState(true);
   const [viewMode, setViewMode] = useState<"table" | "excel">("table");
-  const [getFinalData, setGetFinalData] = useState<any>([])
+  const [getFinalData, setGetFinalData] = useState<any>([]);
+    const { selectedBranch } = useBranchStore();
   // const {user, token} = useAuthStore();
   const { products, fetchProducts } = useProductStore();
-  const { orders } = useShopOrderStore();
+  const { orders, fetchOrders } = useShopOrderStore();
   const {yourStaffId} = useAuthStore();
-  const [currentProduct, setCurrentProduct] = useState<string | undefined>(undefined);
+  const [currentProduct, setCurrentProduct] = useState<ProductType | undefined>(undefined);
 
   // fetch products
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
-
-  // fetch orders from the store (call directly on the store to avoid double deps)
-  useEffect(() => {
-    useShopOrderStore.getState().fetchOrders();
-  }, []);
-
-  // build normalized products (memoized)
-  const normalizedProducts = useMemo(() => {
-    return (products || []).map((p, i) => {
-      const productId = p.productId;
-      const dataOrders = (orders || []).filter((item) => item.productId === productId);
-      return {
-        ...p,
-        dataOrders,
-      };
-    });
-  }, [products, orders]);
-
-  useEffect(() => {
-    if (products.length > 0 && orders.length > 0 && currentProduct === undefined) {
-      setCurrentProduct(products[0].name);
+    if (selectedBranch?._id) {
+      fetchProducts(selectedBranch._id);
+    } else {
+      fetchProducts(null); // Fetch all products if no branch selected
     }
-  }, [products, orders]);
+  }, [fetchProducts, selectedBranch?._id]);
+
+  // fetch orders from the store (filtered by branch)
+  useEffect(() => {
+    if (selectedBranch?._id) {
+      fetchOrders(selectedBranch._id);
+    } else {
+      fetchOrders(); // Fetch all orders if no branch selected
+    }
+  }, [fetchOrders, selectedBranch?._id]);
+
+  // Filter orders by selected product
+  const filteredOrders = useMemo(() => {
+    if (!currentProduct) return orders;
+    return orders.filter(order => order.product_code === currentProduct.product_code);
+  }, [orders, currentProduct]);
+
+  // Get current product (first product or selected)
+  const product = currentProduct || products[0];
+
+
   return (
     <div className={cx("main-layout")}>
       {/* Sidebar */}
@@ -95,16 +98,19 @@ export default function LayoutWithSubmenu() {
 
       {/* Body Content */}
       <div className={cx("body-right")} style={{ width: menuCollapsed ? "calc(100% - 60px)" : "calc(100% - 180px)" }}>
-        {viewMode === "table" && normalizedProducts.map((product, k) => {
-          return (
-            <React.Fragment key={k}>
-              {currentProduct === product.name && (
-                <ShopOrders_v3 productDetail={product} dataOrders={product.dataOrders} productName={currentProduct} setGetFinalData={setGetFinalData}/>
-              )}
-            </React.Fragment>
-          );
-        })}
+        {viewMode === "table" && product && (
+          <ShopOrders_v3 
+            productDetail={product} 
+            dataOrders={filteredOrders} 
+            setGetFinalData={setGetFinalData}
+          />
+        )}
         {viewMode === "excel" && <CreateExcel_v2 orders={getFinalData} />}
+        {viewMode === "table" && !product && (
+          <div style={{ padding: 20 }}>
+            <p>Vui lòng chọn sản phẩm để xem đơn hàng</p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import styles from "./ProductDetailsInventory.module.scss";
 
 const cx = classNames.bind(styles);
 import { FaRegClone } from "react-icons/fa6";
-import ProductTable from "./ProductTable";
+import ProductTable from "./ProductTableForOwner";
 import { type ProductType, type ProductDetailsType } from "../../../../zustand/productStore";
 import { useProductStore } from "../../../../zustand/productStore";
 import { UploadProductImage_API } from "../../../../configs/api";
