@@ -1,16 +1,17 @@
-.address-select-wrapper{
+.address-select-wrapper {
+  position: relative;
   display: flex;
-//   gap: 5px;
+  gap: 10px;
   justify-content: space-between;
-width: 100%;
+  width: calc(100% - 0px);
 }
 .select-css {
   display: block;
   min-width: 200px;
-  max-width: 350px;  // cho đẹp, không quá dài
+  max-width: 350px; // cho đẹp, không quá dài
   padding: 6px 4px;
   margin: 8px 0;
-  
+
   font-size: 14px;
   font-weight: 500;
   color: #333;
@@ -27,7 +28,7 @@ width: 100%;
   background-size: 14px;
 
   transition: all 0.2s ease;
-  
+
   &:hover {
     border-color: #4096ff;
   }

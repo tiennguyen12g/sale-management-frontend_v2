@@ -9,7 +9,7 @@ import BranchProductTable from "./BranchProductTable";
 import { type ProductType, type ProductDetailsType } from "../../../../zustand/productStore";
 import { useProductStore } from "../../../../zustand/productStore";
 import { useBranchStore } from "../../../../zustand/branchStore";
-import { UploadProductImage_API } from "../../../../configs/api";
+import { UploadProductImage_API } from "../../../../config/api";
 const ProductTypeName = ["Quần/áo", "Thiết bị điện tử", "Đồ gia dụng", "Đồ ăn", "Tranh ảnh"];
 const templateProduct: Omit<ProductType, "_id" | "company_id"> = {
   product_code: "",

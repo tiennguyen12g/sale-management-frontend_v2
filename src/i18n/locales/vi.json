@@ -1,0 +1,420 @@
+{
+  "language": {
+    "english": "Tiếng Anh",
+    "vietnamese": "Tiếng Việt"
+  },
+  "menu": {
+    "dashboard": "Bảng Điều Khiển",
+    "products": "Sản Phẩm",
+    "customers": "Khách Hàng",
+    "reports": "Báo Cáo",
+
+    "shop": "Cửa hàng",
+    "messages": "Tin nhắn",
+    "orders": "Đơn Hàng",
+    "warehouse": "Kho hàng",
+    "profile": "Hồ sơ",
+    "ads": "Ads acc",
+    "settings": "Cài Đặt",
+    "expand": "Mở rộng",
+    "collapse": "Thu gọn",
+    "logout": "Đăng xuất"
+  },
+  "profile": {
+    "title": "Cài Đặt Hồ Sơ",
+    "subtitle": "Quản lý cài đặt tài khoản và tùy chọn của bạn",
+    "personalInfo": {
+      "title": "Thông Tin Cá Nhân",
+      "name": "Họ và Tên",
+      "email": "Địa Chỉ Email",
+      "phone": "Số Điện Thoại",
+      "address": "Địa chỉ",
+      "bio": "Giới Thiệu",
+      "bioPlaceholder": "Hãy cho chúng tôi biết về bạn...",
+      "avatar": "Ảnh Đại Diện",
+      "changeAvatar": "Đổi Ảnh Đại Diện",
+      "removeAvatar": "Xóa Ảnh Đại Diện"
+    },
+    "account": {
+      "title": "Cài Đặt Tài Khoản",
+      "changePassword": "Đổi Mật Khẩu",
+      "currentPassword": "Mật Khẩu Hiện Tại",
+      "newPassword": "Mật Khẩu Mới",
+      "confirmPassword": "Xác Nhận Mật Khẩu Mới",
+      "deleteAccount": "Xóa Tài Khoản",
+      "deleteAccountWarning": "Hành động này không thể hoàn tác. Tất cả dữ liệu của bạn sẽ bị xóa vĩnh viễn."
+    },
+    "preferences": {
+      "title": "Tùy Chọn",
+      "language": "Ngôn Ngữ",
+      "theme": "Giao Diện",
+      "themeLight": "Sáng",
+      "themeDark": "Tối",
+      "themeSystem": "Hệ Thống",
+      "notifications": "Thông Báo",
+      "emailNotifications": "Thông Báo Email",
+      "pushNotifications": "Thông Báo Đẩy",
+      "smsNotifications": "Thông Báo SMS"
+    },
+    "privacy": {
+      "title": "Quyền Riêng Tư & Bảo Mật",
+      "twoFactorAuth": "Xác Thực Hai Yếu Tố",
+      "enable2FA": "Bật 2FA",
+      "disable2FA": "Tắt 2FA",
+      "loginHistory": "Lịch Sử Đăng Nhập",
+      "activeSessions": "Phiên Đăng Nhập Đang Hoạt Động",
+      "dataExport": "Xuất Dữ Liệu",
+      "dataExportDesc": "Tải xuống bản sao dữ liệu của bạn"
+    },
+    "buttons": {
+      "save": "Lưu Thay Đổi",
+      "cancel": "Hủy",
+      "update": "Cập Nhật",
+      "delete": "Xóa Tài Khoản",
+      "export": "Xuất Dữ Liệu"
+    },
+    "validation": {
+      "nameRequired": "Tên là bắt buộc",
+      "emailRequired": "Email là bắt buộc",
+      "emailInvalid": "Vui lòng nhập email hợp lệ",
+      "phoneInvalid": "Vui lòng nhập số điện thoại hợp lệ",
+      "passwordRequired": "Mật khẩu là bắt buộc",
+      "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
+      "passwordsNotMatch": "Mật khẩu không khớp"
+    },
+    "success": {
+      "profileUpdated": "Cập nhật hồ sơ thành công",
+      "passwordChanged": "Đổi mật khẩu thành công",
+      "avatarUpdated": "Cập nhật ảnh đại diện thành công"
+    }
+  },
+"auth": {
+    "email": "Địa chỉ Email",
+    "password": "Mật khẩu",
+    "confirmPassword": "Xác nhận Mật khẩu",
+    "login": {
+      "title": "Đăng nhập",
+      "subtitle": "Chọn phương thức đăng nhập bên dưới",
+      "rememberMe": "Ghi nhớ tôi",
+      "forgotPassword": "Quên Mật khẩu",
+      "signIn": "Đăng nhập",
+      "orConnectWith": "Hoặc kết nối với",
+      "noAccount": "Bạn chưa có tài khoản?",
+      "registerLink": "Đăng kí",
+      "emailPlaceholder": "Nhập email của bạn",
+      "passwordPlaceholder": "Nhập mật khẩu",
+      "error": {
+        "loginFailed": "Đăng nhập thất bại",
+        "somethingWentWrong": "Có lỗi, vui lòng thử lại"
+      }
+    },
+    "signup": {
+      "title": "Đăng ký",
+      "subtitle": "Vui lòng điền thông tin bên dưới",
+      "name": "Tên hiển thị",
+      "namePlaceholder": "Ví dụ: tiennguyen12g, hung95 ...",
+      "emailPlaceholder": "Nhập email của bạn",
+      "passwordPlaceholder": "Nhập mật khẩu",
+      "confirmPasswordPlaceholder": "Nhập lại mật khẩu",
+      "confirmPassword": "Xác nhận Mật khẩu",
+      "agreeToTerms": "Đồng ý với Điều khoản",
+      "createAccount": "Đăng kí",
+      "orSignUpWith": "Hoặc Đăng ký với",
+      "haveAccount": "Bạn đã có tài khoản?",
+      "loginLink": "Đăng nhập",
+      "error": {
+        "emailExists": "Email đã đăng kí",
+        "registrationFailed": "Đăng kí lỗi",
+        "passwordsNotMatch": "Mật khẩu nhập lại không khớp!",
+        "somethingWentWrong": "Có lỗi xảy ra. Vui lòng thử lại."
+      },
+      "success": {
+        "registrationSuccess": "Đăng kí thành công! Hãy đăng nhập."
+      }
+    }
+  },
+  "confirmDelete": {
+    "title": "Xóa",
+    "areYouSure": "Bạn có chắc chắn?",
+    "warning": "Cảnh báo:",
+    "warningMessage": "Hành động này không thể hoàn tác. Điều này sẽ xóa vĩnh viễn.",
+    "action": {
+      "cancel": "Hủy",
+      "delete": "Xóa"
+    }
+  },
+  "confirmLogout": {
+    "title": "Xác nhận đăng xuất",
+    "heading": "Xác nhận đăng xuất",
+    "description": "Bạn có chắc chắn muốn đăng xuất? Bạn sẽ cần đăng nhập lại để truy cập tài khoản.",
+    "remindContent": "Mọi thay đổi chưa lưu sẽ bị mất. Hãy đảm bảo lưu công việc của bạn trước khi đăng xuất.",
+    "action": {
+      "stayLoggedIn": "Ở lại đăng nhập",
+      "logout": "Đăng xuất"
+    }
+  },
+  "confirmResetSettings": {
+    "title": "Đặt lại cài đặt",
+    "heading": "Đặt lại tất cả cài đặt",
+    "description": "Điều này sẽ khôi phục tất cả cài đặt về giá trị mặc định. Dữ liệu và tệp cá nhân của bạn sẽ không bị ảnh hưởng.",
+    "willBeReset": "Những mục sau sẽ được đặt lại:",
+    "action": {
+      "resetSettings": "Đặt lại cài đặt"
+    }
+  },
+  "statusModal": {
+    "action": {
+      "close": "Đóng"
+    }
+  },
+    "infoModal": {
+    "action": {
+      "close": "Đóng"
+    }
+  },
+    "warningModal": {
+    "action": {
+      "close": "Đóng"
+    }
+  },
+  "commonModal": {
+    "title": "Modal của tôi",
+    "action": {
+      "close": "Đóng"
+    }
+  },
+  "animatedInfoModal": {
+    "animationProperties": "Thuộc tính hoạt hình"
+  },
+  "button": {
+    "delete": "Xóa",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "submit": "Gửi",
+    "edit": "Chỉnh sửa",
+    "close": "Đóng",
+    "confirm": "Xác nhận",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "hello": "Xin chào",
+    "info": "Thông tin",
+    "download": "Tải xuống",
+    "uploadFile": "Tải lên tệp",
+    "uploadCloud": "Tải lên đám mây",
+    "add": "Thêm",
+    "remove": "Xóa",
+    "revoke": "Thu hồi",
+    "send": "Gửi"
+  },
+  "content": {
+    "deleteOrders": "Xóa {{count}} đơn hàng",
+    "deleteItems": "Xóa {{count}} mục",
+    "successCommon": "Thao tác thành công",
+    "warningCommon": "Thao tác có thể rủi ro!"
+  },
+  "setting": {
+    "title": "Cài Đặt",
+    "subtitle": "Quản lý cài đặt ứng dụng của bạn",
+    "general": {
+      "title": "Cài Đặt Chung",
+      "language": "Ngôn Ngữ",
+      "theme": "Giao Diện",
+      "notifications": "Thông Báo",
+      "account_info": {
+        "title": "Thông Tin Tài Khoản",
+        "username": "Tên Đăng Nhập",  
+        "email": "Địa Chỉ Email",
+        "memberSince": "Tham Gia Từ",
+        "password": "Mật Khẩu",
+        "changePassword": "Đổi Mật Khẩu",
+        
+        "oldPassword": "Mật Khẩu Cũ",
+        "newPassword": "Mật Khẩu Mới",
+        "confirmNewPassword": "Xác Nhận Mật Khẩu Mới"}
+    },
+    "decentralization": {
+      "title": "Phân Quyền",
+      "manageRoles": "Quản Lý Vai Trò",
+      "managePermissions": "Quản Lý Quyền Hạn",
+      "assignRoles": "Phân Vai Trò Cho Người Dùng",
+      "invitation": {
+        "title": "Quản lí thư mời",
+        "sendInvitation": "Gửi lời mời",
+        "noInvitations": "Chưa có lời mời nào được gửi.",
+        "addStaff": "Thêm Nhân Viên",
+        "searchTitle": "Tìm kiếm theo email hoặc mã nhân viên",
+        "staffInfoTitle": "Thông Tin Nhân Viên",
+        "staffName": "Tên Nhân Viên",
+        "staffID": "Mã Nhân Viên",
+        "staffEmail": "Email Nhân Viên",
+        "roleAssigned": "Vai Trò Được Phân Công",
+        "status": "Trạng Thái",
+        "action": "Hành Động",
+        "staffBirthday": "Ngày Sinh",
+        "selectBranch": "Chọn Chi Nhánh",
+        "note": "Ghi Chú",
+        "selectBranchPlaceholder": "Chọn một tùy chọn"
+      }
+
+    },
+          "notification": {
+            "name": "Thông Báo",
+      "title": "Cài Đặt Thông Báo",
+        "systemNotifications": "Thông Báo Hệ Thống",
+        "invitations": "Lời Mời"
+      },
+      "tags": {
+        "name": "Thẻ hội thoại",
+        "title": "Quản Lý Thẻ",
+        "addTag": "Thêm thẻ",
+        "create": {
+          "title": "Thêm mới thẻ",
+          "tagName": "Tên thẻ",
+          "tagNamePlaceholder": "Nhập tên thẻ...",
+          "colorPicker": "Bộ chọn màu",
+          "colorPreview": "Xem trước Màu chủ đề sẽ được hiển thị",
+          "tagNameAndColor": "Tên thẻ và màu sắc",
+          "noTagsAdded": "Không có thẻ nào được thêm.",
+          "confirmDelete": "Bạn có chắc muốn xoá thẻ này?",
+          "table": {
+            "stt": "STT",
+            "tagName": "Tên thẻ",
+            "color": "Màu sắc",
+            "action": "Hành động"
+          }
+        },
+        "edit": {
+          "title": "Chỉnh sửa thẻ",
+          "tagName": "Tên thẻ",
+          "tagNamePlaceholder": "Nhập tên thẻ...",
+          "colorPicker": "Bộ chọn màu",
+          "colorPreview": "Xem trước Màu chủ đề sẽ được hiển thị",
+          "newTag": "Thẻ mới",
+          "disableTag": "Ngừng sử dụng thẻ này",
+          "enterTagName": "Vui lòng nhập tên thẻ",
+          "saveEdit": "Lưu chỉnh sửa"
+        },
+        "manage": {
+          "title": "Thẻ hội thoại",
+          "tags": "Thẻ",
+          "confirmDelete": "Bạn có chắc muốn xoá thẻ này?",
+          "table": {
+            "stt": "STT",
+            "tagName": "Tên thẻ",
+            "color": "Màu sắc",
+            "action": "Hành động"
+          }
+        }
+      },
+      "fastMessage": {
+        "name": "Hỗ trợ trả lời",
+        "title": "Hỗ trợ trả lời",
+        "quickReply": "Trả lời nhanh",
+        "confirmDelete": "Bạn có chắc chắn muốn xóa?",
+        "addQuickReply": "Thêm câu trả lời nhanh",
+        "editQuickReply": "Chỉnh sửa câu trả lời nhanh",
+        "shortKey": "Ký tự tắt",
+        "shortKeyPlaceholder": "Nhập ký tự",
+        "imageContent": "Nội dung hình ảnh",
+        "noMediaSelected": "Chưa chọn hình ảnh / video",
+        "messageContent": "Nội dung tin nhắn",
+        "messagePlaceholder": "Nhập nội dung ... (Nhấn Shift + Enter để xuống dòng)",
+        "saveTemplate": "Lưu mẫu",
+        "button": {
+          "addMedia": "Thêm ảnh/video",
+          "saveReply": "Lưu câu trả lời",
+          "addForm": "Thêm câu trả lời nhanh"
+        },
+        "table": {
+          "stt": "STT",
+          "shortKey": "Ký tự tắt",
+          "messageContent": "Nội dung tin nhắn",
+          "media": "Ảnh/Video",
+          "action": "Hành động"
+        }
+      },
+      "mediaStore": {
+        "title": "Hình ảnh/video hay dùng",
+        "addMedia": "Thêm ảnh/video",
+        "images": "Ảnh",
+        "videos": "Video",
+        "select": "Chọn",
+        "confirmDelete": "Bạn có chắc chắn muốn xóa?",
+        "maxSelectionLimit": "Giới hạn chọn tối đa 6 ảnh/video",
+        "shopIdNotFound": "Không tìm thấy Shop ID"
+      },
+      "tableInvitation": {
+        "loading": "Đang tải...",
+        "confirmAccept": "Bạn có chắc chắn muốn chấp nhận lời mời này?",
+        "confirmReject": "Bạn có chắc chắn muốn từ chối lời mời này?",
+        "failedAccept": "Không thể chấp nhận lời mời",
+        "failedReject": "Không thể từ chối lời mời",
+        "unknownBranch": "Chi nhánh không xác định",
+        "accept": "Chấp nhận",
+        "reject": "Từ chối",
+        "noInvitations": "Chưa có lời mời nào",
+        "status": {
+          "accepted": "Đã chấp nhận",
+          "pending": "Đang chờ"
+        },
+        "table": {
+          "no": "STT",
+          "branchName": "Tên Chi Nhánh",
+          "role": "Vai Trò",
+          "status": "Trạng Thái",
+          "date": "Ngày",
+          "expiryDate": "Ngày Hết Hạn",
+          "actions": "Hành Động"
+        }
+      },
+      "notificationTable": {
+        "title": "Thông Báo Hệ Thống",
+        "loading": "Đang tải thông báo...",
+        "showing": "Hiển thị {{start}} - {{end}} trong tổng số {{total}}",
+        "system": "Hệ Thống",
+        "unknown": "Không xác định",
+        "noNotifications": "Không tìm thấy thông báo",
+        "type": {
+          "info": "Thông Tin",
+          "warning": "Cảnh Báo",
+          "success": "Thành Công",
+          "danger": "Nguy Hiểm",
+          "order": "Đơn Hàng",
+          "task": "Nhiệm Vụ",
+          "salary": "Lương"
+        },
+        "time": {
+          "justNow": "Vừa xong",
+          "minutesAgo": "{{count}} phút trước",
+          "hoursAgo": "{{count}} giờ trước",
+          "daysAgo": "{{count}} ngày trước"
+        },
+        "status": {
+          "read": "Đã Đọc",
+          "unread": "Chưa Đọc"
+        },
+        "pagination": {
+          "previous": "Trước",
+          "next": "Tiếp"
+        },
+        "table": {
+          "title": "Tiêu Đề",
+          "author": "Tác Giả",
+          "time": "Thời Gian",
+          "type": "Loại",
+          "status": "Trạng Thái"
+        },
+        "detail": {
+          "author": "Tác Giả",
+          "time": "Thời Gian",
+          "type": "Loại",
+          "source": "Nguồn",
+          "content": "Nội Dung",
+          "context": "Ngữ Cảnh",
+          "resource": "Tài Nguyên",
+          "id": "ID"
+        }
+      }
+  }
+}
+

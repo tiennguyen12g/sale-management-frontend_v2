@@ -4,7 +4,7 @@ import classNames from "classnames/bind";
 import styles from "./Register.module.scss";
 
 const cx = classNames.bind(styles);
-import { Register_API } from "../configs/api";
+import { Register_API } from "../config/api";
 import type { StaffRole } from "../zustand/staffStore";
 import { SalaryByPosition } from "../zustand/staffStore";
 export default function Register() {

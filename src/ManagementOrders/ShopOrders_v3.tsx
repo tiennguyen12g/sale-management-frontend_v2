@@ -18,157 +18,166 @@ import courier from "./icons/courier.gif";
 import dollarIcon from "./icons/dollar.gif";
 import { HiMinusSmall } from "react-icons/hi2";
 import { HiPlusSmall } from "react-icons/hi2";
-import { GiDividedSquare } from "react-icons/gi";
 import { HiSearch } from "react-icons/hi";
 import { FcFilledFilter } from "react-icons/fc";
-import { LuSquareMenu } from "react-icons/lu";
-import { FaCircle } from "react-icons/fa";
-import { IoIosArrowDropleft } from "react-icons/io";
-import { IoIosArrowDropright } from "react-icons/io";
-import { MdInsertChart } from "react-icons/md";
-import { CgDesktop } from "react-icons/cg";
 
 // Hooks and type
 import { useAuthStore } from "../zustand/authStore";
 import { useBranchStore } from "../zustand/branchStore";
 import { useStaffStore, type StaffRole } from "../zustand/staffStore";
 import { useShopOrderStore, type OrderDataFromServerType, type OriginalOrder, type FinalOrder } from "../zustand/shopOrderStore";
-import { type ProductType, type ProductDetailsType } from "../zustand/productStore";
+import { type ProductType, type ProductDetailsType, useProductStore } from "../zustand/productStore";
 
 // Components
 
-import CreateExcel_v2 from "./CreateExcel_v2";
 import VnAddressSelect_Old from "../ultilitis/VnAddress/VnAddressOld";
-import UploadExcelBox from "../ultilitis/UploadExcelBox";
-import StaffNotification from "../StaffPage/utilities/StaffNotification";
-import { StaffRedistributeButton } from "../Pages/BodyComponent/Financial/Staff/RedistributeOrder";
+import { StaffRedistributeButton } from "../pages/BodyComponent/Financial/Staff/RedistributeOrder";
 import { ClaimMorningButton } from "./ClaimOrderMorning";
 import NotificationBox_v2 from "../ultilitis/NotificationBox_v2";
 import FreeShipAnimate from "./PromotionTags/FreeShipAnimate";
 import Coupon from "./PromotionTags/Coupon";
-import { HiPhoneMissedCall } from "react-icons/hi";
-
+import {
+  TableWithDragColumn,
+  TableWithResizeColumn,
+  TableCommon,
+  Select,
+  Dropdown,
+  Input,
+  Search,
+  SelectGray,
+  ButtonBorderGradient,
+  GradientButton,
+  GroupButton,
+  ButtonCommon,
+  UploadBox,
+} from "@tnbt/react-favorit-style";
 // Ultilitys
 import CustomSelectGlobal from "../ultilitis/CustomSelectGlobal";
+import { icons } from "@/components/ui/icons/Icons";
 
 type VirtualCartType = ProductDetailsType & { quantity: number; isSelected: boolean };
 
-const COLORS: Record<string, string> = {
-  đen: "#000000",
-  trắng: "#FFFFFF",
-  "xanh dương": "#007BFF", // xanh dương (blue) – adjust if you mean "green"
-  đỏ: "#FF0000",
-  "xanh lá cây": "#02a51d",
-  vàng: "#FFD700",
-  hồng: "#FFC0CB",
-  tím: "#800080",
-  cam: "#FFA500",
-  nâu: "#8B4513",
-  xám: "#808080",
-  be: "#F5F5DC",
-  "xanh nõn chuối": "#a7e9b2",
-};
-
-const STATUS_OPTIONS = [
-  // "Chưa gọi điện",
-  "Đơn mới",
-  "Gọi lần 1 ❌", // ✖
-  "Gọi lần 2 ❌",
-  "Gọi lần 3 ❌",
-  "Không mua",
-  "Sale hủy",
-  "Sai số",
-  "Chốt",
-];
-const STATUS_OPTIONS2 = [
-  // "Chưa gọi điện",
-  "Đơn mới",
-  "Không gọi được lần 1",
-  "Không gọi được lần 2",
-  "Không gọi được lần 3",
-  "Khách không mua",
-  "Sale hủy",
-  "Sai số",
-  "Chốt",
-];
-// For delivery status, you should add the update time for each status change. ❌
-const DeliveryOptions = [
-  "Chưa gửi hàng",
-  "Đang đóng hàng",
-  "Đã gửi hàng",
-  "Đang giao hàng",
-  "Giao thành công",
-  "Giao thất bại",
-  "Khách chưa chốt",
-  "Đang hết hàng",
-  "Mất hàng",
-  "Đã nhận hoàn",
-];
-const DiscountOption = {
-  freeShip: {
-    value: 30000,
-  },
-  discount: {
-    value: 20000,
-  },
-};
-const DeliveryOptionsForStaffSelectManual = ["Chưa gửi hàng", "Đang đóng hàng", "Đã gửi hàng", "Đang hết hàng"];
-
-const filterOptions = [
-  {
-    name: "Đơn mới nhất",
-    key: "newest",
-  },
-  {
-    name: "Đơn cũ nhất",
-    key: "oldest",
-  },
-];
-export type SortOrder = "latest" | "oldest";
-
 interface ShopOrdersProps {
-  productDetail: ProductType;
   dataOrders: OrderDataFromServerType[];
   setGetFinalData: Dispatch<SetStateAction<FinalOrder[]>>;
+  products?: ProductType[]; // All products for the branch
 }
 
 const iconSize = 20;
-export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalData }: ShopOrdersProps) {
-  const { updateOrder, deleteOrder, addOrder, updateMultipleOrders, uploadOrdersExcel, deleteManyOrder, fetchOrders } = useShopOrderStore();
+
+export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = [] }: ShopOrdersProps) {
+  // -- Hooks
+  const {
+    updateOrder,
+    deleteOrder,
+    addOrder,
+    updateMultipleOrders,
+    uploadOrdersExcel,
+    deleteManyOrder,
+    fetchOrders,
+    orders: ordersFromStore,
+    setUpdateOrders,
+  } = useShopOrderStore();
   const { yourStaffProfileInWorkplace } = useStaffStore();
-  console.log('yourStaffProfileInWorkplace', yourStaffProfileInWorkplace);
   const { yourStaffId, userInfo } = useAuthStore();
   const { selectedBranch } = useBranchStore();
-  const [showNotification, setShowNotification] = useState(false);
-  const [statusMsg, setStatusMsg] = useState<string>("");
+  const { products: allProducts, fetchProducts } = useProductStore();
+
   const [staffName, setStaffName] = useState<string[]>([yourStaffProfileInWorkplace?.staffInfo.name || "Không"]);
   const [staffID, setStaffID] = useState(yourStaffId || "none");
   const [userId, setUserId] = useState("none");
   const staffRole: StaffRole | "none" = yourStaffProfileInWorkplace?.role || "none";
-  // const [menuCollapsed, setMenuCollapsed] = useState(false);
-  const [activeTable, setActiveTable] = useState("personal-ads-acc");
 
-  let serverOriginalOrderData: OriginalOrder[] = [];
-  let serverFinalOrderData: FinalOrder[] = [];
-  dataOrders.forEach((item) => {
-    // Only push original if it exists (orders from customers)
-    if (item.original) {
-      serverOriginalOrderData.push(item.original);
-    } else {
-      // For staff-created orders, use final as original for display purposes
-      serverOriginalOrderData.push({
-        ...item.final,
-        staff_name: item.final.staff_name,
-      } as OriginalOrder);
+  // -- Support state/notifications
+  const [showNotification, setShowNotification] = useState(false);
+  const [statusMsg, setStatusMsg] = useState<string>("");
+
+  // Product filter state
+  const [selectedProductCode, setSelectedProductCode] = useState<string>("all"); // "all" or product_code
+  const [selectedProductsForOrder, setSelectedProductsForOrder] = useState<ProductType[]>([]); // Multiple products selected when creating/editing order
+  const [editingSelectedProducts, setEditingSelectedProducts] = useState<ProductType[]>([]); // Products selected when editing order
+
+  // Sync dataOrders with store orders - always use store orders if available (they're the source of truth)
+  // The store is updated immediately after edit, so we should use it
+  // Key insight: Zustand store updates will cause ordersFromStore to get a new reference,
+  // so this memo will recalculate and create a new deep copy, triggering React re-renders
+  const syncedDataOrders: any[] = useMemo(() => {
+    // Always prefer store orders if they exist (they're updated immediately after mutations)
+    // Only fall back to prop if store is empty (initial load)
+    if (ordersFromStore.length > 0) {
+      // Always create a deep copy to ensure React detects changes in nested objects
+      // This ensures that even if nested objects change, React will detect the change
+      return JSON.parse(JSON.stringify(ordersFromStore));
     }
-    serverFinalOrderData.push(item.final);
+
+    // Fallback to prop data if store is empty
+
+    if (dataOrders) return dataOrders;
+    return [];
+  }, [dataOrders, ordersFromStore]);
+
+  // Memoize server order data to prevent unnecessary re-renders
+  // Create deep copies to ensure React detects changes in nested objects
+  const serverOriginalOrderData = useMemo(() => {
+    const original: OriginalOrder[] = [];
+    // if(!syncedDataOrders) return;
+    syncedDataOrders.forEach((item: OrderDataFromServerType) => {
+      // Only push original if it exists (orders from customers)
+      if (item.original) {
+        original.push(JSON.parse(JSON.stringify(item.original)));
+      } else {
+        // For staff-created orders, use final as original for display purposes
+        original.push({
+          ...item.final,
+          staff_name: item.final.staff_name,
+        } as OriginalOrder);
+      }
+    });
+    return original;
+  }, [syncedDataOrders]);
+
+  const serverFinalOrderData = useMemo(() => {
+    return syncedDataOrders.map((item: OrderDataFromServerType) => JSON.parse(JSON.stringify(item.final)));
+  }, [syncedDataOrders]);
+
+  // Get available products from branch or products prop
+  const availableProducts = products.length > 0 ? products : allProducts;
+
+  // Get unique product codes from orders
+  const orderProductCodes = useMemo(() => {
+    const codes = new Set<string>();
+    syncedDataOrders.forEach((order: OrderDataFromServerType) => {
+      if (order.product_code) {
+        codes.add(order.product_code);
+      }
+    });
+    return Array.from(codes);
+  }, [syncedDataOrders]);
+
+  // -- Create key for filter order by product
+  let orderProductCodes_KeyFilter: { key: string; label: string }[] = [{ key: "all", label: "Tất cả" }];
+  orderProductCodes.forEach((code) => {
+    if (!code) return;
+    const product = availableProducts.find((p) => p.product_code === code);
+    orderProductCodes_KeyFilter.push({
+      key: code,
+      label: product ? `${code} - ${product.name}` : code,
+    });
   });
 
-  const productCode = productDetail.product_code;
-  const [viewMode, setViewMode] = useState<"table" | "excel">("table");
-  const [orders, setOrders] = useState<FinalOrder[]>(serverFinalOrderData);
+  // Filter orders by selected product
+  const filteredOrdersByProduct = useMemo(() => {
+    if (selectedProductCode === "all") {
+      return serverFinalOrderData;
+    }
+    return serverFinalOrderData.filter((order: FinalOrder) => {
+      // Find the order in syncedDataOrders to get product_code
+      const fullOrder = syncedDataOrders.find((o: OrderDataFromServerType) => o.final.orderCode === order.orderCode);
+      return fullOrder?.product_code === selectedProductCode;
+    });
+  }, [serverFinalOrderData, selectedProductCode, syncedDataOrders]);
+  const [orders, setOrders] = useState<FinalOrder[]>(filteredOrdersByProduct);
   const [originOrder, setOriginOrder] = useState<OriginalOrder | null>(null);
-  const [isFinalDataChange, setIsFinalDataChange] = useState(false);
 
   // filter state
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>(["All"]);
@@ -186,13 +195,30 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
   const [createNewOrderBox, setCreateNewOrderBox] = useState<boolean>(false);
   const [showListProduct, setShowListProduct] = useState(false);
   const localFormatted = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16).replace("T", " ");
+  const [discountValue, setDiscountValue] = useState(0);
+
+  // --- CRITICAL: sync local orders state when syncedDataOrders changes ---
+  // Update orders whenever filteredOrdersByProduct changes (which depends on syncedDataOrders)
+  // This ensures UI updates when store orders change after edit
+  useEffect(() => {
+    // Always update when filteredOrdersByProduct changes
+    // filteredOrdersByProduct is a memo that depends on syncedDataOrders,
+    // which changes when the store updates, so this will trigger a re-render
+    // console.log('ShopOrders_v3: updating orders state, filteredOrdersByProduct length:', filteredOrdersByProduct.length);
+    setOrders([...filteredOrdersByProduct]);
+  }, [filteredOrdersByProduct]);
+
+  // -- ✅ virtualCart can be changed by user
+  const [virtualCart, setVirtualCart] = useState<VirtualCartType[]>([]);
+
+  //-- Handle create new order
   const [defaultNewOrder, setDefaultNewOrder] = useState<FinalOrder>({
     orderCode: "default",
     time: localFormatted,
     customerName: "",
     phone: "",
     address: "",
-    orderInfo: [], //{ product: "", color: "", size: "", quantity: 1, price: 0 }
+    orderInfo: [], //{ product: "", color: "", size: "", quantity: 1, price: 0, product_id }
     total: 0,
     totalProduct: 0,
     totalWeight: 0,
@@ -212,7 +238,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
     },
     source_order_from: "",
   });
-  const [discountValue, setDiscountValue] = useState(0);
+  const [newOrder, setNewOrder] = useState<FinalOrder>({ ...defaultNewOrder });
 
   useEffect(() => {
     setDefaultNewOrder((prev) => {
@@ -222,71 +248,155 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
       return { ...prev, staff_name: staffName[0] };
     });
   }, [staffName]);
-  const [newOrder, setNewOrder] = useState<FinalOrder>({ ...defaultNewOrder });
+  const handleCreateNewOrder = async () => {
+    if (!newOrder) return;
+
+    if (!selectedBranch?._id) {
+      alert("🚨 Vui lòng chọn chi nhánh trước khi tạo đơn hàng.");
+      return;
+    }
+
+    if (selectedProductsForOrder.length === 0) {
+      alert("🚨 Vui lòng chọn ít nhất một sản phẩm trước khi tạo đơn hàng.");
+      return;
+    }
+
+    if (!newOrder.customerName || !newOrder.phone || !newOrder.address || newOrder.orderInfo.length === 0 || newOrder.total <= 0) {
+      alert("🚨 Vui lòng điền đầy đủ thông tin.");
+      return;
+    }
+
+    // For multi-product orders, we'll use the first product's code as the primary product_code
+    // The backend might need to handle this differently, but for now we'll use the first selected product
+    const primaryProduct = selectedProductsForOrder[0];
+
+    const localFormatted = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16).replace("T", " ");
+    const newFinalForSend = {
+      branch_id: selectedBranch._id,
+      product_code: primaryProduct.product_code, // Use first product as primary
+      staffID: staffID,
+      isFromCustomer: false, // Orders created by staff don't need original
+      ...newOrder,
+      staff_name: newOrder.staff_name || staffName[0],
+      time: localFormatted,
+      company_id_own_product: selectedBranch.company_id,
+    };
+    const res = await addOrder(newFinalForSend);
+
+    if (res?.status === "success") {
+      alert(" ✅ Tạo đơn hàng thành công!");
+      // Refresh orders
+      if (selectedBranch?._id) {
+        await fetchOrders(selectedBranch.company_id, selectedBranch._id);
+      }
+      setNewOrder({ ...defaultNewOrder });
+      setSelectedProductsForOrder([]);
+      setVirtualCart([]);
+    } else {
+      alert(" 🚨 Tạo đơn hàng lỗi.");
+    }
+  };
+
+  // -- Handle editting
   const [editing, setEditing] = useState<FinalOrder>({ ...defaultNewOrder });
   const [showEditingBox, setShowEditingBox] = useState(false);
   const [currentEditIndex, setCurrentEditIndex] = useState<number | null>(null);
-  const [hasEditing, setHasEditting] = useState(false);
-  const defaultVirtualCart = useMemo(() => {
-    return (
-      productDetail?.productDetailed?.map((p: ProductDetailsType) => ({
-        ...p,
-        quantity: 0,
-        isSelected: false,
-      })) ?? []
-    );
-  }, [productDetail]);
 
-  // ✅ virtualCart can be changed by user
-  const [virtualCart, setVirtualCart] = useState<VirtualCartType[]>(defaultVirtualCart);
+  // Update virtualCart when selectedProductsForOrder changes (for create order mode)
+  useEffect(() => {
+    // Only update for create order mode (not editing)
+    if (showEditingBox) {
+      // Don't update virtualCart in edit mode - it's set when edit button is clicked
+      return;
+    }
+
+    // For create order mode: rebuild cart when products are selected/deselected
+    if (selectedProductsForOrder.length === 0) {
+      setVirtualCart([]);
+      return;
+    }
+
+    const cart: (VirtualCartType & { productCode?: string; productName?: string })[] = [...virtualCart];
+    selectedProductsForOrder.forEach((product) => {
+      if (product?.productDetailed) {
+        product.productDetailed.forEach((p: ProductDetailsType) => {
+          // Check if this item already exists in cart (don't duplicate)
+          const exists = cart.some((item) => item.color === p.color && item.size === p.size && (item as any).productCode === product.product_code);
+          console.log('existed', exists);
+          if (!exists) {
+            cart.push({
+              ...p,
+              quantity: 0,
+              isSelected: false,
+              productCode: product.product_code,
+              productName: product.name,
+            } as VirtualCartType & { productCode?: string; productName?: string });
+          }
+          // console.log('cart', cart);
+        });
+      }
+    });
+
+    // Check the selected product is unchecked.
+    const remainingCart = cart.filter((item) => {
+      const isProductSelected = selectedProductsForOrder.some((product) => product.product_code === item.productCode);
+      return isProductSelected;
+    });
+    // console.log('remain', remainingCart);
+
+    setVirtualCart(remainingCart);
+  }, [selectedProductsForOrder, showEditingBox]);
 
   const [filterColorInAddProduct, setFilterColorInAddProduct] = useState("None");
   const [isExceedStock, setIsExceedStock] = useState<number | null>(null);
-  const [searchOrderCode, setSearchOrderCode] = useState<string | null>(null);
+  const [searchOrderCode, setSearchOrderCode] = useState<string | undefined>(undefined);
   const [showUploadExcel, setShowUploadExcel] = useState(false);
 
-  // --- CRITICAL: sync local orders state when incoming prop changes ---
-  useEffect(() => {
-    // update local orders to match incoming dataOrders for this product
-    setOrders(serverFinalOrderData);
-
-    // reset UI/editing state when product changes
-    setOriginOrder(null);
-    setEditing({ ...defaultNewOrder });
-    setShowListProduct(false);
-    setCorrectedAddress(null);
-    setVirtualCart(defaultVirtualCart);
-    setShowEditingBox(false);
-  }, [dataOrders, productDetail, defaultVirtualCart]); // re-run when data/orders or product change
-
-  const sortedOrdersByTime = sortOrders(orders, sortBy);
+  // -- Handle editting save
   const handleSave = async () => {
     if (!editing) return;
     if (currentEditIndex === null) return;
     const orderCode = editing.orderCode;
-    const dataOrder = dataOrders.find((data) => data.orderCode === orderCode);
-    console.log("dataOrder", dataOrder);
+    const dataOrder = syncedDataOrders.find((data: OrderDataFromServerType) => data.orderCode === orderCode);
     if (!dataOrder) return console.log("Cannot find root data of the order");
     const combineEditOrder: OrderDataFromServerType = {
       ...dataOrder,
       final: editing,
     };
 
-    console.log("editing", combineEditOrder);
     const res = await updateOrder(dataOrder._id, combineEditOrder);
     setDiscountValue(0);
     if (res?.status === "success") {
+      // Update orders in store with the response data (deep copy to ensure change detection)
+      if (res.data) {
+        // Create a deep copy to ensure all nested objects are new references
+        const updatedOrderData = JSON.parse(JSON.stringify(res.data));
+        setUpdateOrders(updatedOrderData);
+      }
+
+      // Close editing box first
+      setShowEditingBox(false);
+
+      // Reset editing state
       setEditing({ ...defaultNewOrder });
       setCurrentEditIndex(null);
-      alert("Cập nhật thành công");
-      setShowEditingBox(false);
+      setEditingSelectedProducts([]);
+      setVirtualCart([]);
+      setShowListProduct(false);
+      setCorrectedAddress(null);
+      setFilterColorInAddProduct("None");
+
+      // Small delay to ensure store update is processed, then show success
+      setTimeout(() => {
+        alert("Cập nhật thành công");
+      }, 50);
     } else {
       console.log("Editing failed");
       alert("Sửa đơn bị lỗi, không thành công.");
     }
   };
 
-  // handle checkbox change
+  // -- Handle checkbox change
   const toggleStatus = (status: string) => {
     if (status === "All") {
       setSelectedStatuses(["All"]);
@@ -298,7 +408,9 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
     }
   };
 
-  // filter orders
+  // -- Handle filter orders
+
+  const sortedOrdersByTime = sortOrders(orders, sortBy);
   const filteredOrders = selectedStatuses.includes("All")
     ? sortedOrdersByTime
     : sortedOrdersByTime.filter((o) => selectedStatuses.some((s) => s.trim().toLowerCase() === o.status.trim().toLowerCase()));
@@ -307,13 +419,6 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
   const filteredConfirmedOrders = deliveryStatuses === "All" ? filteredOrders : filteredOrders.filter((o) => o.deliveryStatus === deliveryStatuses);
 
   // Step 2: filter by search text
-  // const finalData = !searchOrderCode
-  //   ? filteredConfirmedOrders
-  //   : filteredConfirmedOrders.filter(
-  //       (o) =>
-  //         o.orderCode.toLowerCase().includes(searchOrderCode.toLowerCase()) ||
-  //         (o.deliveryCode && o.deliveryCode.toLowerCase().includes(searchOrderCode.toLowerCase()))
-  //     );
   const finalData = useMemo(() => {
     if (!searchOrderCode) return filteredConfirmedOrders;
     const q = searchOrderCode.toLowerCase();
@@ -323,6 +428,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
   // keep previous ref for shallow comparison
   const prevRef = useRef<typeof finalData | null>(null);
 
+  // -- Handle update data to CreateExcel component
   useEffect(() => {
     const prev = prevRef.current;
     let changed = false;
@@ -335,18 +441,18 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
       // compare by identifier (use your real unique key, e.g. id or orderCode)
       for (let i = 0; i < finalData.length; i++) {
         // quick compare: same object reference or same id/orderCode
-        if (prev[i] !== finalData[i] && (prev[i].orderCode || prev[i].orderCode) !== (finalData[i].orderCode || finalData[i].orderCode)) {
+
+        if (prev[i].status !== finalData[i].status) {
           changed = true;
           break;
         }
       }
     }
-
     if (changed) {
       setGetFinalData(finalData);
       prevRef.current = finalData;
     }
-  }, [finalData, setGetFinalData]);
+  }, [finalData, setGetFinalData, orders]);
 
   const handleFilterByOwnerId = (codeText: string) => {
     if (!codeText) return filteredConfirmedOrders;
@@ -358,8 +464,12 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
     );
   };
 
+  //-- Handle search
+
   const handleSearchChange = (searchText: string) => {
-    setSearchOrderCode(searchText || null);
+    // setSearchOrderCode(searchText || null);
+    // write logic
+    console.log("search", searchText);
   };
 
   const countByStatus = () => {
@@ -384,6 +494,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
   };
   const DeliveryStatusCountsResult = DeliveryStatusCounts();
 
+  // -- Handle select address
   const handleAddressChange_Old = (whatBox: "edit-form" | "new-form", addr: { provinceName: string; districtName: string; communeName: string }) => {
     setCurrentBuyerInfo({
       province: addr.provinceName,
@@ -405,6 +516,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
     }
   }, [correctedAddress, currentBuyerInfo]);
 
+  // -- Function handle order change
   const UpdateMultipleDeliveryStatus = async (newStatus: string) => {
     if (DeliveryStatusCountsResult["Đã chốt"] === 0) {
       alert("Không có đơn hàng nào để cập nhật. Vui lòng kiểm tra lại.");
@@ -415,14 +527,14 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
       return;
     }
 
-    const idsToUpdate = dataOrders
+    const idsToUpdate = syncedDataOrders
       .filter(
-        (o) =>
+        (o: OrderDataFromServerType) =>
           (o.final.status === "Chốt" && o.final.deliveryStatus === "Chưa gửi hàng") ||
           o.final.deliveryStatus === "Đang đóng hàng" ||
           o.final.deliveryStatus === "Đã gửi hàng"
       )
-      .map((o) => o._id);
+      .map((o: OrderDataFromServerType) => o._id);
 
     if (idsToUpdate.length === 0) return;
 
@@ -433,45 +545,6 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
       alert("🚨 Cập nhật lỗi.");
     }
   };
-
-  const handleCreateNewOrder = async () => {
-    if (!newOrder) return;
-    console.log("new", newOrder);
-
-    if (!selectedBranch?._id) {
-      alert("🚨 Vui lòng chọn chi nhánh trước khi tạo đơn hàng.");
-      return;
-    }
-
-    if (!newOrder.customerName || !newOrder.phone || !newOrder.address || newOrder.orderInfo.length === 0 || newOrder.total <= 0) {
-      alert("🚨 Vui lòng điền đầy đủ thông tin.");
-      return;
-    }
-
-    const localFormatted = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16).replace("T", " ");
-    const newFinalForSend = {
-      branch_id: selectedBranch._id,
-      product_code: productCode,
-      staffID: staffID,
-      isFromCustomer: false, // Orders created by staff don't need original
-      ...newOrder,
-      staff_name: newOrder.staff_name || staffName[0],
-      time: localFormatted,
-      company_id_own_product: selectedBranch.company_id,
-    };
-    const res = await addOrder(newFinalForSend);
-
-    if (res?.status === "success") {
-      alert(" ✅ Tạo đơn hàng thành công!");
-      // Refresh orders
-      await fetchOrders(selectedBranch._id);
-    } else {
-      alert(" 🚨 Tạo đơn hàng lỗi.");
-    }
-
-    setNewOrder({ ...defaultNewOrder });
-  };
-
   const handleNumberProduct = (action: "decrease" | "increase", index: number) => {
     const newCart = [...virtualCart];
     if (action === "increase") {
@@ -523,6 +596,9 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
   const handleCloseAddProduct = (whatBox: "new-form" | "edit-form") => {
     const selectOrder = virtualCart.filter((item) => item.isSelected === true);
     const orders = selectOrder.map((cart) => {
+      const itemWithProduct = cart as VirtualCartType & { productCode?: string; productName?: string };
+      // Find the product for this cart item to get product_id
+      const product = availableProducts.find((p) => p.product_code === itemWithProduct.productCode);
       return {
         name: cart.name,
         color: cart.color,
@@ -530,6 +606,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
         quantity: cart.quantity,
         weight: cart.weight,
         price: cart.price,
+        product_id: product?._id || product?.product_code || "", // Use product _id as product_id
       };
     });
 
@@ -606,6 +683,8 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
     }));
   };
 
+  // -- Helper function --//
+
   const handleUploadOrderExcel = async (file: File) => {
     if (!selectedBranch?._id) {
       alert("🚨 Vui lòng chọn chi nhánh trước khi upload đơn hàng.");
@@ -618,7 +697,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
     if (result.status === "success") {
       alert(`✅ Cập nhật ${result.count} đơn thành công`);
       // Refresh orders
-      await fetchOrders(selectedBranch._id);
+      await fetchOrders(selectedBranch.company_id, selectedBranch._id);
     }
     setShowUploadExcel(false);
   };
@@ -638,7 +717,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
   };
 
   const handleDeleteOrder = async (orderCode: string) => {
-    const orderRootData = dataOrders.find((item) => item.orderCode === orderCode);
+    const orderRootData = syncedDataOrders.find((item: OrderDataFromServerType) => item.orderCode === orderCode);
     const idOrder = orderRootData?._id;
     if (!idOrder) return alert(`Không tìm thấy đơn có mã đơn này.`);
     let userChoice = confirm("Bạn chắc chắn muốn xóa?");
@@ -661,7 +740,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
         return [...prev, value];
       });
     } else {
-      const newArrayDelete = arrayDelete.filter((item) => item !== value);
+      const newArrayDelete = arrayDelete.filter((item: string) => item !== value);
       setArrayDelete([...newArrayDelete]);
     }
     console.log("arraydelete", arrayDelete);
@@ -692,33 +771,56 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
       <div className={cx("header")}>
         <div className={cx("header-left")}>
           <div className={cx("header-tabs")}>
-            <div className={cx("search-decor")}>
-              <HiSearch size={20} />
+            <div className="">
+              {/* <HiSearch size={20} />
               <input
                 type="text"
                 placeholder="Nhập mã đơn shop hoặc nhập mã đơn nhà vận chuyển"
                 className={cx("input-search")}
                 onChange={(e) => handleSearchChange(e.target.value)}
+              /> */}
+              <Search
+                value={searchOrderCode}
+                onChange={setSearchOrderCode as any}
+                onSearch={handleSearchChange}
+                placeholder="Nhập mã đơn shop hoặc nhập mã đơn nhà vận chuyển"
+                debounceMs={300}
+                className="w-[400px]"
               />
+            </div>
+            {/* Product Filter */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 10 }}>
+              <div style={{ fontSize: 14, fontWeight: 500, width: "fit-content" }}>Lọc theo sản phẩm:</div>
+              <div style={{ minWidth: 250 }}>
+                {/* <CustomSelectGlobal options={orderProductCodes_KeyFilter} onChange={(id) => setSelectedProductCode(id)} isUseBorder={true} /> */}
+                  <SelectGray options={orderProductCodes_KeyFilter} onChange={(id) => setSelectedProductCode(id)} value={selectedProductCode}/>
+              </div>
             </div>
           </div>
         </div>
         <div className={cx("header-right")}>
           <div className={cx("header-actions")}>
-            <button className={cx("btn-decor")} onClick={() => setCreateNewOrderBox(true)}>
-              Tạo đơn hàng mới
-            </button>
-            <button className={cx("btn-decor")} onClick={() => setOpenUpdateDeliveryBox(true)}>
+            <GradientButton variant="orange" onClick={() => setCreateNewOrderBox(true)} className="flex gap-2 items-center group">
+              {" "}
+              {<icons.bag_add size={16} className="group-hover:scale-[1.2]" />} Tạo đơn mới
+            </GradientButton>
+            <GradientButton variant="orange" onClick={() => setOpenUpdateDeliveryBox(true)}>
               Cập nhật vận chuyển hàng loạt
-            </button>
+            </GradientButton>
             {staffRole === "Director" && (
-              <button className={cx("btn-decor")} onClick={() => DeleteAllSelectOrder()}>
+              <ButtonCommon variant="delete" onClick={() => DeleteAllSelectOrder()}>
                 Delete all select order
-              </button>
+              </ButtonCommon>
             )}
-            <button className={cx("btn-decor")} onClick={() => setShowUploadExcel(true)}>
+            <ButtonCommon
+              className="bg-gradient-to-tr from-orange-400 via-orange-500 to-red-500 text-white"
+              onClick={() => setShowUploadExcel(true)}
+              variant="default"
+              icon={icons.upload}
+              iconClass="mr-2 w-4 h-4"
+            >
               Tải excel
-            </button>{" "}
+            </ButtonCommon>{" "}
             <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
               <ClaimMorningButton staffID={staffID} userId={userId} />
               <StaffRedistributeButton staffID={staffID} userId={userId} />
@@ -777,15 +879,17 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
         <div className={cx("header-right")}></div>
       </div>
 
+      {/* // -- Table content */}
       <div className={cx("content")}>
         <div className={cx("table-scroll")}>
           <div className={cx("table-container")}>
-            <div className={cx("table-header")}></div>
+            {/* <div className={cx("table-header")}></div> */}
             <div className={cx("table-body")}>
               <table className={cx("orders-table")}>
                 <thead>
                   <tr>
                     <th>Box</th>
+                    <th>Sửa</th>
                     <th>Thời gian</th>
                     <th>Mã đơn</th>
                     <th>Trạng thái</th>
@@ -796,9 +900,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
                       <div>Sản phẩm - Màu - Size - Số lượng</div>
                     </th>
                     <th>Tổng tiền</th>
-
                     <th>Vận chuyển</th>
-                    <th>Sửa</th>
                     <th>Ghi chú</th>
                     <th>Nguồn</th>
                     <th>Nhân viên</th>
@@ -810,7 +912,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
 
                     if (o.status === "Chốt") statusClass = "status-done";
                     else if (o.status === "Chưa gọi điện") statusClass = "status-pending";
-                    else if (o.status === "Gọi lần 1" || o.status === "Gọi lần 2" || o.status === "Gọi lần 3") statusClass = "status-retry";
+                    else if (o.status === "Gọi lần 1 ❌" || o.status === "Gọi lần 2 ❌" || o.status === "Gọi lần 3 ❌") statusClass = "status-retry";
                     else if (o.status === "Khách không mua") statusClass = "status-cancel";
                     else if (o.status === "Đơn mới") statusClass = "status-new-order";
 
@@ -821,58 +923,11 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
                     else if (o.deliveryStatus === "Đang giao hàng") deliveryClass = "text-status-retry";
                     else if (o.deliveryStatus === "Đã gửi hàng") deliveryClass = "text-status-info";
                     else if (o.deliveryStatus === "Đang đóng hàng") deliveryClass = "text-status-packing";
-                    console.log('o.time', o.time);
                     return (
                       <tr key={`o.orderCode-${i}`} className={cx("row")}>
                         <td>
                           <input type="checkbox" value={o.orderCode} onChange={(e) => handleSelectManyOrder(e)} />
                         </td>
-                        <td>{ConvertTime(o.time)}</td>
-                        {/* <td>{o.orderCode} <IoIosCopy style={{cursor: "pointer"}} onClick={() => hanleCopyOrderCode(o.orderCode)}/></td> */}
-                        <td style={{ position: "relative" }}>
-                          {o.orderCode} <IoIosCopy style={{ cursor: "pointer" }} onClick={() => handleCopyOrderCode(o.orderCode, i)} />
-                          {copied && copyIndex === i && (
-                            <span className={cx("copied-text")} key={`copy-${i}`}>
-                              Đã sao chép
-                            </span>
-                          )}
-                        </td>
-                        <td className={cx(statusClass)}>{o.status}</td>
-                        <td className={cx(statusClass)}>{o.customerName}</td>
-                        <td className={cx(statusClass)}>{formatPhone(o.phone)}</td>
-                        <td>{o.address}</td>
-                        <td className={cx("order-info-cell")}>
-                          {o.orderInfo.map((item, idx) => (
-                            <div key={idx} className={cx("order-item")}>
-                              {item.name} - {item.color} - {item.size} - x<span style={{ fontSize: 18, fontWeight: 550 }}>{item.quantity}</span>
-                            </div>
-                          ))}
-                        </td>
-                        <td>{o.total.toLocaleString()}₫</td>
-
-                        {/* <td>{o.confirmed ? "✅" : "❌"}</td> */}
-                        <td className={cx(deliveryClass)} style={{ verticalAlign: "middle" }}>
-                          {o.deliveryStatus}
-                          {o.deliveryStatus === "Đang giao hàng" && (
-                            <img src={deliveryTruck} alt="Đang giao" style={{ width: "35px", verticalAlign: "middle" }} />
-                          )}
-                          {o.deliveryStatus === "Giao thành công" && <img src={atm} alt="Đã giao" style={{ width: "25px", verticalAlign: "middle" }} />}
-                          {o.deliveryStatus === "Giao thất bại" && <img src={dislike} alt="Giao thất bại" style={{ width: "30px", verticalAlign: "middle" }} />}
-                          {o.deliveryStatus === "Chưa gửi hàng" && <img src={hourglass} alt="Chưa gửi" style={{ width: "28px", verticalAlign: "middle" }} />}
-                          {o.deliveryStatus === "Đang đóng hàng" && (
-                            <img src={conveyorBelt} alt="Đang đóng hàng" style={{ width: "28px", verticalAlign: "middle", marginLeft: 3 }} />
-                          )}
-                          {o.deliveryStatus === "Khách chưa chốt" && (
-                            <img src={phone} alt="Khách chưa chốt" style={{ width: "28px", verticalAlign: "middle", marginLeft: 3 }} />
-                          )}
-                          {o.deliveryStatus === "Đang hết hàng" && (
-                            <img src={outOfStock} alt="Đang hết hàng" style={{ width: "28px", verticalAlign: "middle", marginLeft: 3 }} />
-                          )}
-                          {o.deliveryStatus === "Đã gửi hàng" && (
-                            <img src={courier} alt="Đã gửi hàng" style={{ width: "28px", verticalAlign: "middle", marginLeft: 3 }} />
-                          )}
-                        </td>
-
                         <td className={cx("group-action")}>
                           {o.deliveryStatus !== "Giao thành công" ? (
                             <React.Fragment>
@@ -881,16 +936,104 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
                                 onClick={() => {
                                   console.log("edit ", o);
                                   setEditing(o);
-                                  setOriginOrder(serverOriginalOrderData[i]);
-                                  const currentOrders = o.orderInfo;
-                                  setVirtualCart(
-                                    defaultVirtualCart.map((item) => {
-                                      const sameProduct = currentOrders.find((order) => order.color === item.color && order.size === item.size);
-                                      return sameProduct
-                                        ? { ...item, isSelected: true, quantity: sameProduct.quantity }
-                                        : { ...item, isSelected: false, quantity: 0 };
-                                    })
-                                  );
+                                  // Find the original order data for this order
+                                  const orderIndex = serverFinalOrderData.findIndex((ord: FinalOrder) => ord.orderCode === o.orderCode);
+                                  if (
+                                    orderIndex !== -1 &&
+                                    serverOriginalOrderData[orderIndex] &&
+                                    serverOriginalOrderData[orderIndex].orderInfo &&
+                                    serverOriginalOrderData[orderIndex].orderInfo.length > 0
+                                  ) {
+                                    setOriginOrder(serverOriginalOrderData[orderIndex]);
+                                  } else {
+                                    // Set empty origin order if it doesn't exist
+                                    setOriginOrder(null);
+                                  }
+
+                                  // Find all unique products used in this order using product_id
+                                  const orderItems = o.orderInfo || [];
+                                  const uniqueProductIds = new Set<string>();
+                                  const productToOrderItemsMap = new Map<string, typeof orderItems>(); // Map product_id to its order items
+                                  const fullOrderData = syncedDataOrders.find((ord: OrderDataFromServerType) => ord.final.orderCode === o.orderCode);
+                                  const productCodeFromOrder = fullOrderData?.product_code;
+
+                                  // Group order items by product_id
+                                  orderItems.forEach((item) => {
+                                    if (item.product_id) {
+                                      uniqueProductIds.add(item.product_id);
+                                      if (!productToOrderItemsMap.has(item.product_id)) {
+                                        productToOrderItemsMap.set(item.product_id, []);
+                                      }
+                                      productToOrderItemsMap.get(item.product_id)?.push(item);
+                                    }
+                                  });
+
+                                  // Find products by product_id (try _id first, then product_code as fallback)
+                                  const editingProducts: ProductType[] = [];
+                                  uniqueProductIds.forEach((productId) => {
+                                    // Try to find by _id first
+                                    let product = availableProducts.find((p) => p._id === productId);
+                                    // If not found, try to find by product_code (in case product_id stores product_code)
+                                    if (!product) {
+                                      product = availableProducts.find((p) => p.product_code === productId);
+                                    }
+                                    if (product) {
+                                      editingProducts.push(product);
+                                    }
+                                  });
+
+                                  // If no products found by product_id, fallback to primary product
+                                  if (editingProducts.length === 0 && productCodeFromOrder) {
+                                    const primaryProduct = availableProducts.find((p) => p.product_code === productCodeFromOrder);
+                                    if (primaryProduct) {
+                                      editingProducts.push(primaryProduct);
+                                      // Add primary product to map if it doesn't exist
+                                      if (!productToOrderItemsMap.has(primaryProduct._id) && !productToOrderItemsMap.has(primaryProduct.product_code)) {
+                                        productToOrderItemsMap.set(primaryProduct._id, orderItems);
+                                      }
+                                    }
+                                  }
+
+                                  // Set selected products
+                                  if (editingProducts.length > 0) {
+                                    setEditingSelectedProducts(editingProducts);
+                                  } else {
+                                    // Final fallback: use first available product
+                                    setEditingSelectedProducts([availableProducts[0]].filter(Boolean));
+                                  }
+
+                                  // Build virtual cart from all selected products with quantities from order
+                                  const productCart: (VirtualCartType & { productCode?: string; productName?: string })[] = [];
+                                  const finalEditingProducts = editingProducts.length > 0 ? editingProducts : [availableProducts[0]].filter(Boolean);
+
+                                  finalEditingProducts.forEach((product) => {
+                                    if (product?.productDetailed) {
+                                      // Get order items for this specific product (try both _id and product_code)
+                                      const productOrderItems =
+                                        productToOrderItemsMap.get(product._id) || productToOrderItemsMap.get(product.product_code) || [];
+
+                                      product.productDetailed.forEach((p: ProductDetailsType) => {
+                                        // Find matching order item by product_id, color and size
+                                        const orderItem = productOrderItems.find((oi) => {
+                                          // Match by product_id first (most reliable)
+                                          const matchesProduct = oi.product_id === product._id || oi.product_id === product.product_code;
+                                          const matchesColor = oi.color === p.color;
+                                          const matchesSize = oi.size === p.size;
+                                          return matchesProduct && matchesColor && matchesSize;
+                                        });
+
+                                        productCart.push({
+                                          ...p,
+                                          quantity: orderItem?.quantity || 0,
+                                          isSelected: !!orderItem && orderItem.quantity > 0,
+                                          productCode: product.product_code,
+                                          productName: product.name,
+                                        } as VirtualCartType & { productCode?: string; productName?: string });
+                                      });
+                                    }
+                                  });
+
+                                  setVirtualCart(productCart.length > 0 ? productCart : []);
 
                                   setCurrentEditIndex(i);
                                   setShowEditingBox(true);
@@ -912,6 +1055,54 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
                             </div>
                           )}
                         </td>
+                        <td>{ConvertTime(o.time)}</td>
+                        <td style={{ position: "relative" }}>
+                          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                            {o.orderCode} <IoIosCopy style={{ cursor: "pointer" }} onClick={() => handleCopyOrderCode(o.orderCode, i)} />
+                            {copied && copyIndex === i && (
+                              <span className={cx("copied-text")} key={`copy-${i}`}>
+                                Đã sao chép
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className={cx(statusClass)}>{o.status}</td>
+                        <td className={cx(statusClass)}>{o.customerName}</td>
+                        <td className={cx(statusClass)}>{formatPhone(o.phone)}</td>
+                        <td>{o.address}</td>
+                        <td className={cx("order-info-cell")}>
+                          {o.orderInfo.map((item, idx) => (
+                            <div key={idx} className={cx("order-item")}>
+                              {item.name} - {item.color} - {item.size} - x<span style={{ fontSize: 18, fontWeight: 550 }}>{item.quantity}</span>
+                            </div>
+                          ))}
+                        </td>
+                        <td>{o.total.toLocaleString()}₫</td>
+                        <td className={cx(deliveryClass)} style={{ verticalAlign: "middle" }}>
+                          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                            {o.deliveryStatus}
+                            {o.deliveryStatus === "Đang giao hàng" && (
+                              <img src={deliveryTruck} alt="Đang giao" style={{ width: "35px", verticalAlign: "middle" }} />
+                            )}
+                            {o.deliveryStatus === "Giao thành công" && <img src={atm} alt="Đã giao" style={{ width: "25px", verticalAlign: "middle" }} />}
+                            {o.deliveryStatus === "Giao thất bại" && (
+                              <img src={dislike} alt="Giao thất bại" style={{ width: "30px", verticalAlign: "middle" }} />
+                            )}
+                            {o.deliveryStatus === "Chưa gửi hàng" && <img src={hourglass} alt="Chưa gửi" style={{ width: "28px", verticalAlign: "middle" }} />}
+                            {o.deliveryStatus === "Đang đóng hàng" && (
+                              <img src={conveyorBelt} alt="Đang đóng hàng" style={{ width: "28px", verticalAlign: "middle", marginLeft: 3 }} />
+                            )}
+                            {o.deliveryStatus === "Khách chưa chốt" && (
+                              <img src={phone} alt="Khách chưa chốt" style={{ width: "28px", verticalAlign: "middle", marginLeft: 3 }} />
+                            )}
+                            {o.deliveryStatus === "Đang hết hàng" && (
+                              <img src={outOfStock} alt="Đang hết hàng" style={{ width: "28px", verticalAlign: "middle", marginLeft: 3 }} />
+                            )}
+                            {o.deliveryStatus === "Đã gửi hàng" && (
+                              <img src={courier} alt="Đã gửi hàng" style={{ width: "28px", verticalAlign: "middle", marginLeft: 3 }} />
+                            )}
+                          </div>
+                        </td>
                         <td>{o.note}</td>
                         <td>{o.website}</td>
                         <td>{o.staff_name}</td>
@@ -920,97 +1111,108 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
                   })}
                 </tbody>
               </table>
-
-              {/* {viewMode === "excel" && <CreateExcel_v2 orders={filteredOrders} />} */}
+              {finalData.length === 0 && (
+                <div style={{ padding: 40, textAlign: "center", color: "#999" }}>
+                  {selectedProductCode === "all"
+                    ? "Không có đơn hàng nào trong chi nhánh này"
+                    : `Không có đơn hàng nào cho sản phẩm ${orderProductCodes.find((c) => c === selectedProductCode) || selectedProductCode}`}
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
       {/* //--Edit Modal */}
-      {showEditingBox && originOrder && editing && (
+      {showEditingBox && editing && (
         <div className={cx("fullfilment-bg")}>
           <div className={cx("modal-overlay")}>
-            {/* Show original Data */}
-            <div className={cx("modal-original")}>
-              <h2>Thông tin gốc</h2>
-              <div className={cx("form")}>
-                <div className={cx("group-item")}>
-                  <label>
-                    Tên khách hàng:
-                    <input disabled value={originOrder.customerName} />
-                  </label>
-                  <label>
-                    Số điện thoại:
-                    <input disabled value={formatPhone(originOrder.phone)} />
-                  </label>
-                </div>
-
-                <label>
-                  Địa chỉ:
-                  <input disabled value={originOrder.address} />
-                </label>
-                {/* Order Info (array of products) */}
-                <div className={cx("order-info-edit")}>
-                  <h3>Thông tin sản phẩm</h3>
-                  <div className={cx("order-item-row")}>
-                    <div className={cx("input-1", "header-order")}>Tên sản phẩm</div>
-                    <div className={cx("input-2", "header-order")}>Màu</div>
-                    <div className={cx("input-3", "header-order")}>Size</div>
-                    <div className={cx("input-4", "header-order")}>Số lượng</div>
-                    <div className={cx("input-5", "header-order")}>Giá</div>
+            {/* Show original Data - only show if originOrder exists and has data */}
+            {originOrder && originOrder.orderInfo && originOrder.orderInfo.length > 0 && (
+              <div className={cx("modal-original")}>
+                <h2>Thông tin gốc</h2>
+                <div className={cx("form")}>
+                  <div className={cx("group-item")}>
+                    <label>
+                      Tên khách hàng:
+                      <input disabled value={originOrder.customerName || ""} />
+                    </label>
+                    <label>
+                      Số điện thoại:
+                      <input disabled value={originOrder.phone ? formatPhone(originOrder.phone) : ""} />
+                    </label>
                   </div>
-                  {originOrder.orderInfo.map((item, index) => {
-                    return (
-                      <div key={index} className={cx("order-item-row")}>
-                        <div className={cx("input-1")}>{item.name}</div>
-                        <div className={cx("input-2")}>
-                          <span className={cx("color-identification")} style={{ backgroundColor: COLORS[item.color.toLowerCase()] }} />
-                          {item.color}
-                        </div>
-                        <div className={cx("input-3")}>{item.size}</div>
-                        <div className={cx("input-4")}>{item.quantity}</div>
-                        <div className={cx("input-5")}>{item.price.toLocaleString("vi-VN")}₫</div>
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className={cx("btn-total-add")}>
-                  <div></div>
-                  <label style={{ fontWeight: "550", fontSize: "17px", textAlign: "right", color: "#ff0958" }}>
-                    Tổng tiền {`( ${originOrder.totalProduct} sản phẩm)`}:&nbsp; {Number(originOrder.total).toLocaleString()} ₫
-                  </label>
-                </div>
-                <div className={cx("group-item")}>
+
                   <label>
-                    Ghi chú:
-                    <input disabled value={originOrder.note} />
+                    Địa chỉ:
+                    <input disabled value={originOrder.address || ""} />
                   </label>
-                  <label>
-                    Nguồn:
-                    <input
-                      value={originOrder.website}
-                      onChange={(e) => setEditing({ ...editing, website: e.target.value })}
-                      placeholder="link website hoặc link facebook khách..."
-                      disabled
-                    />
-                  </label>
-                </div>
-                <div className={cx("group-item")}>
-                  <label>
-                    Nhân viên:
-                    <input disabled value={originOrder.staff_name} />
-                  </label>
+                  {/* Order Info (array of products) */}
+                  <div className={cx("order-info-edit")}>
+                    <h3>Thông tin sản phẩm</h3>
+                    <div className={cx("order-item-row")}>
+                      <div className={cx("input-1", "header-order")}>Tên sản phẩm</div>
+                      <div className={cx("input-2", "header-order")}>Màu</div>
+                      <div className={cx("input-3", "header-order")}>Size</div>
+                      <div className={cx("input-4", "header-order")}>Số lượng</div>
+                      <div className={cx("input-5", "header-order")}>Giá</div>
+                    </div>
+                    {originOrder.orderInfo && originOrder.orderInfo.length > 0 ? (
+                      originOrder.orderInfo.map((item, index) => {
+                        return (
+                          <div key={index} className={cx("order-item-row")}>
+                            <div className={cx("input-1")}>{item.name}</div>
+                            <div className={cx("input-2")}>
+                              <span className={cx("color-identification")} style={{ backgroundColor: COLORS[item.color?.toLowerCase()] || "#ccc" }} />
+                              {item.color}
+                            </div>
+                            <div className={cx("input-3")}>{item.size}</div>
+                            <div className={cx("input-4")}>{item.quantity}</div>
+                            <div className={cx("input-5")}>{item.price.toLocaleString("vi-VN")}₫</div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div style={{ padding: 20, textAlign: "center", color: "#999" }}>Không có thông tin sản phẩm gốc</div>
+                    )}
+                  </div>
+                  <div className={cx("btn-total-add")}>
+                    <div></div>
+                    <label style={{ fontWeight: "550", fontSize: "17px", textAlign: "right", color: "#ff0958" }}>
+                      Tổng tiền {`( ${originOrder.totalProduct || 0} sản phẩm)`}:&nbsp; {Number(originOrder.total || 0).toLocaleString()} ₫
+                    </label>
+                  </div>
+                  <div className={cx("group-item")}>
+                    <label>
+                      Ghi chú:
+                      <input disabled value={originOrder.note || ""} />
+                    </label>
+                    <label>
+                      Nguồn:
+                      <input
+                        value={originOrder.website || ""}
+                        onChange={(e) => setEditing({ ...editing, website: e.target.value })}
+                        placeholder="link website hoặc link facebook khách..."
+                        disabled
+                      />
+                    </label>
+                  </div>
+                  <div className={cx("group-item")}>
+                    <label>
+                      Nhân viên:
+                      <input disabled value={originOrder.staff_name || ""} />
+                    </label>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Show Final Data */}
             <div className={cx("modal")}>
               <h2>Sửa đơn hàng: {editing.orderCode}</h2>
 
               <div className={cx("form")}>
-                <div style={{ fontSize: 16, fontWeight: 550 }}>1. Thông tin khách hàng</div>
+                <div style={{ fontSize: 16, fontWeight: 550, marginTop: 15 }}>1. Thông tin khách hàng</div>
                 <div className={cx("group-item")}>
                   <label>
                     Tên khách hàng:
@@ -1040,9 +1242,15 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
                 <div className={cx("order-info-edit")}>
                   <div style={{ display: "flex", gap: 20, marginBottom: 10, marginTop: 10 }}>
                     <div style={{ fontSize: 16, fontWeight: 550, display: "flex", alignItems: "center" }}>2. Thông tin sản phẩm</div>
-                    <button type="button" className={cx("btn-decor")} onClick={() => setShowListProduct(true)}>
-                      + Thêm sản phẩm
-                    </button>
+                    <ButtonCommon
+                      className="bg-gradient-to-tr from-orange-400 via-orange-500 to-red-500 text-white group [&>span]:transition-transform group-hover:[&>span]:scale-[1.2]"
+                      icon={icons.cart_add}
+                      iconClass="w-5 h-5"
+                      onClick={() => setShowListProduct(true)}
+                      isTextHover={true}
+                    >
+                      Thêm sản phẩm
+                    </ButtonCommon>
                   </div>
                   <div className={cx("order-item-row")}>
                     <div className={cx("input-1")} style={{ textDecoration: "underline" }}>
@@ -1118,11 +1326,6 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
                 </div>
                 {discountValue > 50000 && <div style={{ color: "red" }}>Giảm giá không quá 50.000đ</div>}
                 <div className={cx("btn-total-add")}>
-                  <div>
-                    {/* <button type="button" onClick={() => setShowListProduct(true)}>
-                          + Thêm sản phẩm
-                        </button> */}
-                  </div>
                   <label style={{ fontWeight: "550", fontSize: "17px", textAlign: "right", color: "#ff0958" }}>
                     Tổng tiền {`( ${editing.totalProduct} sản phẩm)`}:&nbsp; {Number(editing.total).toLocaleString()} ₫
                   </label>
@@ -1203,12 +1406,17 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
               <div className={cx("modal-actions")}>
                 <button
                   onClick={() => {
+                    // Reset all editing state
                     setEditing({ ...defaultNewOrder });
                     setCorrectedAddress(null);
-                    setVirtualCart([...defaultVirtualCart]);
+                    setVirtualCart([]);
+                    setEditingSelectedProducts([]);
                     setShowListProduct(false);
+                    setFilterColorInAddProduct("None");
                     setShowEditingBox(false);
                     setDiscountValue(0);
+                    setCurrentEditIndex(null);
+                    setOriginOrder(null);
                   }}
                 >
                   Hủy
@@ -1216,37 +1424,95 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
                 <button onClick={handleSave}>Lưu</button>
               </div>
             </div>
-            {showListProduct && (
+            {showListProduct && editingSelectedProducts.length > 0 && (
               <div className={cx("show-list-product")}>
-                <h4>Chọn sản phẩm theo màu, size</h4>
+                {/* Product Selection for Edit - Multiple products with checkboxes */}
+                <div style={{ fontSize: 16, fontWeight: 550, marginBottom: 10, marginTop: 10 }}>1. Chọn sản phẩm (có thể chọn nhiều)</div>
+                <div className={cx("group-products")} style={{ flexDirection: "column", alignItems: "flex-start", marginBottom: 15 }}>
+                  {availableProducts.map((product) => {
+                    const isSelected = editingSelectedProducts.some((p) => p.product_code === product.product_code);
+                    return (
+                      <div key={product._id} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          style={{ width: 18, height: 18 }}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              const newSelected = [...editingSelectedProducts, product];
+                              setEditingSelectedProducts(newSelected);
+                              // Add product's items to virtual cart (only if not already present)
+                              if (product?.productDetailed) {
+                                const existingProductCodes = new Set(virtualCart.map((item) => (item as any).productCode));
+                                if (!existingProductCodes.has(product.product_code)) {
+                                  const newItems = product.productDetailed.map((p: ProductDetailsType) => ({
+                                    ...p,
+                                    quantity: 0,
+                                    isSelected: false,
+                                    productCode: product.product_code,
+                                    productName: product.name,
+                                  })) as (VirtualCartType & { productCode?: string; productName?: string })[];
+                                  setVirtualCart([...virtualCart, ...newItems]);
+                                }
+                              }
+                            } else {
+                              setEditingSelectedProducts(editingSelectedProducts.filter((p) => p.product_code !== product.product_code));
+                              // Remove items from virtual cart and editing.orderInfo for this product
+                              const filteredCart = virtualCart.filter((item) => (item as any).productCode !== product.product_code);
+                              setVirtualCart(filteredCart);
+                              setEditing({
+                                ...editing,
+                                orderInfo: editing.orderInfo.filter((item) => {
+                                  return item.product_id !== product._id && item.product_id !== product.product_code;
+                                }),
+                              });
+                            }
+                          }}
+                        />
+                        <div style={{ fontSize: 16, color: "var(--orange-primary)", fontWeight: 550 }}>
+                          {product.product_code} - {product.name}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div style={{ fontSize: 16, fontWeight: 550, marginBottom: 10, marginTop: 10 }}>2. Chọn sản phẩm theo màu, size</div>
                 <div className={cx("filter-color-container")}>
                   <div style={{ fontWeight: 550 }}>Lọc theo màu:</div>
                   <div className={cx("wrap-checkbox")}>
-                    {productDetail.colorAvailable.map((color, k) => {
-                      const isChecked = filterColorInAddProduct === color;
-                      return (
-                        <div key={k}>
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={(e) => {
-                              if (isChecked) {
-                                // ✅ if clicking again on the same box → reset to "None"
-                                setFilterColorInAddProduct("None");
-                              } else {
-                                // ✅ else → select this color (unchecking others automatically)
-                                setFilterColorInAddProduct(color);
-                              }
-                            }}
-                          />
-                          <span>{color}</span>
-                        </div>
-                      );
-                    })}
+                    {(() => {
+                      // Get all unique colors from selected products
+                      const selectedProducts = showEditingBox ? editingSelectedProducts : selectedProductsForOrder;
+                      const allColors = new Set<string>();
+                      selectedProducts.forEach((product) => {
+                        product?.colorAvailable?.forEach((color) => allColors.add(color));
+                      });
+                      return Array.from(allColors).map((color, k) => {
+                        const isChecked = filterColorInAddProduct === color;
+                        return (
+                          <div key={k}>
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={(e) => {
+                                if (isChecked) {
+                                  setFilterColorInAddProduct("None");
+                                } else {
+                                  setFilterColorInAddProduct(color);
+                                }
+                              }}
+                            />
+                            <span>{color}</span>
+                          </div>
+                        );
+                      });
+                    })()}
                   </div>
                 </div>
                 <div className={cx("row")}>
                   <div>Chọn</div>
+                  <div>Sản phẩm</div>
                   <div>Tên</div>
                   <div>Màu</div>
                   <div>Size</div>
@@ -1254,44 +1520,48 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
                   <div>Kho</div>
                   <div>Số lượng</div>
                 </div>
-                {virtualCart.map((p, i) => (
-                  <React.Fragment key={i}>
-                    {isExceedStock === i && <div className={cx("warning")}>⚠️ Số lượng vượt quá tồn kho ({p.stock})</div>}
-                    {filterColorInAddProduct === "None" || p.color === filterColorInAddProduct ? (
-                      <div className={cx("row")}>
-                        <div>
-                          <input
-                            checked={p.isSelected}
-                            type="checkbox"
-                            style={{ cursor: "pointer", width: 18, height: 18, borderRadius: 9 }}
-                            onChange={(e) => handleCartChange(e.target.checked, i)}
-                          />
-                        </div>
-                        <div style={{ fontWeight: 550 }}>{p.name}</div>
-                        <div className={cx("column-3")}>
-                          <span className={cx("color-identification")} style={{ backgroundColor: COLORS[p.color.toLowerCase()] }} />
-                          {p.color}
-                        </div>
-                        <div>{p.size}</div>
-                        <div>{p.price.toLocaleString("vi-VN")} đ</div>
-                        <div>{p.stock}</div>
-                        <div className={cx("choose-quantity")}>
-                          <div onClick={() => handleNumberProduct("decrease", i)} className={cx("decrease")}>
-                            <HiMinusSmall color="black" />
+                {virtualCart.map((p, i) => {
+                  const itemWithProduct = p as VirtualCartType & { productCode?: string; productName?: string };
+                  return (
+                    <React.Fragment key={i}>
+                      {isExceedStock === i && <div className={cx("warning")}>⚠️ Số lượng vượt quá tồn kho ({p.stock})</div>}
+                      {filterColorInAddProduct === "None" || p.color === filterColorInAddProduct ? (
+                        <div className={cx("row")}>
+                          <div>
+                            <input
+                              checked={p.isSelected}
+                              type="checkbox"
+                              style={{ cursor: "pointer", width: 18, height: 18, borderRadius: 9 }}
+                              onChange={(e) => handleCartChange(e.target.checked, i)}
+                            />
                           </div>
-                          <div className={cx("vertical-line")}>|</div>
-                          <div style={{ color: "black", fontSize: "18px" }} className={cx("quantity-number")}>
-                            {p.quantity}
+                          <div style={{ fontSize: 12, color: "#666" }}>{itemWithProduct.productCode || ""}</div>
+                          <div style={{ fontWeight: 550 }}>{p.name}</div>
+                          <div className={cx("column-3")}>
+                            <span className={cx("color-identification")} style={{ backgroundColor: COLORS[p.color?.toLowerCase()] || "#ccc" }} />
+                            {p.color}
                           </div>
-                          <div className={cx("vertical-line")}>|</div>
-                          <div onClick={() => handleNumberProduct("increase", i)} className={cx("increase")}>
-                            <HiPlusSmall color="black" />
+                          <div>{p.size}</div>
+                          <div>{p.price.toLocaleString("vi-VN")} đ</div>
+                          <div>{p.stock}</div>
+                          <div className={cx("choose-quantity")}>
+                            <div onClick={() => handleNumberProduct("decrease", i)} className={cx("decrease")}>
+                              <HiMinusSmall color="black" />
+                            </div>
+                            <div className={cx("vertical-line")}>|</div>
+                            <div style={{ color: "black", fontSize: "18px" }} className={cx("quantity-number")}>
+                              {p.quantity}
+                            </div>
+                            <div className={cx("vertical-line")}>|</div>
+                            <div onClick={() => handleNumberProduct("increase", i)} className={cx("increase")}>
+                              <HiPlusSmall color="black" />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ) : null}
-                  </React.Fragment>
-                ))}
+                      ) : null}
+                    </React.Fragment>
+                  );
+                })}
 
                 <div style={{ textAlign: "center", marginTop: 20 }}>
                   <button className={cx("btn-decor", "btn-close")} onClick={() => handleCloseAddProduct("edit-form")}>
@@ -1340,7 +1610,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
             <div className={cx("modal")}>
               <div style={{ fontSize: 20, fontWeight: 600, margin: "10px 0px", color: "#026feb" }}>Tạo đơn hàng mới</div>
               <div className={cx("form")}>
-                <div style={{ fontSize: 16, fontWeight: 550 }}>1. Thông tin khách hàng</div>
+                <div style={{ fontSize: 16, fontWeight: 550, marginTop: 15 }}>1. Thông tin khách hàng</div>
                 <div className={cx("group-item")}>
                   <label>
                     Tên khách hàng:
@@ -1363,15 +1633,23 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
                       placeholder="Số nhà, tên đường hoặc tên tòa nhà..."
                     />
                   </label>
-                  <VnAddressSelect_Old onChange={(addr) => handleAddressChange_Old("new-form", addr)} />
+                  <div className="w-full">
+                    <VnAddressSelect_Old onChange={(addr) => handleAddressChange_Old("new-form", addr)} />
+                  </div>
                 </div>
                 {/* Order Info (array of products) */}
                 <div className={cx("order-info-edit")}>
                   <div style={{ display: "flex", gap: 20, marginBottom: 10, marginTop: 10 }}>
                     <div style={{ fontSize: 16, fontWeight: 550, display: "flex", alignItems: "center" }}>2. Thông tin sản phẩm</div>
-                    <button type="button" className={cx("btn-decor")} onClick={() => setShowListProduct(true)}>
-                      + Thêm sản phẩm
-                    </button>
+                    <ButtonCommon
+                      className="bg-gradient-to-tr from-orange-400 via-orange-500 to-red-500 text-white"
+                      icon={icons.cart_add}
+                      iconClass="w-5 h-5"
+                      onClick={() => setShowListProduct(true)}
+                      isTextHover={true}
+                    >
+                      Thêm sản phẩm
+                    </ButtonCommon>
                   </div>
                   <div className={cx("order-item-row")}>
                     <div className={cx("input-1")} style={{ textDecoration: "underline" }}>
@@ -1487,12 +1765,11 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
                   </label>
                   <label>
                     Nhân viên:
-                    <select disabled={true} value={yourStaffProfileInWorkplace?.staffInfo.name || "Không có tên"} onChange={(e) => setNewOrder({ ...newOrder, staff_name: e.target.value })}>
-                      {/* {staffName.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                      ))} */}
+                    <select
+                      disabled={true}
+                      value={yourStaffProfileInWorkplace?.staffInfo.name || "Không có tên"}
+                      onChange={(e) => setNewOrder({ ...newOrder, staff_name: e.target.value })}
+                    >
                       <option>{yourStaffProfileInWorkplace?.staffInfo.name || "Không có tên"}</option>
                     </select>
                   </label>
@@ -1519,11 +1796,15 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
               <div className={cx("modal-actions")}>
                 <button
                   onClick={() => {
+                    // Reset all create order state
                     setCreateNewOrderBox(false);
                     setCorrectedAddress(null);
-                    setVirtualCart([...defaultVirtualCart]);
+                    setVirtualCart([]);
+                    setSelectedProductsForOrder([]);
                     setNewOrder({ ...defaultNewOrder });
                     setDiscountValue(0);
+                    setShowListProduct(false);
+                    setFilterColorInAddProduct("None");
                   }}
                 >
                   Đóng
@@ -1539,36 +1820,83 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
             </div>
             {showListProduct && (
               <div className={cx("show-list-product")}>
-                <h4>Chọn sản phẩm theo màu size</h4>
+                {/* <h4>Chọn sản phẩm theo màu size</h4> */}
+
+                {/* Product Selection for Create - Multiple products with checkboxes */}
+                <div style={{ fontSize: 16, fontWeight: 550, marginBottom: 10, marginTop: 10 }}>1. Chọn sản phẩm (có thể chọn nhiều)</div>
+                <div className={cx("group-products")}>
+                  {availableProducts.map((product) => {
+                    const isSelected = selectedProductsForOrder.some((p) => p.product_code === product.product_code);
+                    return (
+                      <div key={product._id} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          style={{ width: 18, height: 18 }}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              const newSelected = [...selectedProductsForOrder, product];
+                              setSelectedProductsForOrder(newSelected);
+                              // Virtual cart will be updated by useEffect when selectedProductsForOrder changes
+                            } else {
+                              setSelectedProductsForOrder(selectedProductsForOrder.filter((p) => p.product_code !== product.product_code));
+                              // Remove items from newOrder.orderInfo for this product
+                              setNewOrder({
+                                ...newOrder,
+                                orderInfo: newOrder.orderInfo.filter((item) => {
+                                  return item.product_id !== product._id && item.product_id !== product.product_code;
+                                }),
+                              });
+                              // Virtual cart will be updated by useEffect when selectedProductsForOrder changes
+                            }
+                          }}
+                        />
+                        <div style={{ fontSize: 16, color: "var(--orange-primary)", fontWeight: 550 }}>
+                          {product.product_code} - {product.name}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div style={{ fontSize: 16, fontWeight: 550, marginBottom: 10, marginTop: 10 }}>2. Chọn sản phẩm theo màu size</div>
+
                 <div className={cx("filter-color-container")}>
                   <div style={{ fontWeight: 550 }}>Lọc theo màu:</div>
                   <div className={cx("wrap-checkbox")}>
-                    {productDetail.colorAvailable.map((color, k) => {
-                      const isChecked = filterColorInAddProduct === color;
-                      return (
-                        <div key={k}>
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={(e) => {
-                              if (isChecked) {
-                                // ✅ if clicking again on the same box → reset to "None"
-                                setFilterColorInAddProduct("None");
-                              } else {
-                                // ✅ else → select this color (unchecking others automatically)
-                                setFilterColorInAddProduct(color);
-                              }
-                            }}
-                          />
-                          <span>{color}</span>
-                        </div>
-                      );
-                    })}
+                    {(() => {
+                      // Get all unique colors from selected products
+                      const selectedProducts = showEditingBox ? editingSelectedProducts : selectedProductsForOrder;
+                      const allColors = new Set<string>();
+                      selectedProducts.forEach((product) => {
+                        product?.colorAvailable?.forEach((color) => allColors.add(color));
+                      });
+                      return Array.from(allColors).map((color, k) => {
+                        const isChecked = filterColorInAddProduct === color;
+                        return (
+                          <div key={k}>
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={(e) => {
+                                if (isChecked) {
+                                  setFilterColorInAddProduct("None");
+                                } else {
+                                  setFilterColorInAddProduct(color);
+                                }
+                              }}
+                            />
+                            <span>{color}</span>
+                          </div>
+                        );
+                      });
+                    })()}
                   </div>
                 </div>
                 <div className={cx("row")}>
                   <div>Chọn</div>
                   <div>Tên</div>
+                  <div>Mã sản phẩm</div>
+
                   <div>Màu</div>
                   <div>Size</div>
                   <div>Giá</div>
@@ -1576,44 +1904,49 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
                   <div>Số lượng</div>
                 </div>
 
-                {virtualCart.map((p, i) => (
-                  <React.Fragment key={i}>
-                    {isExceedStock === i && <div className={cx("warning")}>⚠️ Số lượng vượt quá tồn kho ({p.stock})</div>}
-                    {filterColorInAddProduct === "None" || p.color === filterColorInAddProduct ? (
-                      <div className={cx("row")}>
-                        <div>
-                          <input
-                            checked={p.isSelected}
-                            type="checkbox"
-                            style={{ cursor: "pointer", width: 18, height: 18, borderRadius: 9 }}
-                            onChange={(e) => handleCartChange(e.target.checked, i)}
-                          />
-                        </div>
-                        <div style={{ fontWeight: 550 }}>{p.name}</div>
-                        <div className={cx("column-3")}>
-                          <span className={cx("color-identification")} style={{ backgroundColor: COLORS[p.color.toLowerCase()] }} />
-                          {p.color}
-                        </div>
-                        <div>{p.size}</div>
-                        <div>{p.price.toLocaleString("vi-VN")} đ</div>
-                        <div>{p.stock}</div>
-                        <div className={cx("choose-quantity")}>
-                          <div onClick={() => handleNumberProduct("decrease", i)} className={cx("decrease")}>
-                            <HiMinusSmall color="black" />
+                {virtualCart.map((p, i) => {
+                  const itemWithProduct = p as VirtualCartType & { productCode?: string; productName?: string };
+                  return (
+                    <React.Fragment key={i}>
+                      {isExceedStock === i && <div className={cx("warning")}>⚠️ Số lượng vượt quá tồn kho ({p.stock})</div>}
+                      {filterColorInAddProduct === "None" || p.color === filterColorInAddProduct ? (
+                        <div className={cx("row")}>
+                          <div>
+                            <input
+                              checked={p.isSelected}
+                              type="checkbox"
+                              style={{ cursor: "pointer", width: 18, height: 18, borderRadius: 9 }}
+                              onChange={(e) => handleCartChange(e.target.checked, i)}
+                            />
                           </div>
-                          <div className={cx("vertical-line")}>|</div>
-                          <div style={{ color: "black", fontSize: "18px" }} className={cx("quantity-number")}>
-                            {p.quantity}
+                          <div style={{ fontWeight: 550 }}>{p.name}</div>
+                          <div style={{ fontSize: 16, color: "#666" }}>{itemWithProduct.productCode || ""}</div>
+
+                          <div className={cx("column-3")}>
+                            <span className={cx("color-identification")} style={{ backgroundColor: COLORS[p.color?.toLowerCase()] || "#ccc" }} />
+                            {p.color}
                           </div>
-                          <div className={cx("vertical-line")}>|</div>
-                          <div onClick={() => handleNumberProduct("increase", i)} className={cx("increase")}>
-                            <HiPlusSmall color="black" />
+                          <div>{p.size}</div>
+                          <div>{p.price.toLocaleString("vi-VN")} đ</div>
+                          <div>{p.stock}</div>
+                          <div className={cx("choose-quantity")}>
+                            <div onClick={() => handleNumberProduct("decrease", i)} className={cx("decrease")}>
+                              <HiMinusSmall color="black" />
+                            </div>
+                            <div className={cx("vertical-line")}>|</div>
+                            <div style={{ color: "black", fontSize: "18px" }} className={cx("quantity-number")}>
+                              {p.quantity}
+                            </div>
+                            <div className={cx("vertical-line")}>|</div>
+                            <div onClick={() => handleNumberProduct("increase", i)} className={cx("increase")}>
+                              <HiPlusSmall color="black" />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ) : null}
-                  </React.Fragment>
-                ))}
+                      ) : null}
+                    </React.Fragment>
+                  );
+                })}
 
                 <div style={{ textAlign: "center", marginTop: 20 }}>
                   <button className={cx("btn-decor", "btn-close")} onClick={() => handleCloseAddProduct("new-form")}>
@@ -1627,7 +1960,7 @@ export default function ShopOrders_v3({ productDetail, dataOrders, setGetFinalDa
       )}
 
       {/* //-- Upload excel */}
-      {showUploadExcel && <UploadExcelBox onClose={() => setShowUploadExcel(false)} onUpload={handleUploadOrderExcel} />}
+      {showUploadExcel && <UploadBox onClose={() => setShowUploadExcel(false)} onUpload={handleUploadOrderExcel} />}
 
       <div className={cx("footer")}></div>
     </div>
@@ -1647,6 +1980,7 @@ export function sortOrders(data: FinalOrder[], sortBy: SortOrder): FinalOrder[] 
   });
 }
 export function formatPhone(phone: string): string {
+  if (!phone) return phone;
   // Remove all non-digit characters just in case
   const digits = phone.replace(/\D/g, "");
 
@@ -1677,16 +2011,79 @@ function getLocalTime() {
 }
 
 //-- Convert time to "23:29 08-11"
-function ConvertTime(timeString: string){
-// const inputString = "2025-11-08 23:29";
+function ConvertTime(timeString: string) {
+  // const inputString = "2025-11-08 23:29";
 
-// Regex Explanation:
-// (\d{4})-(\d{2})-(\d{2})  -> Matches and captures Year (Group 1), Month (Group 2), Day (Group 3)
-// \s                     -> Matches the space
-// (\d{2}):(\d{2})        -> Matches and captures Hours (Group 4), Minutes (Group 5)
-// Replacement string uses $n to refer to the capture groups: $4:$5 $3-$2
-const outputString = timeString.replace(/(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2})/, '$4:$5 $3-$2');
+  // Regex Explanation:
+  // (\d{4})-(\d{2})-(\d{2})  -> Matches and captures Year (Group 1), Month (Group 2), Day (Group 3)
+  // \s                     -> Matches the space
+  // (\d{2}):(\d{2})        -> Matches and captures Hours (Group 4), Minutes (Group 5)
+  // Replacement string uses $n to refer to the capture groups: $4:$5 $3-$2
+  const outputString = timeString.replace(/(\d{4})-(\d{2})-(\d{2})\s(\d{2}):(\d{2})/, "$4:$5 $3-$2");
 
-// console.log(outputString); // Output: "23:29 08-11"
-return outputString
+  // console.log(outputString); // Output: "23:29 08-11"
+  return outputString;
 }
+
+const COLORS: Record<string, string> = {
+  đen: "#000000",
+  trắng: "#FFFFFF",
+  "xanh dương": "#007BFF", // xanh dương (blue) – adjust if you mean "green"
+  đỏ: "#FF0000",
+  "xanh lá cây": "#02a51d",
+  vàng: "#FFD700",
+  hồng: "#FFC0CB",
+  tím: "#800080",
+  cam: "#FFA500",
+  nâu: "#8B4513",
+  xám: "#808080",
+  be: "#F5F5DC",
+  "xanh nõn chuối": "#a7e9b2",
+};
+
+const STATUS_OPTIONS = [
+  // "Chưa gọi điện",
+  "Đơn mới",
+  "Gọi lần 1 ❌", // ✖
+  "Gọi lần 2 ❌",
+  "Gọi lần 3 ❌",
+  "Không mua",
+  "Sale hủy",
+  "Sai số",
+  "Chốt",
+];
+
+// For delivery status, you should add the update time for each status change. ❌
+const DeliveryOptions = [
+  "Chưa gửi hàng",
+  "Đang đóng hàng",
+  "Đã gửi hàng",
+  "Đang giao hàng",
+  "Giao thành công",
+  "Giao thất bại",
+  "Khách chưa chốt",
+  "Đang hết hàng",
+  "Mất hàng",
+  "Đã nhận hoàn",
+];
+const DiscountOption = {
+  freeShip: {
+    value: 30000,
+  },
+  discount: {
+    value: 20000,
+  },
+};
+const DeliveryOptionsForStaffSelectManual = ["Chưa gửi hàng", "Đang đóng hàng", "Đã gửi hàng", "Đang hết hàng"];
+
+const filterOptions = [
+  {
+    name: "Đơn mới nhất",
+    key: "latest",
+  },
+  {
+    name: "Đơn cũ nhất",
+    key: "oldest",
+  },
+];
+export type SortOrder = "latest" | "oldest";

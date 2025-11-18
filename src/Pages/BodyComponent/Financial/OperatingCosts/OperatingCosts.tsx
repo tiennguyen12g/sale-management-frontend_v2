@@ -6,7 +6,7 @@ const cx = classNames.bind(styles);
 // import { operatingCostsData } from "../DataTest/DataForOperatingCost";
 import type { OperatingCostsDataType, OperatingAcctionType } from "../DataTest/DataForOperatingCost";
 import OperatingCostsChart from "../Charts/OperatingCostsChart";
-import { AddOperatingCost_API, UploadOperatingCost_API } from "../../../../configs/api";
+import { AddOperatingCost_API, UploadOperatingCost_API } from "../../../../config/api";
 import { useOperatingCostsStore } from "../../../../zustand/operatingCostsStore";
 import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";

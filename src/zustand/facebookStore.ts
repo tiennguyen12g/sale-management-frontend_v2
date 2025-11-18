@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import axiosApiCall from "./axiosApiClient";
 import { useAuthStore } from "./authStore";
-import { facebookAPIBase } from "../configs/api";
+import { facebookAPIBase } from "../config/api";
 import { type TagType } from "./branchStore";
 import { useBranchStore, type IBranch } from "./branchStore";
 interface FBUser {

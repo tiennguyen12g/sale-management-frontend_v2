@@ -7,7 +7,7 @@ import {
   AcceptInvitation_API,
   RejectInvitation_API,
   DeleteInvitation_API,
-} from "../configs/api";
+} from "../config/api";
 import { useAuthStore } from "./authStore";
 import type { StaffRole } from "./staffStore";
 import type { IBranch } from "./branchStore";

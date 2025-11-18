@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { AddOperatingCost_API, UploadOperatingCost_API, GetOperatingCost_API } from "../configs/api";
-import type { OperatingCostsDataType } from "../Pages/BodyComponent/Financial/DataTest/DataForOperatingCost";
+import { AddOperatingCost_API, UploadOperatingCost_API, GetOperatingCost_API } from "../config/api";
+import type { OperatingCostsDataType } from "../pages/BodyComponent/Financial/DataTest/DataForOperatingCost";
 import { useAuthStore } from "./authStore";
 // export interface OperatingCost {
 //   _id?: string;

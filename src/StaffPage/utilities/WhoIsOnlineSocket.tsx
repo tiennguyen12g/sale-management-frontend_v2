@@ -4,7 +4,7 @@ import classNames from "classnames/bind";
 import styles from "./WhoIsOnlineSocket.module.scss";
 const cx = classNames.bind(styles);
 import { useStaffStore } from "../../zustand/staffStore";
-import { socketAPI } from "../../configs/api";
+import { socketAPI } from "../../config/api";
 
 type StaffStatus = {
   staffID: string;
@@ -35,8 +35,13 @@ export default function WhoIsOnlineSocket() {
   }, [staffList]);
 
   useEffect(() => {
+    // Determine if we should use /socket (Nginx) or /socket.io (direct)
+    const isHTTPS = typeof window !== "undefined" && window.location.protocol === "https:";
+    
     const s = io(socketAPI, {
+      path: isHTTPS ? "/socket" : "/socket.io", // Nginx proxies /socket, direct uses /socket.io
       query: { manager: "true" }, // mark this as a manager connection
+      transports: ["websocket", "polling"], // Allow fallback to polling
     });
 
     setSocket(s);

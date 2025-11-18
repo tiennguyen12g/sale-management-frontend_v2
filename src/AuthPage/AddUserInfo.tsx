@@ -3,7 +3,7 @@ import classNames from "classnames/bind";
 import styles from "./AddUserInfo.module.scss";
 const cx = classNames.bind(styles);
 
-import { AddStaff_API, EditStaffInfo_API } from "../configs/api";
+import { AddStaff_API, EditStaffInfo_API } from "../config/api";
 import { useStaffStore, type IStaff } from "../zustand/staffStore";
 import { useAuthStore, type UserInfoType } from "../zustand/authStore";
 import { SalaryByPosition } from "../zustand/staffStore";

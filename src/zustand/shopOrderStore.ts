@@ -1,8 +1,9 @@
 import { create } from "zustand";
 import axios from "axios";
-import { GetShopOrders_API, AddShopOrders_API } from "../configs/api";
+import { GetShopOrders_API, AddShopOrders_API } from "../config/api";
 import { useAuthStore } from "./authStore";
 import axiosApiCall from "./axiosApiClient";
+import { useBranchStore } from "./branchStore";
 // ---------- Types ----------
 export interface OrderItem {
   name: string;
@@ -11,6 +12,7 @@ export interface OrderItem {
   quantity: number;
   price: number;
   weight: number;
+  product_id: string;
 }
 
 export interface DeliveryDetails {
@@ -114,9 +116,9 @@ type ApiResult = { status: "success" | "failed"; message?: string };
 // ---------- Zustand Store ----------
 interface ShopOrderState {
   orders: OrderDataFromServerType[];
-  fetchOrders: (branchId?: string) => Promise<{ status: string; message: string } | undefined>;
-  addOrder: (order: Partial<FinalOrder> & { branch_id: string; product_code: string; isFromCustomer?: boolean, company_id_own_product: string }) => Promise<{ status: string }>;
-  updateOrder: (id: string, updates: OrderDataFromServerType) => Promise<{ status: string } | undefined>;
+  fetchOrders: (company_id_own_order: string , branchId: string, ) => Promise<{ status: string; message: string } | undefined>;
+  addOrder: (order: Partial<FinalOrder> & { branch_id: string; product_code: string; company_id_own_product: string, isFromCustomer?: boolean,  }) => Promise<{ status: string }>;
+  updateOrder: (id: string, updates: OrderDataFromServerType) => Promise<{ status: string, data?: OrderDataFromServerType } | undefined>;
   deleteOrder: (id: string) => Promise<{ status: string } | undefined>;
   deleteManyOrder: (ids: string[]) => Promise<{ status: string } | undefined>;
   updateMultipleOrders: (ids: string[], updates: Partial<FinalOrder>) => Promise<{ status: string; result: any } | undefined>;
@@ -124,16 +126,17 @@ interface ShopOrderState {
   addOrderDataFromServer: (fullOrder: OrderDataFromServerType) => Promise<void>;
   addArrayOrderDataFromServer: (fullOrder: OrderDataFromServerType[]) => Promise<void>;
   uploadDeliveryExcel: (file: File, shipCompany: string) => Promise<{ status: string; count: any }>;
+  setUpdateOrders: (updates: OrderDataFromServerType) => void;
 }
 
 export const useShopOrderStore = create<ShopOrderState>((set, get) => ({
   orders: [],
 
   // Fetch all orders
-  fetchOrders: async (branchId?: string) => {
+  fetchOrders: async (company_id_own_order: string, branchId: string, ) => {
     try {
       const { getAuthHeader } = useAuthStore.getState();
-      const url = branchId ? `${GetShopOrders_API}?branch_id=${branchId}` : GetShopOrders_API;
+      const url = branchId ? `${GetShopOrders_API}?branch_id=${branchId}&company_id_own_order=${company_id_own_order}` : GetShopOrders_API;
       const res = await axiosApiCall.get(url, {
         headers: { "Content-Type": "application/json", ...getAuthHeader() },
       });
@@ -146,7 +149,7 @@ export const useShopOrderStore = create<ShopOrderState>((set, get) => ({
   },
 
   // Add new order
-  addOrder: async (order: Partial<FinalOrder> & { branch_id: string; product_code: string; isFromCustomer?: boolean, company_id_own_product: string }) => {
+  addOrder: async (order: Partial<FinalOrder> & { branch_id: string; product_code: string; company_id_own_product: string; isFromCustomer?: boolean  }) => {
     try {
       const { getAuthHeader } = useAuthStore.getState();
       
@@ -175,10 +178,8 @@ export const useShopOrderStore = create<ShopOrderState>((set, get) => ({
       const res = await axiosApiCall.put(`${GetShopOrders_API}/${id}`, updates, {
         headers: { "Content-Type": "application/json", ...getAuthHeader() },
       });
-      set({
-        orders: get().orders.map((o) => (o._id === id ? res.data : o)),
-      });
-      return { status: "success" };
+      
+      return { status: "success", data: JSON.parse(JSON.stringify(res.data)) };
     } catch (err) {
       console.error("Failed to update order:", err);
       return { status: "failed" };
@@ -292,11 +293,48 @@ export const useShopOrderStore = create<ShopOrderState>((set, get) => ({
       return { status: "failed", count: 0 };
     }
   },
+
   refreshOrders: async () => {
     // This will be called after mutations to refresh the list
     // The actual branch_id will be passed by the component
     const state = get();
+      const selectedBranch = useBranchStore.getState().selectedBranch;
     // Re-fetch with the last used branch (if any)
-    await state.fetchOrders();
+    if(selectedBranch){
+      await state.fetchOrders(selectedBranch?.company_id, selectedBranch?._id);
+    }
   },
+setUpdateOrders: (update) => {
+  console.log('setUpdateOrders called with:', update);
+  
+  set(state => {
+    // Find the index of the order to update
+    const orderIndex = state.orders.findIndex(o => o._id === update._id);
+    
+    if (orderIndex === -1) {
+      console.warn('Order not found in store:', update._id);
+      // If order not found, add it (shouldn't happen, but handle gracefully)
+      return { orders: [...state.orders, JSON.parse(JSON.stringify(update))] };
+    }
+    
+    // Create a completely new array with new object references for ALL orders
+    // This ensures Zustand detects the change even if only one order changed
+    const updatedOrders = state.orders.map((o, index) => {
+      if (index === orderIndex) {
+        // Create a deep copy of the updated order to ensure all nested objects are new
+        return JSON.parse(JSON.stringify(update));
+      } else {
+        // For other orders, also create a deep copy to ensure array reference changes
+        // This helps React detect the change in the parent component
+        return JSON.parse(JSON.stringify(o));
+      }
+    });
+    
+    // console.log('Updated orders array length:', updatedOrders.length);
+    // console.log('Updated order at index', orderIndex, ':', updatedOrders[orderIndex]);
+    
+    return { orders: updatedOrders };
+  });
+}
+
 }));

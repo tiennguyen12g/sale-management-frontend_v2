@@ -5,7 +5,7 @@ import styles from "./EditStaff.module.scss";
 const cx = classNames.bind(styles);
 // import type { StaffDataType, SalaryHistoryType, RelationshipStatus } from "../DataTest/DataForStaffSalary";
 import type { StaffDataType, RelationshipStatus } from "../../../../zustand/staffStore";
-import { EditStaffInfo_API } from "../../../../configs/api";
+import { EditStaffInfo_API } from "../../../../config/api";
 import { useStaffStore } from "../../../../zustand/staffStore";
 import { useAuthStore } from "../../../../zustand/authStore";
 interface EditStaffProps {

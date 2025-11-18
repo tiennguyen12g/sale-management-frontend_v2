@@ -3,36 +3,39 @@ import "./App.css";
 // Libraries
 import { useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-
+import "@i18n/i18next";
+import { I18nProvider } from "@/i18n";
 // Components
-import MainPage from "./Pages/MainPage";
-import Login from "./AuthPage/Login";
-import Register from "./AuthPage/Register";
+import MainPage from "./pages/MainPage";
 import ProtectedRoute from "./AuthPage/ProtectedRoute";
 import UserPage from "./StaffPage/StaffPage";
 import GlobalSocket from "./ultilitis/GlobalSocket";
-import ProductTableForStaff from "./Pages/BodyComponent/ProductManage/ProductDetails/ProductTableForStaff";
-import NoRoute from "./ultilitis/NoRoute";
-import PageMessage from "./Pages/BodyComponent/FacebookAPI/PageMessage";
-import { FacebookSDKLoader } from "./Pages/BodyComponent/FacebookAPI/FacebookSDKLoader";
-import AdsAccountManagement from "./Pages/BodyComponent/Financial/AdsCosts/AdsAccountManagement";
-import SettingPage from "./Pages/SettingPage/SettingPage";
-import InitialPage from "./Pages/InitialPage/InitialPage";
+import ProductTableForStaff from "./pages/BodyComponent/ProductManage/ProductDetails/ProductTableForStaff";
+import Error404 from "@/components/common/Error404";
+import PageMessage from "./pages/BodyComponent/FacebookAPI/PageMessage";
+import { FacebookSDKLoader } from "./pages/BodyComponent/FacebookAPI/FacebookSDKLoader";
+import AdsAccountManagement from "./pages/BodyComponent/Financial/AdsCosts/AdsAccountManagement";
+import SettingPage from "./pages/SettingPage/SettingPage";
+import InitialPage from "./pages/InitialPage/InitialPage";
 
 //Hooks
 import { useHydrateAuth } from "./zustand/hydrationHook";
 // Layout
-import Layout1 from "./Layout/Layout1";
-import LayoutWithSubmenu from "./Layout/LayoutWithSubmenu";
+import Layout1 from "./layout/Layout1";
+import LayoutWithSubmenu from "./layout/LayoutWithSubmenu";
 import CreateShopModal from "./TestAPI/createShop";
-function App() {
+
+import LoginSignUpPage from "@/pages/auth/LoginSignUpPage";
+import LoginPage from "@/pages/auth/LoginPage";
+import SignUpPage from "@/pages/auth/SignUpPage";
+function AppContent() {
   const location = useLocation();
   // Routes where StaffMenu should NOT appear
-  const hideStaffMenuOn = ["/login", "/register", "/home"];
+  const hideStaffMenuOn = ["/login", "/register", "/auth", "/home"];
   // Check if current path starts with any excluded route
   const shouldShowStaffMenu = !hideStaffMenuOn.some((path) => location.pathname.startsWith(path));
 
-    const hydrated = useHydrateAuth();
+  const hydrated = useHydrateAuth();
   if (!hydrated) {
     return <div>Loading...</div>;
   }
@@ -48,9 +51,9 @@ function App() {
 
       <Routes>
         {/* Public routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/test" element={<CreateShopModal />} />
+        <Route path="/auth" element={<LoginSignUpPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<SignUpPage />} />
 
         {/* Initial Page - Shop Selection */}
         <Route
@@ -137,9 +140,16 @@ function App() {
         />
 
         {/* Catch-all */}
-        <Route path="*" element={<NoRoute />} />
+        <Route path="*" element={<Error404 />} />
       </Routes>
     </div>
+  );
+}
+function App() {
+  return (
+    <I18nProvider>
+      <AppContent />
+    </I18nProvider>
   );
 }
 

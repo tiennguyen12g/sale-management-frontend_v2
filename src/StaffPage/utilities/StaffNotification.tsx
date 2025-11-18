@@ -1,21 +1,31 @@
 import { useEffect, useState } from "react";
-import { socketAPI } from "../../configs/api";
-import { FaCartPlus } from "react-icons/fa";
-import { IoNotifications } from "react-icons/io5";
-import bellNotification from "../../ManagementOrders/icons/bell.gif"
+import { socketAPI } from "../../config/api";
+import bellNotification from "../../ManagementOrders/icons/bell.gif";
 import { useShopOrderStore } from "../../zustand/shopOrderStore";
-export default function StaffNotification({ staffID, menuCollapsed }: { staffID: string, menuCollapsed: boolean }) {
+
+export default function StaffNotification({ staffID, menuCollapsed }: { staffID: string; menuCollapsed: boolean }) {
   const [status, setStatus] = useState("disconnected");
   const [notifications, setNotifications] = useState<any[]>([]);
-  const { addOrder, addOrderDataFromServer } = useShopOrderStore();
+  const {addOrderDataFromServer } = useShopOrderStore();
 
   useEffect(() => {
-    const worker = new Worker(new URL("../workers/orderWorker.js", import.meta.url));
+    // Fix: Import worker properly for Vite - use inline worker or fix the path
+    let worker: Worker;
+    try {
+      // Try the worker import - Vite should handle this
+      worker = new Worker(new URL("../../workers/orderWorker.js", import.meta.url), {
+        type: "classic",
+      });
+    } catch (error) {
+      console.error("Failed to create worker:", error);
+      return; // Exit early if worker creation fails
+    }
 
+    // React main thread
     worker.postMessage({
       type: "connect",
       staffID,
-      serverUrl: socketAPI,
+      serverUrl: socketAPI, // Use socketAPI from config (automatically uses HTTPS through Nginx if page is HTTPS)
     });
 
     worker.onmessage = (e) => {
@@ -43,13 +53,18 @@ export default function StaffNotification({ staffID, menuCollapsed }: { staffID:
     }
   }, [notifications]);
   return (
-    <div style={{ padding: 0, fontFamily: "Arial", display: "flex", alignItems: "center", flexDirection: "column"}}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10 , height: 60}}>
-        <div style={{display: "flex", justifyContent:"center", alignItems: "center"}}><img src={bellNotification} width={40} height={40}/> </div>
+    <div style={{ padding: 0, fontFamily: "Arial", display: "flex", alignItems: "center", flexDirection: "column" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, height: 60 }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <img src={bellNotification} width={40} height={40} />{" "}
+        </div>
         {!menuCollapsed && <div style={{ fontWeight: 600, fontSize: 18, color: "var(--orange-header-text-color)" }}>Đơn mới</div>}
-        
       </div>
-      {notifications && <div style={{ color: "#0485fd", fontWeight: 550, fontSize: 16, height: 40, display: "flex", justifyContent:"center", alignItems: "center" }}>{notifications.length}</div>}
+      {notifications && (
+        <div style={{ color: "#0485fd", fontWeight: 550, fontSize: 16, height: 40, display: "flex", justifyContent: "center", alignItems: "center" }}>
+          {notifications.length}
+        </div>
+      )}
     </div>
   );
 }

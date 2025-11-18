@@ -7,7 +7,7 @@ import { FaRegClone } from "react-icons/fa6";
 import ProductTable from "./ProductTableForOwner";
 import { type ProductType, type ProductDetailsType } from "../../../../zustand/productStore";
 import { useProductStore } from "../../../../zustand/productStore";
-import { UploadProductImage_API } from "../../../../configs/api";
+import { UploadProductImage_API } from "../../../../config/api";
 import ProductTableInventory from "./ProductTableInventory";
 const ProductTypeName = ["Quần/áo", "Thiết bị điện tử", "Đồ gia dụng", "Đồ ăn", "Tranh ảnh"];
 const templateProduct: Omit<ProductType, "_id"> = {

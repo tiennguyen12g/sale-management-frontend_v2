@@ -227,7 +227,7 @@
     .table-header {
       display: grid;
       /* Make first two columns fixed, rest flexible */
-      grid-template-columns: 160px 100px repeat(18, minmax(140px, 1fr));
+      grid-template-columns: 160px 100px 200px repeat(15, minmax(140px, 1fr)) 200px minmax(140px, 1fr);
       background-color: #f8f9fa;
       border-bottom: 2px solid #e0e0e0;
       position: sticky;
@@ -256,7 +256,7 @@
       .table-row {
         width: 100%;
         display: grid;
-        grid-template-columns: 160px 100px repeat(18, minmax(140px, 1fr));
+        grid-template-columns: 160px 100px 200px repeat(15, minmax(140px, 1fr)) 200px minmax(140px, 1fr);
         border-bottom: 1px solid #e2e2e2e1;
         transition: background-color 0.2s;
         align-items: center;

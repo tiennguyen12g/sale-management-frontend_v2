@@ -6,6 +6,8 @@ import { MdDelete } from "react-icons/md";
 import { MdModeEditOutline } from "react-icons/md";
 
 import { useBranchStore, type IBranchSetting, type TagType } from "../../zustand/branchStore";
+import { AddButton, ButtonDeleteIcon, ButtonEditIcon } from "@tnbt/react-favorit-style";
+import {useTranslation} from "react-i18next";
 import { v4 as uuidv4 } from "uuid";
 const cx = classNames.bind(styles);
 
@@ -26,9 +28,9 @@ export const exapmleTagList = [
 
 export default function ManageTags() {
   const { addTag, deleteTag, updateTag, branchSettings, setUpdateBranchSettings } = useBranchStore();
-
+  const {t} = useTranslation();
   if (!branchSettings) {
-    console.log('null');
+    console.log("null");
     return null;
   }
   const [tagList, setTagList] = useState<TagType[]>(branchSettings.shopTagList || []);
@@ -49,7 +51,7 @@ export default function ManageTags() {
   };
 
   const handleDeleteTag = (id: string) => {
-    if (window.confirm("Bạn có chắc muốn xoá thẻ này?")) {
+    if (window.confirm(t("setting.tags.manage.confirmDelete", "Bạn có chắc muốn xoá thẻ này?"))) {
       const newTagList = tagList.filter((tag) => tag.id !== id);
       setTagList(newTagList);
       const newSetting = { ...branchSettings, shopTagList: newTagList };
@@ -82,46 +84,46 @@ export default function ManageTags() {
   return (
     <div className={cx("main")}>
       <div className={cx("header")}>
-        <h3>Thẻ hội thoại</h3>
-        <div className={cx("info")}>{tagList.length} Thẻ</div>
-        <button className={cx("add-btn")} onClick={() => setShowModal(true)}>
-          Thêm thẻ
-        </button>
+        <h3>{t("setting.tags.manage.title", "Thẻ hội thoại")}</h3>
+        <div className={cx("info")}>{tagList.length} {t("setting.tags.manage.tags", "Thẻ")}</div>
+        <AddButton size="sm" onClick={() => setShowModal(true)}>{t("setting.tags.addTag","Thêm thẻ")}</AddButton>
       </div>
 
       <div className={cx("table-wrapper")}>
         <table className={cx("table")}>
           <thead>
             <tr>
-              <th>STT</th>
-              <th>Tên thẻ</th>
-              <th>Màu sắc</th>
-              <th>Hành động</th>
+              <th>{t("setting.tags.manage.table.stt", "STT")}</th>
+              <th>{t("setting.tags.manage.table.tagName", "Tên thẻ")}</th>
+              <th>{t("setting.tags.manage.table.color", "Màu sắc")}</th>
+              <th>{t("setting.tags.manage.table.action", "Hành động")}</th>
             </tr>
           </thead>
           <tbody>
-            {tagList.map((tag, index) => (
-              <tr key={tag.id}>
-                <td>{index + 1}</td>
-                <td>
-                  <div className={cx("tag-item")}>
-                    <span className={cx("tag-color")} style={{ backgroundColor: tag.color }} />
-                    {tag.tagName}
-                  </div>
-                </td>
-                <td>
-                  <div className={cx("color-preview")} style={{ backgroundColor: tag.color }} />
-                </td>
-                <td>
-                  <button className={cx("")} onClick={() => handleEditTag(tag)}>
-                    <MdModeEditOutline size={20} />
-                  </button>
-                  <button className={cx("delete-btn")} onClick={() => handleDeleteTag(tag.id)}>
-                    <MdDelete size={22} />
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {tagList.map((tag, index) => {
+              return (
+                <tr key={tag.id}>
+                  <td>{index + 1}</td>
+                  <td>
+                    <div className={cx("tag-item")}>
+                      <span className={cx("tag-color")} style={{ backgroundColor: tag.color }} />
+                      {tag.tagName}
+                    </div>
+                  </td>
+                  <td>
+                    <div className={cx("color-preview")} style={{ backgroundColor: tag.color }} />
+                  </td>
+                  <td>
+                    {(tag.id !== "3b0b1439-bd7e-4956-926f-efd43b43c83d" || tag.tagName !== "Khách mới") && (
+                      <div className="flex gap-2.5 items-center">
+                        <ButtonEditIcon onClick={() => handleEditTag(tag)} size={22} />
+                        <ButtonDeleteIcon onClick={() => handleDeleteTag(tag.id)} size={22} />
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

@@ -3,7 +3,7 @@ import classNames from "classnames/bind";
 import styles from "./AddStaff.module.scss";
 const cx = classNames.bind(styles);
 
-import { AddStaff_API } from "../../../../configs/api";
+import { AddStaff_API } from "../../../../config/api";
 import { useStaffStore } from "../../../../zustand/staffStore";
 import { useAuthStore } from "../../../../zustand/authStore";
 export default function AddStaff({ setIsOpenAddForm }: { setIsOpenAddForm: Dispatch<React.SetStateAction<boolean>> }) {

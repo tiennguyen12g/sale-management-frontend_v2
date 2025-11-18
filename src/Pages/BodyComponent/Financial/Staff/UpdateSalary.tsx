@@ -2,7 +2,7 @@ import React, { useState, type Dispatch, type SetStateAction } from "react";
 import classNames from "classnames/bind";
 import styles from "./UpdateSalary.module.scss";
 const cx = classNames.bind(styles);
-import { UpdateSalary_API } from "../../../../configs/api";
+import { UpdateSalary_API } from "../../../../config/api";
 import { useAuthStore } from "../../../../zustand/authStore";
 
 interface Props {

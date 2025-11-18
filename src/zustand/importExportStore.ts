@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import { useAuthStore } from "./authStore";
-import { GetImpExpIn_API, AddImpExpIn_API, UploadImpExpIn_API } from "../configs/api";
+import { GetImpExpIn_API, AddImpExpIn_API, UploadImpExpIn_API } from "../config/api";
 // ---------- Types ----------
 export interface ImportProductDetailsType {
   name: string;

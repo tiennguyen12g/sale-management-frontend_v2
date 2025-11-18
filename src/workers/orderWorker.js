@@ -1,28 +1,40 @@
-// orderWorker.js
+// workers/orderWorker.js
+// Classic Worker (not ES module)
 importScripts("https://cdn.socket.io/4.7.2/socket.io.min.js");
 
-let socket;
+let socket = null;
 
-onmessage = function (e) {
-  if (e.data.type === "connect") {
-    const { staffID, serverUrl } = e.data;
-    socket = io(serverUrl, { query: { staffID } });
+self.onmessage = (event) => {
+  const { type, staffID, serverUrl } = event.data;
+
+  // ---------- CONNECT ----------
+  if (type === "connect") {
+    const isHTTPS = serverUrl?.startsWith("https");
+
+    socket = io(serverUrl, {
+      path: isHTTPS ? "/socket" : "/socket.io",
+      transports: ["websocket", "polling"],
+      query: { staffID },
+      reconnection: true,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 2000,
+    });
 
     socket.on("connect", () => {
-      postMessage({ type: "connected" });
+      self.postMessage({ type: "connected" });
     });
 
     socket.on("disconnect", () => {
-      postMessage({ type: "disconnected" });
+      self.postMessage({ type: "disconnected" });
     });
 
-    socket.on("new-order", (data) => {
-      // push event back to React
-      postMessage({ type: "new-order", payload: data });
+    socket.on("new-order", (payload) => {
+      self.postMessage({ type: "new-order", payload });
     });
   }
 
-  if (e.data.type === "disconnect" && socket) {
+  // ---------- DISCONNECT ----------
+  if (type === "disconnect" && socket) {
     socket.disconnect();
   }
 };

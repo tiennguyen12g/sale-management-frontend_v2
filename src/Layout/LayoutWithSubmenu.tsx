@@ -5,7 +5,6 @@ const cx = classNames.bind(styles);
 
 import { useProductStore, type ProductType } from "../zustand/productStore";
 import { useShopOrderStore } from "../zustand/shopOrderStore";
-import { useStaffStore } from "../zustand/staffStore";
 import { useAuthStore } from "../zustand/authStore";
 import ShopOrders_v3 from "../ManagementOrders/ShopOrders_v3";
 import CreateExcel_v2 from "../ManagementOrders/CreateExcel_v2";
@@ -23,13 +22,16 @@ export default function LayoutWithSubmenu() {
   const [menuCollapsed, setMenuCollapsed] = useState(true);
   const [viewMode, setViewMode] = useState<"table" | "excel">("table");
   const [getFinalData, setGetFinalData] = useState<any>([]);
-    const { selectedBranch } = useBranchStore();
-  // const {user, token} = useAuthStore();
+  const { selectedBranch } = useBranchStore();
   const { products, fetchProducts } = useProductStore();
   const { orders, fetchOrders } = useShopOrderStore();
   const {yourStaffId} = useAuthStore();
-  const [currentProduct, setCurrentProduct] = useState<ProductType | undefined>(undefined);
 
+
+  // Debug: Log when orders change
+  // useEffect(() => {
+  //   console.log('LayoutWithSubmenu: orders changed, length:', orders.length);
+  // }, [orders]);
   // fetch products
   useEffect(() => {
     if (selectedBranch?._id) {
@@ -41,22 +43,10 @@ export default function LayoutWithSubmenu() {
 
   // fetch orders from the store (filtered by branch)
   useEffect(() => {
-    if (selectedBranch?._id) {
-      fetchOrders(selectedBranch._id);
-    } else {
-      fetchOrders(); // Fetch all orders if no branch selected
+    if (selectedBranch && selectedBranch?._id) {
+      fetchOrders( selectedBranch.company_id, selectedBranch._id,);
     }
   }, [fetchOrders, selectedBranch?._id]);
-
-  // Filter orders by selected product
-  const filteredOrders = useMemo(() => {
-    if (!currentProduct) return orders;
-    return orders.filter(order => order.product_code === currentProduct.product_code);
-  }, [orders, currentProduct]);
-
-  // Get current product (first product or selected)
-  const product = currentProduct || products[0];
-
 
   return (
     <div className={cx("main-layout")}>
@@ -98,19 +88,14 @@ export default function LayoutWithSubmenu() {
 
       {/* Body Content */}
       <div className={cx("body-right")} style={{ width: menuCollapsed ? "calc(100% - 60px)" : "calc(100% - 180px)" }}>
-        {viewMode === "table" && product && (
+        {viewMode === "table" && (
           <ShopOrders_v3 
-            productDetail={product} 
-            dataOrders={filteredOrders} 
+            dataOrders={orders} 
             setGetFinalData={setGetFinalData}
+            products={products}
           />
         )}
         {viewMode === "excel" && <CreateExcel_v2 orders={getFinalData} />}
-        {viewMode === "table" && !product && (
-          <div style={{ padding: 20 }}>
-            <p>Vui lòng chọn sản phẩm để xem đơn hàng</p>
-          </div>
-        )}
       </div>
     </div>
   );

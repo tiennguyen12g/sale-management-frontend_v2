@@ -1,5 +1,43 @@
-const backendAPI = "http://localhost:4000/api-v1";
-const socketAPI = "http://localhost:4005"
+// Detect if we're running on HTTPS and use appropriate URLs
+// If page is HTTPS, use HTTPS URLs through Nginx proxy
+// If page is HTTP, use direct HTTP URLs (for local dev)
+const isHTTPS = typeof window !== "undefined" && window.location.protocol === "https:";
+const currentHost = typeof window !== "undefined" ? window.location.hostname : "172.16.255.206";
+const currentPort = typeof window !== "undefined" ? window.location.port : "";
+
+// Determine the API host and ports
+// If accessing via localhost or 127.0.0.1, use that; otherwise use the configured IP
+const API_HOST = (currentHost === "localhost" || currentHost === "127.0.0.1") 
+  ? currentHost 
+  : "172.16.255.206";
+
+const NGINX_HTTPS_PORT = "443"; // Nginx HTTPS port
+const BACKEND_HTTP_PORT = "4000";
+const SOCKET_HTTP_PORT = "4005";
+
+// Use HTTPS through Nginx if page is HTTPS, otherwise use direct HTTP
+// When HTTPS, use the same host as the page (localhost or IP) with port 443
+// When HTTP, use direct backend connection
+const backendAPI = isHTTPS
+  ? `https://${API_HOST}:${NGINX_HTTPS_PORT}/api-v1`
+  : `http://${API_HOST}:${BACKEND_HTTP_PORT}/api-v1`;
+
+// Socket.IO: Use HTTPS through Nginx with /socket path if HTTPS, otherwise direct HTTP
+const socketAPI = isHTTPS
+  ? `https://${API_HOST}:${NGINX_HTTPS_PORT}`
+  : `http://${API_HOST}:${SOCKET_HTTP_PORT}`;
+
+// Debug logging (remove in production)
+if (typeof window !== "undefined") {
+  console.log("🔧 API Config:", {
+    isHTTPS,
+    currentHost,
+    API_HOST,
+    backendAPI,
+    socketAPI,
+    windowLocation: window.location.href
+  });
+}
 
 // Login - Register
 const Login_API = `${backendAPI}/auth/login`;
@@ -59,6 +97,10 @@ const AddBank_API = `${backendAPI}/money-banks/add`;
 const GetAdsCosts_API = `${backendAPI}/ads-costs`;
 const AddAdsCosts_API = `${backendAPI}/ads-costs/add`;
 const UploadAdsCosts_API = `${backendAPI}/ads-costs/upload`;
+
+// Ads Accounts (Facebook Ads)
+const GetAdsAccounts_API = `${backendAPI}/ads-accounts`;
+const FetchAndSaveAdsAccounts_API = `${backendAPI}/ads-accounts/fetch-and-save`;
 
 // Product
 const GetProducts_API = `${backendAPI}/products`;
@@ -157,6 +199,10 @@ export {
     GetAdsCosts_API,
     AddAdsCosts_API,
     UploadAdsCosts_API,
+
+    // Ads Accounts
+    GetAdsAccounts_API,
+    FetchAndSaveAdsAccounts_API,
 
     //Product
     GetProducts_API,

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ClaimOrderStats_API } from "../../../../configs/api";
+import { ClaimOrderStats_API } from "../../../../config/api";
 
 type StaffStat = { staffID: string; name: string; claimed: number; status: "Present" | "Absent" };
 

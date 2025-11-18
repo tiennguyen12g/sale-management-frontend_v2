@@ -8,7 +8,9 @@ import GeneralSetting from "./GeneralSetting";
 import Notification from "./Notification";
 import Decentralization from "./Decentralization";
 import { useBranchStore } from "../../zustand/branchStore";
+import { useTranslation } from "react-i18next";
 export default function SettingPage() {
+  const { t } = useTranslation();
   const [activePage, setAcctivePage] = useState<string>("general-setting");
   const { selectedBranch, fetchBranchSettings } = useBranchStore();
   //-- Fetch branch settings
@@ -24,25 +26,25 @@ export default function SettingPage() {
     <div className={cx("main-setting")}>
       {/* Left Sidebar Menu */}
       <div className={cx("sidebar")}>
-        <h2 className={cx("sidebar-title")}>Cài đặt</h2>
+        <h2 className={cx("sidebar-title")}>{t("setting.title", "Cài đặt")}</h2>
 
         <div className={cx("menu-list")}>
           <div className={cx("menu-item", activePage === "general-setting" ? "active" : "")} onClick={() => setAcctivePage("general-setting")}>
             <span className={cx("icon")}>⚙️</span>
-            <span className={cx("text")}>Cài đặt chung</span>
+            <span className={cx("text")}>{t("setting.general.title", "Cài đặt chung")}</span>
           </div>
           <div className={cx("menu-item", activePage === "decentralization" ? "active" : "")} onClick={() => setAcctivePage("decentralization")}>
             <span className={cx("icon")}>👥</span>
-            <span className={cx("text")}>Phân quyền</span>
+            <span className={cx("text")}>{t("setting.decentralization.title", "Phân quyền")}</span>
           </div>
           <div className={cx("menu-item", activePage === "notification" ? "active" : "")} onClick={() => setAcctivePage("notification")}>
             <span className={cx("icon")}>🔔</span>
-            <span className={cx("text")}>Thông báo</span>
+            <span className={cx("text")}>{t("setting.notification.name", "Thông báo")}</span>
           </div>
 
           <div className={cx("menu-item", activePage === "tag-management" ? "active" : "")} onClick={() => setAcctivePage("tag-management")}>
             <span className={cx("icon")}>🏷️</span>
-            <span className={cx("text")}>Thẻ hội thoại</span>
+            <span className={cx("text")}> {t("setting.tags.name", "Thẻ hội thoại")}</span>
           </div>
 
           <div className={cx("menu-item")}>
@@ -53,7 +55,7 @@ export default function SettingPage() {
 
           <div className={cx("menu-item", activePage === "fast-message" ? "active" : "")} onClick={() => setAcctivePage("fast-message")}>
             <span className={cx("icon")}>💬</span>
-            <span className={cx("text")}>Hỗ trợ trả lời</span>
+            <span className={cx("text")}>{t("setting.fastMessage.name", "Hỗ trợ trả lời")}</span>
           </div>
 
           <div className={cx("menu-item")}>

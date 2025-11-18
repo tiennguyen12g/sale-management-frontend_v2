@@ -3,8 +3,10 @@ import classNames from "classnames/bind";
 import styles from "./TableInvitation.module.scss";
 const cx = classNames.bind(styles);
 import { useInvitationStore } from "../../zustand/invitationStore";
+import { useTranslation } from "react-i18next";
 
 export default function TableInvitation() {
+  const { t } = useTranslation();
   const { receivedInvitations, fetchReceivedInvitations, acceptInvitation, rejectInvitation, loading } =
     useInvitationStore();
 
@@ -13,24 +15,24 @@ export default function TableInvitation() {
   }, [fetchReceivedInvitations]);
 
   const handleAccept = async (invitationId: string) => {
-    if (!confirm("Are you sure you want to accept this invitation?")) return;
+    if (!confirm(t("setting.tableInvitation.confirmAccept", "Are you sure you want to accept this invitation?"))) return;
 
     const result = await acceptInvitation(invitationId);
     if (result?.status === "success") {
       alert(result.message);
     } else {
-      alert(result?.message || "Failed to accept invitation");
+      alert(result?.message || t("setting.tableInvitation.failedAccept", "Failed to accept invitation"));
     }
   };
 
   const handleReject = async (invitationId: string) => {
-    if (!confirm("Are you sure you want to reject this invitation?")) return;
+    if (!confirm(t("setting.tableInvitation.confirmReject", "Are you sure you want to reject this invitation?"))) return;
 
     const result = await rejectInvitation(invitationId);
     if (result?.status === "success") {
       alert(result.message);
     } else {
-      alert(result?.message || "Failed to reject invitation");
+      alert(result?.message || t("setting.tableInvitation.failedReject", "Failed to reject invitation"));
     }
   };
 
@@ -38,25 +40,25 @@ export default function TableInvitation() {
     if (typeof branch === "object" && branch?.display_name) {
       return branch.display_name;
     }
-    return "Unknown Branch";
+    return t("setting.tableInvitation.unknownBranch", "Unknown Branch");
   };
 
   return (
     <div className={cx("main")}>
       {loading ? (
-        <div>Loading...</div>
+        <div>{t("setting.tableInvitation.loading", "Loading...")}</div>
       ) : receivedInvitations && receivedInvitations.length > 0 ? (
         <div className={cx("table-container")}>
           <table className={cx("invitation-table")}>
             <thead>
               <tr>
-                <th>No</th>
-                <th>Branch Name</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Date</th>
-                <th>Expiry Date</th>
-                <th>Actions</th>
+                <th>{t("setting.tableInvitation.table.no", "No")}</th>
+                <th>{t("setting.tableInvitation.table.branchName", "Branch Name")}</th>
+                <th>{t("setting.tableInvitation.table.role", "Role")}</th>
+                <th>{t("setting.tableInvitation.table.status", "Status")}</th>
+                <th>{t("setting.tableInvitation.table.date", "Date")}</th>
+                <th>{t("setting.tableInvitation.table.expiryDate", "Expiry Date")}</th>
+                <th>{t("setting.tableInvitation.table.actions", "Actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -72,7 +74,7 @@ export default function TableInvitation() {
                     <td>{invitation.role}</td>
                     <td>
                       <span className={cx("status", isAccepted ? "accepted" : "pending")}>
-                        {isAccepted ? "Accepted" : "Pending"}
+                        {isAccepted ? t("setting.tableInvitation.status.accepted", "Accepted") : t("setting.tableInvitation.status.pending", "Pending")}
                       </span>
                     </td>
                     <td>{createDate}</td>
@@ -84,13 +86,13 @@ export default function TableInvitation() {
                             className={cx("accept-btn")}
                             onClick={() => handleAccept(invitation._id)}
                           >
-                            Accept
+                            {t("setting.tableInvitation.accept", "Accept")}
                           </button>
                           <button
                             className={cx("reject-btn")}
                             onClick={() => handleReject(invitation._id)}
                           >
-                            Reject
+                            {t("setting.tableInvitation.reject", "Reject")}
                           </button>
                         </div>
                       ) : (
@@ -104,7 +106,7 @@ export default function TableInvitation() {
           </table>
         </div>
       ) : (
-        <div className={cx("no-invitations")}>No invitations received</div>
+        <div className={cx("no-invitations")}>{t("setting.tableInvitation.noInvitations", "No invitations received")}</div>
       )}
     </div>
   );

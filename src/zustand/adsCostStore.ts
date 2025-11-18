@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { useAuthStore } from "./authStore";
-import { GetAdsCosts_API, AddAdsCosts_API, UploadAdsCosts_API } from "../configs/api";
+import { GetAdsCosts_API, AddAdsCosts_API, UploadAdsCosts_API } from "../config/api";
 export type PlatformName = "TikTok" | "Facebook" | "Shopee";
 
 export interface AdsCostType {

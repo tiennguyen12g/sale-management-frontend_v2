@@ -16,10 +16,9 @@ import { FaCartPlus } from "react-icons/fa";
 import { useAuthStore } from "../zustand/authStore";
 import { FaUserCircle } from "react-icons/fa";
 import StaffTracking_v2 from "../StaffPage/utilities/StaffTracking_v2";
-
-import { useStaffStore } from "../zustand/staffStore";
 import { useMainMenuStore } from "../zustand/mainMenuCollapsed";
-
+import LanguageSwitcher from "@/i18n/LanguageSwitcherForMenu";
+import { useTranslation } from "react-i18next";
 interface Props {
   isCollapsed: boolean;
   setIsCollapsed: Dispatch<SetStateAction<boolean>>;
@@ -28,6 +27,7 @@ interface Props {
 const iconSize = 22;
 export default function MainMenu({}: Props) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { openMenu, setOpenMenu, menuCollapsed, toggleMenuCollapse } = useMainMenuStore();
   const { company_id, accessRole, yourStaffId, logout } = useAuthStore();
   const handleLogout = () => {
@@ -47,7 +47,7 @@ export default function MainMenu({}: Props) {
         >
           <div className={cx("part1")}>
        <IoStorefrontSharp className={cx("icon")} size={iconSize} color="#ffffff" />
-            {!menuCollapsed && <span>Cửa hàng</span>}
+            {!menuCollapsed && <span>{t("menu.shop", "Cửa hàng")}</span>}
           </div>
         </div>
         <div
@@ -59,7 +59,7 @@ export default function MainMenu({}: Props) {
         >
           <div className={cx("part1")}>
             <AiFillMessage className={cx("icon")} size={iconSize} color="#ffffff" />
-            {!menuCollapsed && <span>Tin nhắn</span>}
+            {!menuCollapsed && <span>{t("menu.messages","Tin nhắn")}</span>}
           </div>
         </div>
         <div
@@ -71,7 +71,7 @@ export default function MainMenu({}: Props) {
         >
           <div className={cx("part1")}>
             <FaCartPlus className={cx("icon")} size={iconSize} color="#ffffff" />
-            {!menuCollapsed && <span>Đơn hàng</span>}
+            {!menuCollapsed && <span>{t("menu.orders","Đơn hàng")}</span>}
           </div>
         </div>
         <div
@@ -83,7 +83,7 @@ export default function MainMenu({}: Props) {
         >
           <div className={cx("part1")}>
             <MdOutlineWarehouse className={cx("icon")} size={iconSize} color="#ffffff" />
-            {!menuCollapsed && <span>Kho hàng</span>}
+            {!menuCollapsed && <span>{t("menu.warehouse","Kho hàng")}</span>}
           </div>
         </div>
         <div
@@ -95,7 +95,7 @@ export default function MainMenu({}: Props) {
         >
           <div className={cx("part1")}>
             <FaUserCircle className={cx("icon")} size={iconSize} color="#ffffff" />
-            {!menuCollapsed && <span>Hồ sơ</span>}
+            {!menuCollapsed && <span>{t("menu.profile","Hồ sơ")}</span>}
           </div>
         </div>
         <div
@@ -107,7 +107,7 @@ export default function MainMenu({}: Props) {
         >
           <div className={cx("part1")}>
             <RiAdvertisementFill className={cx("icon")} size={iconSize + 3} color="#ffffff" />
-            {!menuCollapsed && <span>Ads acc</span>}
+            {!menuCollapsed && <span>{t("menu.ads","Ads acc")}</span>}
           </div>
         </div>
         <div
@@ -119,12 +119,17 @@ export default function MainMenu({}: Props) {
         >
           <div className={cx("part1")}>
             <IoSettingsSharp className={cx("icon")} size={iconSize + 3} color="#ffffff" />
-            {!menuCollapsed && <span>Cài đặt</span>}
+            {!menuCollapsed && <span>{t("menu.settings","Cài đặt")}</span>}
           </div>
         </div>
       </div>
 
       <div className={cx("part-below")}>
+        <div className={cx("menu-item")}>
+          <div className="w-full">
+            <LanguageSwitcher />
+          </div>
+        </div>
         <div className={cx("menu-item")}>
           <div className={cx("part1")}>
             <StaffTracking_v2 staffID={yourStaffId ? yourStaffId : ""} menuCollapsed={menuCollapsed} />
@@ -137,13 +142,13 @@ export default function MainMenu({}: Props) {
             ) : (
               <RiLogoutBoxRFill className={cx("icon")} size={iconSize + 3} color="#ffffff" style={{ marginLeft: -1 }} />
             )}
-            {!menuCollapsed && <span>Thu nhỏ</span>}
+            {!menuCollapsed && <span>{t("menu.collapse","Thu nhỏ")}</span>}
           </div>
         </div>
         <div className={cx("menu-item")} onClick={handleLogout}>
           <div className={cx("part1")}>
             <PiPowerFill className={cx("icon")} size={iconSize + 3} color="#ffffff" fontWeight={600} />
-            {!menuCollapsed && <span>Đăng xuất</span>}
+            {!menuCollapsed && <span>{t("menu.logout","Đăng xuất")}</span>}
           </div>
         </div>
       </div>

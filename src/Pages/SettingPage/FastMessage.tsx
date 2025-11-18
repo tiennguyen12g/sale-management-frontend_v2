@@ -22,7 +22,10 @@ import MessageEmoji from "../BodyComponent/FacebookAPI/ultility/MessageEmoji";
 // import { useSettingStore, type FastMessageType, type ISettings } from "../../zustand/settingStore";
 import { useBranchStore, type FastMessageType, type IBranchSetting } from "../../zustand/branchStore";
 
+import { AddButton, ButtonDeleteIcon, ButtonEditIcon, ButtonCloseIcon, ButtonCommon } from "@tnbt/react-favorit-style";
+import {useTranslation} from "react-i18next";
 export default function FastMessage() {
+  const { t } = useTranslation();
   const { branchSettings, addFastMessage, deleteFastMessage, updateFastMessage, setUpdateBranchSettings,selectedBranch, fetchBranchSettings } = useBranchStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -78,7 +81,7 @@ export default function FastMessage() {
   };
 
   const handleDeleteFastMessage = (id: string) => {
-    let userConfirmed = confirm("Bạn có chắc chắn muốn xóa?");
+    let userConfirmed = confirm(t("setting.fastMessage.confirmDelete", "Bạn có chắc chắn muốn xóa?"));
 
     if (!branchSettings) return;
 
@@ -155,27 +158,25 @@ export default function FastMessage() {
 
   return (
     <div className={cx("main")}>
-      <h2 className={cx("title")}>Hỗ trợ trả lời</h2>
+      <h2 className={cx("title")}>{t("setting.fastMessage.title", "Hỗ trợ trả lời")}</h2>
 
       <div className={cx("card")}>
         <div className={cx("header")}>
-          <h3 className={cx("header-title")}>Trả lời nhanh</h3>
-          <button onClick={() => setIsModalOpen(true)} className={cx("btn-primary")}>
-            Thêm mẫu
-          </button>
+          <h3 className={cx("header-title")}>{t("setting.fastMessage.quickReply", "Trả lời nhanh")}</h3>
+          <AddButton onClick={() => setIsModalOpen(true)}>{t("setting.fastMessage.button.addForm","Thêm câu trả lời nhanh")}</AddButton>
         </div>
 
         <div className={cx("table-wrapper")}>
           <table className={cx("table")}>
             <thead>
               <tr className={cx("table-header-row")}>
-                <th className={cx("table-header", "stt")}>STT</th>
-                <th className={cx("table-header", "short-key")}>Ký tự tắt</th>
+                <th className={cx("table-header", "stt")}>{t("setting.fastMessage.table.stt", "STT")}</th>
+                <th className={cx("table-header", "short-key")}>{t("setting.fastMessage.table.shortKey", "Ký tự tắt")}</th>
                 <th className={cx("table-header", "search-header")}>
-                  <div className={cx("header-content")}>Nội dung tin nhắn</div>
+                  <div className={cx("header-content")}>{t("setting.fastMessage.table.messageContent", "Nội dung tin nhắn")}</div>
                 </th>
-                <th className={cx("table-header")}>Ảnh/Video</th>
-                <th className={cx("table-header", "action-header")}>Hành động</th>
+                <th className={cx("table-header")}>{t("setting.fastMessage.table.media", "Ảnh/Video")}</th>
+                <th className={cx("table-header", "action-header")}>{t("setting.fastMessage.table.action", "Hành động")}</th>
               </tr>
             </thead>
             <tbody>
@@ -198,9 +199,11 @@ export default function FastMessage() {
                     )}
                   </td>
 
-                  <td className={cx("table-cell", "action-cell")}>
-                    <MdModeEdit size={25} color="#007adf" style={{ cursor: "pointer", marginRight: 12 }} onClick={() => handleOpenEditFastMessage(msg)} />
-                    <MdDelete size={25} color="red" style={{ cursor: "pointer" }} onClick={() => handleDeleteFastMessage(msg.id)} />
+                  <td >
+                    <div className="flex items-center gap-2.5 justify-center">
+                      <ButtonEditIcon onClick={() => handleOpenEditFastMessage(msg)} size={22} />
+                      <ButtonDeleteIcon onClick={() => handleDeleteFastMessage(msg.id)} size={22} />
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -213,20 +216,18 @@ export default function FastMessage() {
         <div className={cx("modal-overlay")}>
           <div className={cx("modal")}>
             <div className={cx("modal-header")}>
-              <h3 className={cx("modal-title")}>Thêm câu trả lời nhanh</h3>
-              <button onClick={() => setIsModalOpen(false)} className={cx("btn-close")}>
-                <X size={24} />
-              </button>
+              <h3 className={cx("modal-title")}>{t("setting.fastMessage.addQuickReply", "Thêm câu trả lời nhanh")}</h3>
+              <ButtonCloseIcon onClick={() => setIsModalOpen(false)} size={22} />
             </div>
 
             <div className={cx("modal-body")}>
               <div className={cx("form-group")}>
-                <label className={cx("form-label")}>Ký tự tắt</label>
+                <label className={cx("form-label")}>{t("setting.fastMessage.shortKey", "Ký tự tắt")}</label>
                 <div className={cx("input-wrapper")}>
                   <span className={cx("input-prefix")}>/</span>
                   <input
                     type="text"
-                    placeholder="Nhập ký tự"
+                    placeholder={t("setting.fastMessage.shortKeyPlaceholder", "Nhập ký tự")}
                     value={shortKey || ""}
                     onChange={(e) => setShortKey(e.target.value)}
                     className={cx("input-keyword")}
@@ -237,11 +238,11 @@ export default function FastMessage() {
               <div className={cx("content-block")}>
                 <div className={cx("content-block-inner")}>
                   <div className={cx("content-block-header")}>
-                    <span className={cx("content-label")}>Nội dung hình ảnh</span>
+                    <span className={cx("content-label")}>{t("setting.fastMessage.imageContent", "Nội dung hình ảnh")}</span>
                   </div>
 
                   <div className={cx("media-added")}>
-                    {selectedMedia.length === 0 && <p>Chưa chọn hình ảnh / video</p>}
+                    {selectedMedia.length === 0 && <p>{t("setting.fastMessage.noMediaSelected", "Chưa chọn hình ảnh / video")}</p>}
                     <div className={cx("image-media")}>
                       {selectedMedia
                         .filter((media) => media.type === "image")
@@ -283,7 +284,7 @@ export default function FastMessage() {
               <div className={cx("content-block")}>
                 <div className={cx("content-block-inner")}>
                   <div className={cx("content-block-header")}>
-                    <span className={cx("content-label")}>Nội dung tin nhắn</span>
+                    <span className={cx("content-label")}>{t("setting.fastMessage.messageContent", "Nội dung tin nhắn")}</span>
                     <div ref={emojiRef} className={cx("emoji-wrapper")}>
                       <BsEmojiGrinFill
                         size={20}
@@ -297,7 +298,7 @@ export default function FastMessage() {
                   </div>
                   <textarea
                     value={messageContent}
-                    placeholder="Nhập nội dung ... (Nhấn Shift + Enter để xuống dòng)"
+                    placeholder={t("setting.fastMessage.messagePlaceholder", "Nhập nội dung ... (Nhấn Shift + Enter để xuống dòng)")}
                     className={cx("textarea")}
                     onChange={(e) => setMessageContent(e.target.value)}
                   />
@@ -305,12 +306,8 @@ export default function FastMessage() {
               </div>
 
               <div className={cx("modal-footer")}>
-                <button onClick={() => setIsModalOpen(false)} className={cx("btn-secondary")}>
-                  Đóng
-                </button>
-                <button className={cx("btn-primary")} onClick={handleSaveFastMessage}>
-                  Lưu mẫu
-                </button>
+                <ButtonCommon onClick={() => setIsModalOpen(false)}>{t("button.close", "Đóng")}</ButtonCommon>
+                <ButtonCommon variant="agree" onClick={handleSaveFastMessage}>{t("setting.fastMessage.saveTemplate", "Lưu mẫu")}</ButtonCommon>
               </div>
             </div>
           </div>
@@ -321,20 +318,18 @@ export default function FastMessage() {
         <div className={cx("modal-overlay")}>
           <div className={cx("modal")}>
             <div className={cx("modal-header")}>
-              <h3 className={cx("modal-title")}>Thêm câu trả lời nhanh</h3>
-              <button onClick={() => setIsModalOpen(false)} className={cx("btn-close")}>
-                <X size={24} />
-              </button>
+              <h3 className={cx("modal-title")}>{t("setting.fastMessage.editQuickReply", "Chỉnh sửa câu trả lời nhanh")}</h3>
+              <ButtonCloseIcon onClick={() => setShowEdit(false)} size={22} />
             </div>
 
             <div className={cx("modal-body")}>
               <div className={cx("form-group")}>
-                <label className={cx("form-label")}>Ký tự tắt</label>
+                <label className={cx("form-label")}>{t("setting.fastMessage.shortKey", "Ký tự tắt")}</label>
                 <div className={cx("input-wrapper")}>
                   <span className={cx("input-prefix")}>/</span>
                   <input
                     type="text"
-                    placeholder="Nhập ký tự"
+                    placeholder={t("setting.fastMessage.shortKeyPlaceholder", "Nhập ký tự")}
                     value={shortKey || ""}
                     onChange={(e) => setShortKey(e.target.value)}
                     className={cx("input-keyword")}
@@ -345,11 +340,11 @@ export default function FastMessage() {
               <div className={cx("content-block")}>
                 <div className={cx("content-block-inner")}>
                   <div className={cx("content-block-header")}>
-                    <span className={cx("content-label")}>Nội dung hình ảnh</span>
+                    <span className={cx("content-label")}>{t("setting.fastMessage.imageContent", "Nội dung hình ảnh")}</span>
                   </div>
 
                   <div className={cx("media-added")}>
-                    {selectedMedia.length === 0 && <p>Chưa chọn hình ảnh / video</p>}
+                    {selectedMedia.length === 0 && <p>{t("setting.fastMessage.noMediaSelected", "Chưa chọn hình ảnh / video")}</p>}
                     <div className={cx("image-media")}>
                       {selectedMedia
                         .filter((media) => media.type === "image")
@@ -385,7 +380,7 @@ export default function FastMessage() {
               <div className={cx("content-block")}>
                 <div className={cx("content-block-inner")}>
                   <div className={cx("content-block-header")}>
-                    <span className={cx("content-label")}>Nội dung tin nhắn</span>
+                    <span className={cx("content-label")}>{t("setting.fastMessage.messageContent", "Nội dung tin nhắn")}</span>
                     <div ref={emojiRef} className={cx("emoji-wrapper")}>
                       <BsEmojiGrinFill
                         size={20}
@@ -399,7 +394,7 @@ export default function FastMessage() {
                   </div>
                   <textarea
                     value={messageContent}
-                    placeholder="Nhập nội dung ... (Nhấn Shift + Enter để xuống dòng)"
+                    placeholder={t("setting.fastMessage.messagePlaceholder", "Nhập nội dung ... (Nhấn Shift + Enter để xuống dòng)")}
                     className={cx("textarea")}
                     onChange={(e) => setMessageContent(e.target.value)}
                   />
@@ -407,12 +402,8 @@ export default function FastMessage() {
               </div>
 
               <div className={cx("modal-footer")}>
-                <button onClick={() => setShowEdit(false)} className={cx("btn-secondary")}>
-                  Đóng
-                </button>
-                <button className={cx("btn-primary")} onClick={handleSaveEdit}>
-                  Lưu mẫu
-                </button>
+               <ButtonCommon onClick={() => setShowEdit(false)}>{t("button.close", "Đóng")}</ButtonCommon>
+                <ButtonCommon variant="agree" onClick={handleSaveEdit}>{t("setting.fastMessage.saveTemplate", "Lưu mẫu")}</ButtonCommon>
               </div>
             </div>
           </div>

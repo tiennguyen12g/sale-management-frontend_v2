@@ -287,13 +287,13 @@
     padding: 8px;
     text-align: center;
     white-space: nowrap; /* prevent text from wrapping */
+    z-index: 2;
   }
 
   thead th {
     position: sticky;
     top: -2px;
     background: #f5f5f5;
-    z-index: 2;
     border-top: 1px solid transparent;
   }
 }
@@ -352,13 +352,12 @@
     white-space: nowrap; /* prevent text from wrapping */
   }
 
-  // thead th {
-  //   position: sticky;
-  //   top: -2px;
-  //   background: #f5f5f5;
-  //   z-index: 2;
-  //   border-top: 1px solid transparent;
-  // }
+  thead th {
+    position: sticky;
+    top: -2px;
+    background: #e6e6e6;
+    border-top: 1px solid transparent;
+  }
 
   tr:nth-child(even) {
     background-color: #fafafa;

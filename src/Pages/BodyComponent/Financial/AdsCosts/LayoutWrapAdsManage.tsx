@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import classNames from "classnames/bind";
-import styles from "./LayoutWrapper.module.scss";
+import styles from "./LayoutWrapAdsManage.module.scss";
 const cx = classNames.bind(styles);
 import { FaCircle } from "react-icons/fa";
 import { IoIosArrowDropleft } from "react-icons/io";
@@ -9,7 +9,7 @@ import { MdInsertChart } from "react-icons/md";
 import { CgDesktop } from "react-icons/cg";
 import adsIcon from "../../../../assets/adsIcon.svg";
 const iconSize = 20;
-export default function LayoutWrapper() {
+export default function LayoutWrapAdsManage() {
   const [activeTable, setActiveTable] = useState("personal-ads-acc");
   const [menuCollapsed, setMenuCollapsed] = useState(false);
   return (
@@ -39,13 +39,6 @@ export default function LayoutWrapper() {
             </div>
             {!menuCollapsed && <span>Trình quản lý</span>}
           </div>
-          {/* <div className={cx("menu-item")}>Xóa QTV ẩn</div>
-          <div className={cx("menu-item")}>Đổi thức TKQC</div>
-          <div className={cx("menu-item")}>Share Pixel</div>
-          <div className={cx("menu-item")}>Super Share</div>
-          <div className={cx("menu-item")}>Super Target</div>
-          <div className={cx("menu-item")}>Ads Save</div>
-          <div className={cx("menu-item")}>Kháng TKQC</div> */}
         </div>
         <div className={cx("sidebar-footer")}>
           <div className={cx("footer-info")}>{/* Footer content */}</div>

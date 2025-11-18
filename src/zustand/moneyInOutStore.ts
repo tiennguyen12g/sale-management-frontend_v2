@@ -1,11 +1,11 @@
 import { create } from "zustand";
-import { GetMoneyInOut_API, AddMoneyInOut_API, UploadMoneyInOut_API } from "../configs/api";
+import { GetMoneyInOut_API, AddMoneyInOut_API, UploadMoneyInOut_API } from "../config/api";
 import type {
   MoneyInOutDataType,
   MoneyInOut_Action_Type,
   MoneyInOut_DestinationFund_Type,
   MoneyInOut_SourceFund_Type,
-} from "../Pages/BodyComponent/Financial/DataTest/DataForMoney";
+} from "../pages/BodyComponent/Financial/DataTest/DataForMoney";
 import { useAuthStore } from "./authStore";
 interface MoneyInOutState {
   moneyInOuts: MoneyInOutDataType[];

@@ -4,7 +4,7 @@ import classNames from "classnames/bind";
 import styles from "./AddAdsCosts.module.scss";
 const cx = classNames.bind(styles);
 import { type AdsCostType, useAdsCostStore } from "../../../../zustand/adsCostStore";
-import { UploadAdsCosts_API } from "../../../../configs/api";
+import { UploadAdsCosts_API } from "../../../../config/api";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { useAuthStore } from "../../../../zustand/authStore";

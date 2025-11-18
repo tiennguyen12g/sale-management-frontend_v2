@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import axiosApiCall from "./axiosApiClient";
 import { useAuthStore } from "./authStore";
-import { backendAPI } from "../configs/api";
+import { backendAPI } from "../config/api";
 import { type StaffRole } from "./staffStore";
 
 export const PLATFORM_LIST = ["facebook", "instagram", "zalo", "tiktok", "shopee"] as const;

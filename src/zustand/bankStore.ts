@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { GetBank_API, AddBank_API } from "../configs/api";
+import { GetBank_API, AddBank_API } from "../config/api";
 import { useAuthStore } from "./authStore";
 export interface MoneyBankAccount {
   _id: string;

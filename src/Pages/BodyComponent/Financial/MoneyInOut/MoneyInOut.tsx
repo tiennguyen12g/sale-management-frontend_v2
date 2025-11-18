@@ -17,7 +17,7 @@ import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 import { useMoneyInOutStore } from "../../../../zustand/moneyInOutStore";
 import UploadExcelBox from "../../../../ultilitis/UploadExcelBox";
-import { UploadMoneyInOut_API } from "../../../../configs/api";
+import { UploadMoneyInOut_API } from "../../../../config/api";
 import MoneyInOutDiagram from "./MoneyInOutDiagram";
 import type { MoneyTransitionType, SegmentType, DiagramProps } from "./MoneyInOutDiagram";
 

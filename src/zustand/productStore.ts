@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { useAuthStore } from "./authStore";
 import { useBranchStore } from "./branchStore";
-import { GetProducts_API, AddProduct_API, AssignProductsToBranch_API, UpdateBranchProducts_API, GetBranchProducts_API } from "../configs/api";
+import { GetProducts_API, AddProduct_API, AssignProductsToBranch_API, UpdateBranchProducts_API, GetBranchProducts_API } from "../config/api";
 export interface ProductDetailsType {
   name: string;
   stock: number;

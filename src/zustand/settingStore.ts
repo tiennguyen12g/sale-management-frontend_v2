@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { useAuthStore } from "./authStore";
 import axiosApiCall from "./axiosApiClient";
-import { backendAPI } from "../configs/api";
+import { backendAPI } from "../config/api";
 
 //============================
 // Types

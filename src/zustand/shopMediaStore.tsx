@@ -2,7 +2,7 @@
 import { create } from "zustand";
 import axiosApiCall from "./axiosApiClient";
 import { useAuthStore } from "./authStore";
-import { backendAPI } from "../configs/api";
+import { backendAPI } from "../config/api";
 
 export interface MediaItem {
   id: string;

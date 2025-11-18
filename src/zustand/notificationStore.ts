@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { GetNotifications_API, MarkNotificationRead_API, MarkAllNotificationsRead_API } from "../configs/api";
+import { GetNotifications_API, MarkNotificationRead_API, MarkAllNotificationsRead_API } from "../config/api";
 import { useAuthStore } from "./authStore";
 
 export interface INotification {

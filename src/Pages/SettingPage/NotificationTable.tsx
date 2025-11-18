@@ -3,8 +3,10 @@ import classNames from "classnames/bind";
 import styles from "./NotificationTable.module.scss";
 const cx = classNames.bind(styles);
 import { useNotificationStore, type INotification } from "../../zustand/notificationStore";
+import { useTranslation } from "react-i18next";
 
 export default function NotificationTable() {
+  const { t } = useTranslation();
   const { notifications, pagination, fetchNotifications, markAsRead, loading } = useNotificationStore();
   const [selectedNotification, setSelectedNotification] = useState<INotification | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,25 +29,25 @@ export default function NotificationTable() {
   };
 
   const getAuthorName = (sender: any): string => {
-    if (!sender) return "System";
+    if (!sender) return t("setting.notificationTable.system", "System");
     if (typeof sender === "object" && sender.username) {
       return sender.username;
     }
     if (typeof sender === "object" && sender.email) {
       return sender.email;
     }
-    return "Unknown";
+    return t("setting.notificationTable.unknown", "Unknown");
   };
 
   const getTypeTag = (type: string): string => {
     const typeMap: Record<string, string> = {
-      info: "Info",
-      warning: "Warning",
-      success: "Success",
-      danger: "Danger",
-      order: "Order",
-      task: "Task",
-      salary: "Salary",
+      info: t("setting.notificationTable.type.info", "Info"),
+      warning: t("setting.notificationTable.type.warning", "Warning"),
+      success: t("setting.notificationTable.type.success", "Success"),
+      danger: t("setting.notificationTable.type.danger", "Danger"),
+      order: t("setting.notificationTable.type.order", "Order"),
+      task: t("setting.notificationTable.type.task", "Task"),
+      salary: t("setting.notificationTable.type.salary", "Salary"),
     };
     return typeMap[type] || type;
   };
@@ -62,10 +64,10 @@ export default function NotificationTable() {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? "s" : ""} ago`;
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
-    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+    if (diffMins < 1) return t("setting.notificationTable.time.justNow", "Just now");
+    if (diffMins < 60) return t("setting.notificationTable.time.minutesAgo", "{{count}} minute(s) ago", { count: diffMins });
+    if (diffHours < 24) return t("setting.notificationTable.time.hoursAgo", "{{count}} hour(s) ago", { count: diffHours });
+    if (diffDays < 7) return t("setting.notificationTable.time.daysAgo", "{{count}} day(s) ago", { count: diffDays });
     return date.toLocaleDateString();
   };
 
@@ -78,26 +80,30 @@ export default function NotificationTable() {
   return (
     <div className={cx("notification-table-container")}>
       <div className={cx("table-header")}>
-        <h3>System Notifications</h3>
+        <h3>{t("setting.notificationTable.title", "System Notifications")}</h3>
         {pagination && (
           <div className={cx("pagination-info")}>
-            Showing {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, pagination.total)} of {pagination.total}
+            {t("setting.notificationTable.showing", "Showing {{start}} - {{end}} of {{total}}", {
+              start: ((currentPage - 1) * itemsPerPage) + 1,
+              end: Math.min(currentPage * itemsPerPage, pagination.total),
+              total: pagination.total
+            })}
           </div>
         )}
       </div>
 
       {loading ? (
-        <div className={cx("loading")}>Loading notifications...</div>
+        <div className={cx("loading")}>{t("setting.notificationTable.loading", "Loading notifications...")}</div>
       ) : notifications.length > 0 ? (
         <>
           <table className={cx("notification-table")}>
             <thead>
               <tr>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Time</th>
-                <th>Type</th>
-                <th>Status</th>
+                <th>{t("setting.notificationTable.table.title", "Title")}</th>
+                <th>{t("setting.notificationTable.table.author", "Author")}</th>
+                <th>{t("setting.notificationTable.table.time", "Time")}</th>
+                <th>{t("setting.notificationTable.table.type", "Type")}</th>
+                <th>{t("setting.notificationTable.table.status", "Status")}</th>
               </tr>
             </thead>
             <tbody>
@@ -117,7 +123,7 @@ export default function NotificationTable() {
                   </td>
                   <td>
                     <span className={cx("read-status", { read: notification.read, unread: !notification.read })}>
-                      {notification.read ? "Read" : "Unread"}
+                      {notification.read ? t("setting.notificationTable.status.read", "Read") : t("setting.notificationTable.status.unread", "Unread")}
                     </span>
                   </td>
                 </tr>
@@ -133,7 +139,7 @@ export default function NotificationTable() {
                 disabled={currentPage === 1}
                 className={cx("page-btn")}
               >
-                Previous
+                {t("setting.notificationTable.pagination.previous", "Previous")}
               </button>
               <div className={cx("page-numbers")}>
                 {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => (
@@ -151,13 +157,13 @@ export default function NotificationTable() {
                 disabled={currentPage === pagination.totalPages}
                 className={cx("page-btn")}
               >
-                Next
+                {t("setting.notificationTable.pagination.next", "Next")}
               </button>
             </div>
           )}
         </>
       ) : (
-        <div className={cx("no-notifications")}>No notifications found</div>
+        <div className={cx("no-notifications")}>{t("setting.notificationTable.noNotifications", "No notifications found")}</div>
       )}
 
       {/* Detail Modal */}
@@ -172,29 +178,29 @@ export default function NotificationTable() {
             </div>
             <div className={cx("modal-body")}>
               <div className={cx("detail-row")}>
-                <strong>Author:</strong> {getAuthorName(selectedNotification.sender_id)}
+                <strong>{t("setting.notificationTable.detail.author", "Author")}:</strong> {getAuthorName(selectedNotification.sender_id)}
               </div>
               <div className={cx("detail-row")}>
-                <strong>Time:</strong> {new Date(selectedNotification.createdAt).toLocaleString()}
+                <strong>{t("setting.notificationTable.detail.time", "Time")}:</strong> {new Date(selectedNotification.createdAt).toLocaleString()}
               </div>
               <div className={cx("detail-row")}>
-                <strong>Type:</strong>{" "}
+                <strong>{t("setting.notificationTable.detail.type", "Type")}:</strong>{" "}
                 <span className={cx("type-tag", getTypeClass(selectedNotification.type))}>
                   {getTypeTag(selectedNotification.type)}
                 </span>
               </div>
               <div className={cx("detail-row")}>
-                <strong>Source:</strong> {selectedNotification.source}
+                <strong>{t("setting.notificationTable.detail.source", "Source")}:</strong> {selectedNotification.source}
               </div>
               <div className={cx("content-section")}>
-                <strong>Content:</strong>
+                <strong>{t("setting.notificationTable.detail.content", "Content")}:</strong>
                 <div className={cx("message-content")}>{selectedNotification.message}</div>
               </div>
               {selectedNotification.context && (
                 <div className={cx("context-section")}>
-                  <strong>Context:</strong>
+                  <strong>{t("setting.notificationTable.detail.context", "Context")}:</strong>
                   <div>
-                    Resource: {selectedNotification.context.resource} (ID: {selectedNotification.context.resource_id})
+                    {t("setting.notificationTable.detail.resource", "Resource")}: {selectedNotification.context.resource} ({t("setting.notificationTable.detail.id", "ID")}: {selectedNotification.context.resource_id})
                   </div>
                 </div>
               )}

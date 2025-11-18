@@ -4,16 +4,15 @@ import styles from "./Decentralization.module.scss";
 const cx = classNames.bind(styles);
 import Invitation from "./Invitation";
 import { useInvitationStore } from "../../zustand/invitationStore";
-
+import { AddButton, ButtonCommon } from "@tnbt/react-favorit-style";
+import { useTranslation } from "react-i18next";
 export default function Decentralization() {
+  const { t } = useTranslation();
   const { sentInvitations, fetchSentInvitations, deleteInvitation, loading } = useInvitationStore();
 
   useEffect(() => {
     fetchSentInvitations();
   }, [fetchSentInvitations]);
-  useEffect(() => {
-console.log('sds', sentInvitations);
-  },[sentInvitations])
 
   const handleDelete = async (invitationId: string) => {
     if (!confirm("Are you sure you want to remove this invitation?")) return;
@@ -39,13 +38,13 @@ console.log('sds', sentInvitations);
 
   return (
     <div className={cx("main")}>
-      <h2>Decentralization</h2>
+      <h2>{t("setting.decentralization.title","Phân quyền")}</h2>
 
       {/* Table list of sent invitations */}
       <div className={cx("sent-invitations-section")}>
-        <div className={cx('header-table')}>
-            <div className={cx('title')}>Sent Invitations</div> 
-            <Invitation />
+        <div className={cx("header-table")}>
+          <div className={cx("title")}>{t("setting.decentralization.invitation.title", "Quản lí thư mời")}</div>
+          <Invitation />
         </div>
         {sentInvitations && sentInvitations.length > 0 ? (
           <div className={cx("table-container")}>
@@ -72,20 +71,16 @@ console.log('sds', sentInvitations);
                       <td>{invitation.staff_email}</td>
                       <td>{getBranchName(invitation.branch_id)}</td>
                       <td>{invitation.role}</td>
-                      <td>{(new Date(Number(invitation.date))).toLocaleDateString()}</td>
+                      <td>{new Date(Number(invitation.date)).toLocaleDateString()}</td>
                       <td>
-                        <span className={cx("status", accepted ? "accepted" : "pending")}>
-                          {accepted ? "Accepted" : "Pending"}
-                        </span>
+                        <span className={cx("status", accepted ? "accepted" : "pending")}>{accepted ? "Accepted" : "Pending"}</span>
                       </td>
                       <td>
                         {!accepted ? (
-                          <button
-                            className={cx("delete-btn")}
-                            onClick={() => handleDelete(invitation._id)}
-                          >
-                            Remove
-                          </button>
+                          // <button className={cx("delete-btn")} onClick={() => handleDelete(invitation._id)}>
+                          //   Remove
+                          // </button>
+                          <ButtonCommon variant="cancel" onClick={() => handleDelete(invitation._id)}>{t("button.revoke", "Xóa")}</ButtonCommon>
                         ) : (
                           <span className={cx("no-action")}>-</span>
                         )}
@@ -97,7 +92,7 @@ console.log('sds', sentInvitations);
             </table>
           </div>
         ) : (
-          <div className={cx("no-invitations")}>No invitations sent yet</div>
+          <div className={cx("no-invitations")}>{t("setting.decentralization.invitation.noInvitations", "Chưa có lời mời nào được gửi.")}</div>
         )}
       </div>
     </div>

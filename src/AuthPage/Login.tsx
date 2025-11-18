@@ -4,7 +4,7 @@ import classNames from "classnames/bind";
 import styles from "./Login.module.scss";
 
 const cx = classNames.bind(styles);
-import { Login_API } from "../configs/api";
+import { Login_API } from "../config/api";
 import { useAuthStore } from "../zustand/authStore";
 export default function Login() {
   const [email, setEmail] = useState("");

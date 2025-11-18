@@ -80,9 +80,6 @@ export default function PageMessage() {
           {showListPage && <PageSelect setShowListPage={setShowListPage} />}
           <div className={cx("header-menu")}>
             <div>
-              <button className={cx("btn-decor")} onClick={() => setShowListPage(true)}>
-                Danh sách shop
-              </button>
               {/* <button onClick={() => }>Create Tag</button> */}
             </div>
             <div className={cx("shop-name")}>TNBT Shop</div>

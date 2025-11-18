@@ -7,6 +7,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { useBranchStore } from "../../zustand/branchStore";
 const cx = classNames.bind(styles);
 import { useFacebookStore } from "../../zustand/facebookStore";
+import { useTranslation } from "react-i18next";
 
 export interface MediaSelectType {
   id: string;
@@ -20,13 +21,14 @@ interface Props {
 }
 
 export default function MediaStore({ onClose, onSelect, multiSelect = true }: Props) {
+  const { t } = useTranslation();
   const { images, videos, fetchMedia, addMedia, deleteMedia } = useShopMediaStore();
   const {selectedBranch} = useBranchStore();
   const [selected, setSelected] = useState<MediaSelectType[]>([]);
   const [notify, setNotify] = useState<string | null>(null);
   const { pageSelected } = useFacebookStore();
   if (!selectedBranch) {
-    return <div>Shop ID does not found</div>;
+    return <div>{t("setting.mediaStore.shopIdNotFound", "Shop ID does not found")}</div>;
   }
   const branch_id = selectedBranch._id;
 
@@ -35,11 +37,11 @@ export default function MediaStore({ onClose, onSelect, multiSelect = true }: Pr
   }, [branch_id, fetchMedia]);
   useEffect(() => {
     if (selected.length > 6 && notify === null) {
-      setNotify("Giới hạn chọn tối đa 6 ảnh/video");
+      setNotify(t("setting.mediaStore.maxSelectionLimit", "Giới hạn chọn tối đa 6 ảnh/video"));
     } else if (notify !== null && selected.length < 7) {
       setNotify(null);
     }
-  }, [selected, notify]);
+  }, [selected, notify, t]);
 
   const toggleSelect = (id: string, url: string, type: "image" | "video") => {
     setSelected((prev) => {
@@ -56,7 +58,7 @@ export default function MediaStore({ onClose, onSelect, multiSelect = true }: Pr
   };
 
   const handleDeleteMedia = (shopId: string, type: "image" | "video", url: string) => {
-    let userConfirmed = confirm("Bạn có chắc chắn muốn xóa?");
+    let userConfirmed = confirm(t("setting.mediaStore.confirmDelete", "Bạn có chắc chắn muốn xóa?"));
 
     if (userConfirmed) {
       console.log("User clicked OK.");
@@ -71,13 +73,13 @@ export default function MediaStore({ onClose, onSelect, multiSelect = true }: Pr
     <div className={cx("main")}>
       <div className={cx("body-box")}>
         <div className={cx("header")}>
-          <div className={cx("header-title")}>Hình ảnh/video hay dùng</div>
+          <div className={cx("header-title")}>{t("setting.mediaStore.title", "Hình ảnh/video hay dùng")}</div>
         </div>
 
         <div className={cx("body")}>
           <div className={cx("upload")}>
             <label className={cx("btn-add-media")}>
-              Thêm ảnh/video
+              {t("setting.mediaStore.addMedia", "Thêm ảnh/video")}
               <input
                 type="file"
                 accept="image/*,video/*"
@@ -93,7 +95,7 @@ export default function MediaStore({ onClose, onSelect, multiSelect = true }: Pr
           </div>
 
           <div className={cx("media-section")}>
-            <h4>Ảnh</h4>
+            <h4>{t("setting.mediaStore.images", "Ảnh")}</h4>
             <div className={cx("grid")}>
               {images.map((img) => {
                 const isSelect = selected.find((imageInfo) => imageInfo.url === img.url);
@@ -113,7 +115,7 @@ export default function MediaStore({ onClose, onSelect, multiSelect = true }: Pr
               })}
             </div>
 
-            <h4>Video</h4>
+            <h4>{t("setting.mediaStore.videos", "Video")}</h4>
             <div className={cx("grid")}>
               {videos.map((vid) => {
                 const isSelect = selected.find((videoInfo) => videoInfo.url === vid.url);
@@ -139,7 +141,7 @@ export default function MediaStore({ onClose, onSelect, multiSelect = true }: Pr
           <div style={{ color: "red", display: "flex", alignItems: "center" }}>{notify !== null ? notify : ""}</div>
           <div className={cx("footer-btn")}>
             <button className={cx("btn-decor", "btn-nomal")} onClick={() => onClose(false)}>
-              Đóng
+              {t("button.close", "Đóng")}
             </button>
             <button
               className={cx("btn-primary", "btn-decor")}
@@ -147,7 +149,7 @@ export default function MediaStore({ onClose, onSelect, multiSelect = true }: Pr
               disabled={selected.length > 6 ? true : false}
               style={{ backgroundColor: selected.length > 6 ? "gray" : "" }}
             >
-              Chọn ({selected.length})
+              {t("setting.mediaStore.select", "Chọn")} ({selected.length})
             </button>
           </div>
         </div>

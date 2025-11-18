@@ -9,7 +9,7 @@ import {
   SendMediaGroup_API,
   SendMedia_API,
   UpdateConversation_API,
-} from "../configs/api";
+} from "../config/api";
 import { type TagType } from "./branchStore";
 import type { IBranch } from "./branchStore";
 

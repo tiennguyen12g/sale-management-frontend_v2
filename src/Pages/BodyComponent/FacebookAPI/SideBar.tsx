@@ -61,6 +61,7 @@ export default function Sidebar({ conversationData }: SidebarProps) {
       // Tag filter
       if (tagFilter !== "all") {
         if (!conversation.tags || conversation.tags.id !== tagFilter) {
+          console.log('1', tagFilter);
           return false;
         }
       }
@@ -79,6 +80,16 @@ export default function Sidebar({ conversationData }: SidebarProps) {
     };
     return obj;
   });
+  convertToOptionsType.unshift({
+          name: "Tất cả",
+      key: "all",
+      color: "black",
+  })
+  // convertToOptionsType.push({
+  //         name: "Khách mới",
+  //     key: "Khánh mới",
+  //     color: "rgb(238, 121, 25)",
+  // })
 
   const optionForStatus = [
     {
@@ -108,7 +119,7 @@ export default function Sidebar({ conversationData }: SidebarProps) {
               <option value="unread">Chưa đọc</option>
               <option value="read">Đã đọc</option>
             </select> */}
-            <CustomSelectGlobal options={optionForStatus} onChange={(id) => setReadFilter(id as FilterType)} dropdownPosition="bottom" isUseBorder={true} />
+            <CustomSelectGlobal options={optionForStatus} onChange={(id) => setReadFilter(id as FilterType)} dropdownPosition="bottom" isUseBorder={true} isUsePlaceHolder={false}/>
           </div>
           <div className={cx("filter-group", "group-2")}>
             <label htmlFor="tag-filter">Thẻ:</label>
@@ -121,7 +132,7 @@ export default function Sidebar({ conversationData }: SidebarProps) {
               ))}
             </select> */}
             <CustomSelectGlobal
-              isUsePlaceHolder={true}
+              isUsePlaceHolder={false}
               options={convertToOptionsType}
               onChange={(id) => setTagFilter(id as TagFilterType)}
               dropdownPosition="bottom"

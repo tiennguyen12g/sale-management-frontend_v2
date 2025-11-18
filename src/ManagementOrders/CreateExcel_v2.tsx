@@ -1,11 +1,12 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import classNames from "classnames/bind";
 import styles from "./CreateExcel_v2.module.scss";
 import * as XLSX from "xlsx";
 // import { type Order, type OrderItem } from "./ShopOrders";
-import type { FinalOrder, OrderItem } from "../zustand/shopOrderStore";
+import  { type FinalOrder,type OrderItem , useShopOrderStore} from "../zustand/shopOrderStore";
 import CustomSelectGlobal from "../ultilitis/CustomSelectGlobal";
 import { useStaffMenuStore } from "../zustand/menuCollapsed";
+
 const cx = classNames.bind(styles);
 import { FaShippingFast } from "react-icons/fa";
 import { FcFilledFilter } from "react-icons/fc";
@@ -95,6 +96,7 @@ function totalQuantity(items: OrderItem[]) {
 
 export default function CreateExcel_v2({ orders }: Props) {
   // const [carrier, setCarrier] = useState<(typeof CARRIERS)[keyof typeof CARRIERS]>(CARRIERS.VIETTEL);
+  const {} = useShopOrderStore();
   const [carrier, setCarrier] = useState<string>("viettelpost");
   const [viettelService, setViettelService] = useState(VIETTEL_SERVICE_OPTIONS[1]);
   const [jntService, setJntService] = useState(JNT_SERVICE_OPTIONS[0]);
@@ -103,6 +105,10 @@ export default function CreateExcel_v2({ orders }: Props) {
   const [selectedProductId, setSelectedProductId] = useState<string>("All");
   const [totalOrders, setTotalOrders] = useState<number>(0);
   const { menuCollapsed } = useStaffMenuStore();
+
+  useEffect(() => {
+    console.log('orders', orders);
+  },[orders])
 
   // Get the orders that are "Chốt" and "Chưa gửi hàng"
   const filterConfirmOrdersAndNotDelivery = orders.filter((o) => o.status === "Chốt" && o.deliveryStatus === "Chưa gửi hàng");

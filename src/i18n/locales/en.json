@@ -1,0 +1,416 @@
+{
+  "language": {
+    "english": "English",
+    "vietnamese": "Vietnamese"
+  },
+  "menu": {
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "customers": "Customers",
+    "reports": "Reports",
+    "analytics": "Analytics",
+    "invoices": "Invoices",
+    "support": "Support",
+
+    "shop": "Shop",
+    "messages": "Messages",
+    "orders": "Orders",
+    "warehouse": "Warehouse",
+    "profile": "Profile",
+    "ads": "Ads acc",
+    "settings": "Settings",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "logout": "Logout"
+    
+  },
+  "profile": {
+    "title": "Profile Settings",
+    "subtitle": "Manage your account settings and preferences",
+    "personalInfo": {
+      "title": "Personal Information",
+      "name": "Full Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "address": "Address",
+      "bio": "Bio",
+      "bioPlaceholder": "Tell us about yourself...",
+      "avatar": "Profile Picture",
+      "changeAvatar": "Change Avatar",
+      "removeAvatar": "Remove Avatar"
+    },
+    "account": {
+      "title": "Account Settings",
+      "changePassword": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "deleteAccount": "Delete Account",
+      "deleteAccountWarning": "This action cannot be undone. All your data will be permanently deleted."
+    },
+    "preferences": {
+      "title": "Preferences",
+      "language": "Language",
+      "theme": "Theme",
+      "themeLight": "Light",
+      "themeDark": "Dark",
+      "themeSystem": "System",
+      "notifications": "Notifications",
+      "emailNotifications": "Email Notifications",
+      "pushNotifications": "Push Notifications",
+      "smsNotifications": "SMS Notifications"
+    },
+    "privacy": {
+      "title": "Privacy & Security",
+      "twoFactorAuth": "Two-Factor Authentication",
+      "enable2FA": "Enable 2FA",
+      "disable2FA": "Disable 2FA",
+      "loginHistory": "Login History",
+      "activeSessions": "Active Sessions",
+      "dataExport": "Export Data",
+      "dataExportDesc": "Download a copy of your data"
+    },
+    "buttons": {
+      "save": "Save Changes",
+      "cancel": "Cancel",
+      "update": "Update",
+      "delete": "Delete Account",
+      "export": "Export Data"
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email",
+      "phoneInvalid": "Please enter a valid phone number",
+      "passwordRequired": "Password is required",
+      "passwordMinLength": "Password must be at least 8 characters",
+      "passwordsNotMatch": "Passwords do not match"
+    },
+    "success": {
+      "profileUpdated": "Profile updated successfully",
+      "passwordChanged": "Password changed successfully",
+      "avatarUpdated": "Avatar updated successfully"
+    }
+  },
+  "auth": {
+    "email": "Email Address",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "login": {
+      "title": "Login",
+      "subtitle": "Choose login method below",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot Password",
+      "signIn": "Sign In",
+      "orConnectWith": "Or connect with",
+      "noAccount": "Don't have an account",
+      "registerLink": "Register",
+      "emailPlaceholder": "Enter your email",
+      "passwordPlaceholder": "Enter your password",
+      "error": {
+        "loginFailed": "Login failed",
+        "somethingWentWrong": "Something went wrong. Please try again."
+      }
+    },
+    "signup": {
+      "title": "Sign Up",
+      "subtitle": "Please fill in the information below",
+      "name": "Display Name",
+      "namePlaceholder": "e.g., tiennguyen12g, hung95 ...",
+      "emailPlaceholder": "Enter your email",
+      "passwordPlaceholder": "Enter your password",
+      "confirmPasswordPlaceholder": "Re-enter your password",
+      "confirmPassword": "Confirm Password",
+      "agreeToTerms": "Agree To Terms",
+      "createAccount": "Register",
+      "orSignUpWith": "or Sign Up with",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Login",
+      "error": {
+        "emailExists": "Email already registered",
+        "registrationFailed": "Registration failed",
+        "passwordsNotMatch": "Passwords do not match!",
+        "somethingWentWrong": "Something went wrong. Please try again."
+      },
+      "success": {
+        "registrationSuccess": "Registration successful! Please login."
+      }
+    }
+  },
+  "confirmDelete": {
+    "title": "Delete",
+    "areYouSure": "Are you sure?",
+    "warning": "Warning:",
+    "warningMessage": "This action cannot be undone. This will permanently delete.",
+    "action": {
+      "cancel": "Cancel",
+      "delete": "Delete"
+    }
+  },
+  "confirmLogout": {
+    "title": "Confirm Logout",
+    "heading": "Logout Confirmation",
+    "description": "Are you sure you want to logout? You will need to sign in again to access your account.",
+    "remindContent": "Any unsaved changes will be lost. Make sure to save your work before logging out.",
+    "action": {
+      "stayLoggedIn": "Stay Logged In",
+      "logout": "Logout"
+    }
+  },
+  "confirmResetSettings": {
+    "title": "Reset Settings",
+    "heading": "Reset All Settings",
+    "description": "This will restore all settings to their default values. Your personal data and files will not be affected.",
+    "willBeReset": "The following will be reset:",
+    "action": {
+      "resetSettings": "Reset Settings"
+    }
+  },
+  "statusModal": {
+    "action": {
+      "close": "Close"
+    }
+  },
+  "commonModal": {
+    "title": "My Modal",
+    "action": {
+      "close": "Close"
+    }
+  },
+  "animatedInfoModal": {
+    "animationProperties": "Animation Properties"
+  },
+  "button": {
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "submit": "Submit",
+    "edit": "Edit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "hello": "Hello World",
+    "info": "Info",
+    "download": "Download",
+    "uploadFile": "Upload File",
+    "uploadCloud": "Upload Cloud",
+    "add": "Add",
+    "remove": "Remove",
+    "revoke": "Revoke",
+    "send": "Send"
+
+
+  },
+  "content": {
+    "deleteOrders": "Delete {{count}} orders",
+    "deleteItems": "Delete {{count}} items",
+    "successCommon": "Successful operation",
+    "warningCommon": "Actions that may involve risk"
+  },
+  "setting": {
+    "title": "Settings",
+    "subtitle": "Manage your application settings and preferences",
+    "general": {
+      "title": "General Settings",
+      "language": "Language",
+      "theme": "Theme",
+      "notifications": "Notifications",
+      "account_info": {
+        "title": "Account Information",
+        "username": "Username",
+        "email": "Email Address",
+        "memberSince": "Member Since",
+        "password": "Password",
+        "changePassword": "Change Password",
+        "oldPassword": "Old Password",
+        "newPassword": "New Password",
+        "confirmNewPassword": "Confirm New Password"
+      }
+    },
+    "decentralization": {
+      "title": "Decentralization",
+      "userRoles": "User Roles",
+      "permissions": "Permissions",
+      "manageRoles": "Manage Roles",
+      "invitation": {
+        "title": "Invitation Management",
+        "sendInvitation": "Send invitation",
+        "noInvitations": "No invitations sent yet",
+        "addStaff": "Add Staff",
+        "searchTitle": "Search by email or staff ID",
+        "staffInfoTitle": "Staff Information",
+        "staffName": "Staff Name",
+        "staffID": "Staff ID",
+        "staffEmail": "Staff Email",
+        "roleAssigned": "Role Assigned",
+        "status": "Status",
+        "action": "Action",
+        "staffBirthday": "Staff Birthday",
+        "selectBranch": "Select Branch",
+        "note": "Note (Optional)",
+        "selectBranchPlaceholder": "Select a branch"
+      }
+    },
+          "notification": {
+      "name": "Notification",
+      "title": "Notification Settings",
+        "systemNotifications": "System Notifications",
+        "invitations": "Invitations"
+      },
+      "tags": {
+        "name": "Tags conversation",
+        "title": "Tag Management",
+        "addTag": "Add Tag",
+        "create": {
+          "title": "Add New Tag",
+          "tagName": "Tag Name",
+          "tagNamePlaceholder": "Enter tag name...",
+          "colorPicker": "Color Picker",
+          "colorPreview": "Preview - Theme color will be displayed",
+          "tagNameAndColor": "Tag name and color",
+          "noTagsAdded": "No tags added.",
+          "confirmDelete": "Are you sure you want to delete this tag?",
+
+          "table": {
+            "stt": "No",
+            "tagName": "Tag Name",
+            "color": "Color",
+            "action": "Action"
+          }
+        },
+        "edit": {
+          "title": "Edit Tag",
+          "tagName": "Tag Name",
+          "tagNamePlaceholder": "Enter tag name...",
+          "colorPicker": "Color Picker",
+          "colorPreview": "Preview - Theme color will be displayed",
+          "newTag": "New Tag",
+          "disableTag": "Disable this tag",
+          "enterTagName": "Please enter tag name",
+          "saveEdit": "Save Changes"
+        },
+        "manage": {
+          "title": "Conversation Tags",
+          "tags": "Tags",
+          "confirmDelete": "Are you sure you want to delete this tag?",
+          "table": {
+            "stt": "No",
+            "tagName": "Tag Name",
+            "color": "Color",
+            "action": "Action"
+          }
+        }
+      },
+      "fastMessage": {
+        "name": "Reply Support",
+        "title": "Reply Support",
+        "quickReply": "Quick Reply",
+        "confirmDelete": "Are you sure you want to delete?",
+        "addQuickReply": "Add Quick Reply",
+        "editQuickReply": "Edit Quick Reply",
+        "shortKey": "Short Key",
+        "shortKeyPlaceholder": "Enter key",
+        "imageContent": "Image Content",
+        "noMediaSelected": "No images/videos selected",
+        "messageContent": "Message Content",
+        "messagePlaceholder": "Enter content... (Press Shift + Enter for new line)",
+        "saveTemplate": "Save Template",
+        "button": {
+          "addMedia": "Add Image/Video",
+          "saveReply": "Save Reply",
+          "addForm": "Add Quick Reply"
+        },
+        "table": {
+          "stt": "No",
+          "shortKey": "Short Key",
+          "messageContent": "Message Content",
+          "media": "Image/Video",
+          "action": "Action"
+        }
+      },
+      "mediaStore": {
+        "title": "Frequently Used Images/Videos",
+        "addMedia": "Add Image/Video",
+        "images": "Images",
+        "videos": "Videos",
+        "select": "Select",
+        "confirmDelete": "Are you sure you want to delete?",
+        "maxSelectionLimit": "Maximum selection limit: 6 images/videos",
+        "shopIdNotFound": "Shop ID not found"
+      },
+      "tableInvitation": {
+        "loading": "Loading...",
+        "confirmAccept": "Are you sure you want to accept this invitation?",
+        "confirmReject": "Are you sure you want to reject this invitation?",
+        "failedAccept": "Failed to accept invitation",
+        "failedReject": "Failed to reject invitation",
+        "unknownBranch": "Unknown Branch",
+        "accept": "Accept",
+        "reject": "Reject",
+        "noInvitations": "No invitations received",
+        "status": {
+          "accepted": "Accepted",
+          "pending": "Pending"
+        },
+        "table": {
+          "no": "No",
+          "branchName": "Branch Name",
+          "role": "Role",
+          "status": "Status",
+          "date": "Date",
+          "expiryDate": "Expiry Date",
+          "actions": "Actions"
+        }
+      },
+      "notificationTable": {
+        "title": "System Notifications",
+        "loading": "Loading notifications...",
+        "showing": "Showing {{start}} - {{end}} of {{total}}",
+        "system": "System",
+        "unknown": "Unknown",
+        "noNotifications": "No notifications found",
+        "type": {
+          "info": "Info",
+          "warning": "Warning",
+          "success": "Success",
+          "danger": "Danger",
+          "order": "Order",
+          "task": "Task",
+          "salary": "Salary"
+        },
+        "time": {
+          "justNow": "Just now",
+          "minutesAgo": "{{count}} minute(s) ago",
+          "hoursAgo": "{{count}} hour(s) ago",
+          "daysAgo": "{{count}} day(s) ago"
+        },
+        "status": {
+          "read": "Read",
+          "unread": "Unread"
+        },
+        "pagination": {
+          "previous": "Previous",
+          "next": "Next"
+        },
+        "table": {
+          "title": "Title",
+          "author": "Author",
+          "time": "Time",
+          "type": "Type",
+          "status": "Status"
+        },
+        "detail": {
+          "author": "Author",
+          "time": "Time",
+          "type": "Type",
+          "source": "Source",
+          "content": "Content",
+          "context": "Context",
+          "resource": "Resource",
+          "id": "ID"
+        }
+      }
+  }
+}
+

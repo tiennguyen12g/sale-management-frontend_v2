@@ -1,0 +1,76 @@
+.login-signup-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  // justify-content: center;
+  padding: 80px 20px 20px;
+}
+
+.toggle-buttons {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 4px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  margin-bottom: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.toggle-btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: #6b7280;
+
+  &:hover {
+    color: #374151;
+  }
+
+  &.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    transform: translateY(-1px);
+  }
+
+  &:first-child.active {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  }
+
+  &:last-child.active {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  }
+}
+
+.form-container {
+  width: 100%;
+  max-width: 500px;
+  margin-top: 100px;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .login-signup-container {
+    padding: 60px 16px 16px;
+  }
+
+  .toggle-buttons {
+    margin-bottom: 24px;
+  }
+
+  .toggle-btn {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+}
+

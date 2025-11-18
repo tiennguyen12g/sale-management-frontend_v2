@@ -3,11 +3,13 @@ import classNames from "classnames/bind";
 import styles from "./GeneralSetting.module.scss";
 const cx = classNames.bind(styles);
 
-import { ChangePassword_API } from "../../configs/api";
+import { ChangePassword_API } from "../../config/api";
 import { useAuthStore } from "../../zustand/authStore";
+import { EditButton, ButtonCommon } from "@tnbt/react-favorit-style";
+import {useTranslation} from "react-i18next";
 export default function GeneralSetting() {
   const { user, getAuthHeader, yourStaffId } = useAuthStore();
-  const [isOpenForm, setIsOpenForm] = useState(false);
+  const { t } = useTranslation();
   const [newPassword, setNewPassword] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [repeatPass, setRepeatPass] = useState("");
@@ -33,27 +35,17 @@ export default function GeneralSetting() {
   };
   return (
     <div className={cx("main")}>
-      {/* <div className={cx("header-logout")}>
-        <div>
-          <h4 style={{ color: "#005fec" }}>Hồ sơ cá nhân</h4>
-        </div>
-      </div> */}
-
       {showAccountForm && user && (
         <div className={cx("wrap-change-pass")}>
           <div className={cx("form-container")}>
-            <h5>Đổi mật khẩu</h5>
+            <h5>{t("setting.general.account_info.changePassword", "Đổi mật khẩu")}</h5>
             <div style={{ color: "red" }}>{error}</div>
-            <input type="password" placeholder="Mật khẩu cũ" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
-            <input type="password" placeholder="Mật khẩu mới" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-            <input type="password" placeholder="Nhập lại mật khẩu mới" value={repeatPass} onChange={(e) => setRepeatPass(e.target.value)} />
+            <input type="password" placeholder={t("setting.general.account_info.newPassword", "Mật khẩu cũ")}  value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
+            <input type="password" placeholder={t("setting.general.account_info.oldPassword", "Mật khẩu mới")}value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+            <input type="password" placeholder={t("setting.general.account_info.confirmNewPassword", "Nhập lại mật khẩu mới")} value={repeatPass} onChange={(e) => setRepeatPass(e.target.value)} />
             <div className={cx("btn-actions")}>
-              <button className={cx("save")} onClick={() => handleChangePass()}>
-                Lưu
-              </button>
-              <button className={cx("cancel")} onClick={() => setShowAccountForm(false)}>
-                Hủy
-              </button>
+              <ButtonCommon variant="agree" onClick={() => handleChangePass()}>{t("button.save","Lưu")}</ButtonCommon>
+              <ButtonCommon variant="cancel" onClick={() => setShowAccountForm(false)}>{t("button.cancel", "Hủy")}</ButtonCommon>
             </div>
           </div>
         </div>
@@ -61,25 +53,17 @@ export default function GeneralSetting() {
       {user && (
         <div className={cx("profile-card", "card1")}>
           <div className={cx("header")}>
-            <div className={cx("title")}>Thông tin tài khoản</div>
+            <div className={cx("title")}>{t("setting.general.account_info.title", "Thông tin tài khoản")}</div>
           </div>
           <p>
-            <strong>Email:</strong> {user.email}
+            <strong>{t("setting.general.account_info.email", "Email")}:</strong> {user.email}
           </p>
           <p>
-            <strong>Ngày đăng kí:</strong> {user.registeredDate}
+            <strong>{t("setting.general.account_info.memberSince", "Ngày đăng kí")}:</strong> {user.registeredDate}
           </p>
-          <p style={{display: "flex", alignItems: "center"}}>
-            <strong>Mật khẩu:</strong> *******
-            <button
-              className={cx("btn-edit")}
-              onClick={() => {
-                // open small modal/form for changing password or role
-                setShowAccountForm(true);
-              }}
-            >
-              ✏️ Đổi mật khẩu
-            </button>
+          <p className="flex gap-3 items-center">
+            <strong>{t("setting.general.account_info.password", "Mật khẩu")}:</strong> *******
+            <EditButton size="sm" onClick={() => setShowAccountForm(true)}>{t("setting.general.account_info.changePassword","Đổi mật khẩu")}</EditButton>
           </p>
         </div>
       )}

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { HeartBeat_API } from "../../configs/api";
+import { HeartBeat_API } from "../../config/api";
 import { useAuthStore } from "../../zustand/authStore";
 export default function StaffHeartbeat() {
     const {getAuthHeader} = useAuthStore();
