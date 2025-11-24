@@ -16,7 +16,7 @@ import { v4 as uuidv4 } from "uuid";
 
 // Components & Type
 import MediaStore, { type MediaSelectType } from "./MediaStore";
-import MessageEmoji from "../BodyComponent/FacebookAPI/ultility/MessageEmoji";
+import MessageEmoji from "../BodyComponent/MessagePage/ultility/MessageEmoji";
 
 // Hooks
 // import { useSettingStore, type FastMessageType, type ISettings } from "../../zustand/settingStore";

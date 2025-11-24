@@ -4,7 +4,7 @@ import classNames from "classnames/bind";
 import styles from "./AllOrdersForOwner.module.scss"; // reuse styles
 const cx = classNames.bind(styles);
 
-import { useShopOrderStore, type FinalOrder, type OrderDataFromServerType } from "../zustand/shopOrderStore";
+import { useShopOrderStore, type FinalOrder, type OrderDataFromServerType } from "../../zustand/shopOrderStore";
 import UpdateDataOrderForStaff from "./UpdateDataOrderForStaff";
 // same status arrays as ShopOrders2.tsx
 const STATUS_OPTIONS = [

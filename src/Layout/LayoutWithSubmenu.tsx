@@ -6,9 +6,9 @@ const cx = classNames.bind(styles);
 import { useProductStore, type ProductType } from "../zustand/productStore";
 import { useShopOrderStore } from "../zustand/shopOrderStore";
 import { useAuthStore } from "../zustand/authStore";
-import ShopOrders_v3 from "../ManagementOrders/ShopOrders_v3";
-import CreateExcel_v2 from "../ManagementOrders/CreateExcel_v2";
-import StaffNotification from "../StaffPage/utilities/StaffNotification";
+import ShopOrders_v3 from "../pages/ManagementOrders/ShopOrders_v3";
+import CreateExcel_v2 from "../pages/ManagementOrders/CreateExcel_v2";
+import StaffNotification from "../pages/StaffPage/utilities/StaffNotification";
 // Icons
 import { IoIosArrowDropleft } from "react-icons/io";
 import { IoIosArrowDropright } from "react-icons/io";

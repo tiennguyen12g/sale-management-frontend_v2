@@ -4,7 +4,7 @@ import styles from "./RedistributeOrder.module.scss";
 const cx = classNames.bind(styles);
 import { RedistributionOrder_API } from "../../../../config/api";
 import { useShopOrderStore } from "../../../../zustand/shopOrderStore";
-import NotificationBox_v2 from "../../../../ultilitis/NotificationBox_v2";
+import NotificationBox_v2 from "../../../../utils/NotificationBox_v2";
 import { GradientButton } from "@tnbt/react-favorit-style";
 export function StaffRedistributeButton({ staffID, userId }: { staffID: string; userId: string }) {
   const [status, setStatus] = useState("");

@@ -1,9 +1,11 @@
 // No Route (404) Component
 import { useNavigate } from "react-router-dom";
-import { FaHome, FaArrowLeft,FaExclamationTriangle } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
+import { FaHome, FaArrowLeft, FaExclamationTriangle } from "react-icons/fa";
 import styles from "./Error404.module.scss";
 
 export default function Error404() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleGoHome = () => {
@@ -30,52 +32,52 @@ export default function Error404() {
         </div>
 
         {/* Message */}
-        <h1 className={styles.title}>Trang không tìm thấy</h1>
+        <h1 className={styles.title}>{t("error404.title", "Trang không tìm thấy")}</h1>
         <p className={styles.description}>
-          Xin lỗi, trang bạn đang tìm kiếm không tồn tại hoặc đã bị di chuyển.
+          {t("error404.description", "Xin lỗi, trang bạn đang tìm kiếm không tồn tại hoặc đã bị di chuyển.")}
           <br />
-          Vui lòng kiểm tra lại đường dẫn hoặc quay lại trang chủ.
+          {t("error404.description2", "Vui lòng kiểm tra lại đường dẫn hoặc quay lại trang chủ.")}
         </p>
 
         {/* Action Buttons */}
         <div className={styles.actions}>
           <button className={styles.btnPrimary} onClick={handleGoHome}>
             <FaHome className={styles.btnIcon} />
-            <span>Về trang chủ</span>
+            <span>{t("error404.goHome", "Về trang chủ")}</span>
           </button>
           <button className={styles.btnSecondary} onClick={handleGoBack}>
             <FaArrowLeft className={styles.btnIcon} />
-            <span>Quay lại</span>
+            <span>{t("error404.goBack", "Quay lại")}</span>
           </button>
         </div>
 
         {/* Quick Links */}
         <div className={styles.quickLinks}>
-          <p className={styles.quickLinksTitle}>Các trang phổ biến:</p>
+          <p className={styles.quickLinksTitle}>{t("error404.popularPages", "Các trang phổ biến:")}</p>
           <div className={styles.links}>
             <button
               className={styles.link}
-              onClick={() => navigate("/quan-li-don-hang")}
+              onClick={() => navigate("/order-management")}
             >
-              Đơn hàng
+              {t("error404.orders", "Đơn hàng")}
             </button>
             <button
               className={styles.link}
-              onClick={() => navigate("/danh-sach-san-pham")}
+              onClick={() => navigate("/product-list")}
             >
-              Sản phẩm
+              {t("error404.products", "Sản phẩm")}
             </button>
             <button
               className={styles.link}
-              onClick={() => navigate("/tin-nhan-page")}
+              onClick={() => navigate("/messages")}
             >
-              Tin nhắn
+              {t("error404.messages", "Tin nhắn")}
             </button>
             <button
               className={styles.link}
-              onClick={() => navigate("/ho-so-ca-nhan")}
+              onClick={() => navigate("/profile-in-company")}
             >
-              Hồ sơ
+              {t("error404.profile", "Hồ sơ")}
             </button>
           </div>
         </div>

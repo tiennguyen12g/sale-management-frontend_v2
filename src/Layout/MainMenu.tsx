@@ -15,7 +15,7 @@ import { AiFillMessage } from "react-icons/ai";
 import { FaCartPlus } from "react-icons/fa";
 import { useAuthStore } from "../zustand/authStore";
 import { FaUserCircle } from "react-icons/fa";
-import StaffTracking_v2 from "../StaffPage/utilities/StaffTracking_v2";
+import StaffTracking_v2 from "../pages/StaffPage/utilities/StaffTracking_v2";
 import { useMainMenuStore } from "../zustand/mainMenuCollapsed";
 import LanguageSwitcher from "@/i18n/LanguageSwitcherForMenu";
 import { useTranslation } from "react-i18next";
@@ -29,7 +29,7 @@ export default function MainMenu({}: Props) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { openMenu, setOpenMenu, menuCollapsed, toggleMenuCollapse } = useMainMenuStore();
-  const { company_id, accessRole, yourStaffId, logout } = useAuthStore();
+  const { yourStaffId, logout } = useAuthStore();
   const handleLogout = () => {
     logout();
     window.location.href = "/login"; // redirect
@@ -38,7 +38,7 @@ export default function MainMenu({}: Props) {
   return (
     <div className={cx("main-menu", { collapsed: menuCollapsed })}>
       <div className={cx("part-above")}>
-                <div
+        <div
           className={cx("menu-item", { active: openMenu === "list-shop" })}
           onClick={() => {
             setOpenMenu("");
@@ -46,7 +46,7 @@ export default function MainMenu({}: Props) {
           }}
         >
           <div className={cx("part1")}>
-       <IoStorefrontSharp className={cx("icon")} size={iconSize} color="#ffffff" />
+            <IoStorefrontSharp className={cx("icon")} size={iconSize} color="#ffffff" />
             {!menuCollapsed && <span>{t("menu.shop", "Cửa hàng")}</span>}
           </div>
         </div>
@@ -54,72 +54,72 @@ export default function MainMenu({}: Props) {
           className={cx("menu-item", { active: openMenu === "message" })}
           onClick={() => {
             setOpenMenu("message");
-            navigate("/tin-nhan-page");
+            navigate("/messages");
           }}
         >
           <div className={cx("part1")}>
             <AiFillMessage className={cx("icon")} size={iconSize} color="#ffffff" />
-            {!menuCollapsed && <span>{t("menu.messages","Tin nhắn")}</span>}
+            {!menuCollapsed && <span>{t("menu.messages", "Tin nhắn")}</span>}
           </div>
         </div>
         <div
           className={cx("menu-item", { active: openMenu === "orders" })}
           onClick={() => {
             setOpenMenu("orders");
-            navigate("/quan-li-don-hang");
+            navigate("/order-management");
           }}
         >
           <div className={cx("part1")}>
             <FaCartPlus className={cx("icon")} size={iconSize} color="#ffffff" />
-            {!menuCollapsed && <span>{t("menu.orders","Đơn hàng")}</span>}
+            {!menuCollapsed && <span>{t("menu.orders", "Đơn hàng")}</span>}
           </div>
         </div>
         <div
           className={cx("menu-item", { active: openMenu === "inventory" })}
           onClick={() => {
             setOpenMenu("inventory");
-            navigate("/danh-sach-san-pham");
+            navigate("/product-list");
           }}
         >
           <div className={cx("part1")}>
             <MdOutlineWarehouse className={cx("icon")} size={iconSize} color="#ffffff" />
-            {!menuCollapsed && <span>{t("menu.warehouse","Kho hàng")}</span>}
+            {!menuCollapsed && <span>{t("menu.warehouse", "Kho hàng")}</span>}
           </div>
         </div>
         <div
           className={cx("menu-item", { active: openMenu === "user-page" })}
           onClick={() => {
             setOpenMenu("user-page");
-            navigate("/ho-so-ca-nhan");
+            navigate("/profile-in-company");
           }}
         >
           <div className={cx("part1")}>
             <FaUserCircle className={cx("icon")} size={iconSize} color="#ffffff" />
-            {!menuCollapsed && <span>{t("menu.profile","Hồ sơ")}</span>}
+            {!menuCollapsed && <span>{t("menu.profile", "Hồ sơ")}</span>}
           </div>
         </div>
         <div
           className={cx("menu-item", { active: openMenu === "ads-account" })}
           onClick={() => {
             setOpenMenu("ads-account");
-            navigate("/tai-khoan-ads");
+            navigate("/ads-account");
           }}
         >
           <div className={cx("part1")}>
             <RiAdvertisementFill className={cx("icon")} size={iconSize + 3} color="#ffffff" />
-            {!menuCollapsed && <span>{t("menu.ads","Ads acc")}</span>}
+            {!menuCollapsed && <span>{t("menu.ads", "Ads acc")}</span>}
           </div>
         </div>
         <div
-          className={cx("menu-item", { active: openMenu === "cai-dat" })}
+          className={cx("menu-item", { active: openMenu === "settings" })}
           onClick={() => {
-            setOpenMenu("cai-dat");
-            navigate("/cai-dat");
+            setOpenMenu("settings");
+            navigate("/settings");
           }}
         >
           <div className={cx("part1")}>
             <IoSettingsSharp className={cx("icon")} size={iconSize + 3} color="#ffffff" />
-            {!menuCollapsed && <span>{t("menu.settings","Cài đặt")}</span>}
+            {!menuCollapsed && <span>{t("menu.settings", "Cài đặt")}</span>}
           </div>
         </div>
       </div>
@@ -142,13 +142,13 @@ export default function MainMenu({}: Props) {
             ) : (
               <RiLogoutBoxRFill className={cx("icon")} size={iconSize + 3} color="#ffffff" style={{ marginLeft: -1 }} />
             )}
-            {!menuCollapsed && <span>{t("menu.collapse","Thu nhỏ")}</span>}
+            {!menuCollapsed && <span>{t("menu.collapse", "Thu nhỏ")}</span>}
           </div>
         </div>
         <div className={cx("menu-item")} onClick={handleLogout}>
           <div className={cx("part1")}>
             <PiPowerFill className={cx("icon")} size={iconSize + 3} color="#ffffff" fontWeight={600} />
-            {!menuCollapsed && <span>{t("menu.logout","Đăng xuất")}</span>}
+            {!menuCollapsed && <span>{t("menu.logout", "Đăng xuất")}</span>}
           </div>
         </div>
       </div>

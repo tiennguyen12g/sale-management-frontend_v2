@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from "react";
 import classNames from "classnames/bind";
 import styles from "./SettingPage.module.scss";
-import FastMessage from "./FastMessage";
 const cx = classNames.bind(styles);
+
+// Hooks
+import { useBranchStore } from "@/zustand/branchStore";
+import { useTranslation } from "react-i18next";
+// Types
+// Components
 import ManageTags from "./ManageTags";
 import GeneralSetting from "./GeneralSetting";
 import Notification from "./Notification";
 import Decentralization from "./Decentralization";
-import { useBranchStore } from "../../zustand/branchStore";
-import { useTranslation } from "react-i18next";
+import AssistantAI from "@/pages/SettingPage/AssistantAI";
+import FastMessage from "./FastMessage";
+// Libraries
+// Icons
+// Utils
+
+
 export default function SettingPage() {
   const { t } = useTranslation();
   const [activePage, setAcctivePage] = useState<string>("general-setting");
@@ -47,9 +57,9 @@ export default function SettingPage() {
             <span className={cx("text")}> {t("setting.tags.name", "Thẻ hội thoại")}</span>
           </div>
 
-          <div className={cx("menu-item")}>
+          <div className={cx("menu-item", activePage === "assistant-ai" ? "active" : "")} onClick={() => setAcctivePage("assistant-ai")}>
             <span className={cx("icon")}>✨</span>
-            <span className={cx("text")}>Trợ lý AI</span>
+            <span className={cx("text")}>{t("setting.assistantAI.title", "Trợ lý AI")}</span>
             <span className={cx("badge")}>Beta</span>
           </div>
 
@@ -58,7 +68,7 @@ export default function SettingPage() {
             <span className={cx("text")}>{t("setting.fastMessage.name", "Hỗ trợ trả lời")}</span>
           </div>
 
-          <div className={cx("menu-item")}>
+          {/* <div className={cx("menu-item")}>
             <span className={cx("icon")}>💻</span>
             <span className={cx("text")}>Giao diện</span>
           </div>
@@ -86,7 +96,7 @@ export default function SettingPage() {
           <div className={cx("menu-item")}>
             <span className={cx("icon")}>🕐</span>
             <span className={cx("text")}>Lịch sử</span>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -97,6 +107,7 @@ export default function SettingPage() {
         {activePage === "fast-message" && <FastMessage />}
         {activePage === "notification" && <Notification />}
         {activePage === "decentralization" && <Decentralization />}
+        {activePage === "assistant-ai" && <AssistantAI />}{" "}
       </div>
     </div>
   );

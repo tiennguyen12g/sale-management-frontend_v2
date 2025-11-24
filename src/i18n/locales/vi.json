@@ -88,7 +88,7 @@
       "avatarUpdated": "Cập nhật ảnh đại diện thành công"
     }
   },
-"auth": {
+  "auth": {
     "email": "Địa chỉ Email",
     "password": "Mật khẩu",
     "confirmPassword": "Xác nhận Mật khẩu",
@@ -167,12 +167,12 @@
       "close": "Đóng"
     }
   },
-    "infoModal": {
+  "infoModal": {
     "action": {
       "close": "Đóng"
     }
   },
-    "warningModal": {
+  "warningModal": {
     "action": {
       "close": "Đóng"
     }
@@ -222,15 +222,16 @@
       "notifications": "Thông Báo",
       "account_info": {
         "title": "Thông Tin Tài Khoản",
-        "username": "Tên Đăng Nhập",  
+        "username": "Tên Đăng Nhập",
         "email": "Địa Chỉ Email",
         "memberSince": "Tham Gia Từ",
         "password": "Mật Khẩu",
         "changePassword": "Đổi Mật Khẩu",
-        
+
         "oldPassword": "Mật Khẩu Cũ",
         "newPassword": "Mật Khẩu Mới",
-        "confirmNewPassword": "Xác Nhận Mật Khẩu Mới"}
+        "confirmNewPassword": "Xác Nhận Mật Khẩu Mới"
+      }
     },
     "decentralization": {
       "title": "Phân Quyền",
@@ -255,166 +256,189 @@
         "note": "Ghi Chú",
         "selectBranchPlaceholder": "Chọn một tùy chọn"
       }
-
     },
-          "notification": {
-            "name": "Thông Báo",
+    "notification": {
+      "name": "Thông Báo",
       "title": "Cài Đặt Thông Báo",
-        "systemNotifications": "Thông Báo Hệ Thống",
-        "invitations": "Lời Mời"
-      },
-      "tags": {
-        "name": "Thẻ hội thoại",
-        "title": "Quản Lý Thẻ",
-        "addTag": "Thêm thẻ",
-        "create": {
-          "title": "Thêm mới thẻ",
-          "tagName": "Tên thẻ",
-          "tagNamePlaceholder": "Nhập tên thẻ...",
-          "colorPicker": "Bộ chọn màu",
-          "colorPreview": "Xem trước Màu chủ đề sẽ được hiển thị",
-          "tagNameAndColor": "Tên thẻ và màu sắc",
-          "noTagsAdded": "Không có thẻ nào được thêm.",
-          "confirmDelete": "Bạn có chắc muốn xoá thẻ này?",
-          "table": {
-            "stt": "STT",
-            "tagName": "Tên thẻ",
-            "color": "Màu sắc",
-            "action": "Hành động"
-          }
-        },
-        "edit": {
-          "title": "Chỉnh sửa thẻ",
-          "tagName": "Tên thẻ",
-          "tagNamePlaceholder": "Nhập tên thẻ...",
-          "colorPicker": "Bộ chọn màu",
-          "colorPreview": "Xem trước Màu chủ đề sẽ được hiển thị",
-          "newTag": "Thẻ mới",
-          "disableTag": "Ngừng sử dụng thẻ này",
-          "enterTagName": "Vui lòng nhập tên thẻ",
-          "saveEdit": "Lưu chỉnh sửa"
-        },
-        "manage": {
-          "title": "Thẻ hội thoại",
-          "tags": "Thẻ",
-          "confirmDelete": "Bạn có chắc muốn xoá thẻ này?",
-          "table": {
-            "stt": "STT",
-            "tagName": "Tên thẻ",
-            "color": "Màu sắc",
-            "action": "Hành động"
-          }
-        }
-      },
-      "fastMessage": {
-        "name": "Hỗ trợ trả lời",
-        "title": "Hỗ trợ trả lời",
-        "quickReply": "Trả lời nhanh",
-        "confirmDelete": "Bạn có chắc chắn muốn xóa?",
-        "addQuickReply": "Thêm câu trả lời nhanh",
-        "editQuickReply": "Chỉnh sửa câu trả lời nhanh",
-        "shortKey": "Ký tự tắt",
-        "shortKeyPlaceholder": "Nhập ký tự",
-        "imageContent": "Nội dung hình ảnh",
-        "noMediaSelected": "Chưa chọn hình ảnh / video",
-        "messageContent": "Nội dung tin nhắn",
-        "messagePlaceholder": "Nhập nội dung ... (Nhấn Shift + Enter để xuống dòng)",
-        "saveTemplate": "Lưu mẫu",
-        "button": {
-          "addMedia": "Thêm ảnh/video",
-          "saveReply": "Lưu câu trả lời",
-          "addForm": "Thêm câu trả lời nhanh"
-        },
+      "systemNotifications": "Thông Báo Hệ Thống",
+      "invitations": "Lời Mời"
+    },
+    "tags": {
+      "name": "Thẻ hội thoại",
+      "title": "Quản Lý Thẻ",
+      "addTag": "Thêm thẻ",
+      "create": {
+        "title": "Thêm mới thẻ",
+        "tagName": "Tên thẻ",
+        "tagNamePlaceholder": "Nhập tên thẻ...",
+        "colorPicker": "Bộ chọn màu",
+        "colorPreview": "Xem trước Màu chủ đề sẽ được hiển thị",
+        "tagNameAndColor": "Tên thẻ và màu sắc",
+        "noTagsAdded": "Không có thẻ nào được thêm.",
+        "confirmDelete": "Bạn có chắc muốn xoá thẻ này?",
         "table": {
           "stt": "STT",
-          "shortKey": "Ký tự tắt",
-          "messageContent": "Nội dung tin nhắn",
-          "media": "Ảnh/Video",
+          "tagName": "Tên thẻ",
+          "color": "Màu sắc",
           "action": "Hành động"
         }
       },
-      "mediaStore": {
-        "title": "Hình ảnh/video hay dùng",
-        "addMedia": "Thêm ảnh/video",
-        "images": "Ảnh",
-        "videos": "Video",
-        "select": "Chọn",
-        "confirmDelete": "Bạn có chắc chắn muốn xóa?",
-        "maxSelectionLimit": "Giới hạn chọn tối đa 6 ảnh/video",
-        "shopIdNotFound": "Không tìm thấy Shop ID"
+      "edit": {
+        "title": "Chỉnh sửa thẻ",
+        "tagName": "Tên thẻ",
+        "tagNamePlaceholder": "Nhập tên thẻ...",
+        "colorPicker": "Bộ chọn màu",
+        "colorPreview": "Xem trước Màu chủ đề sẽ được hiển thị",
+        "newTag": "Thẻ mới",
+        "disableTag": "Ngừng sử dụng thẻ này",
+        "enterTagName": "Vui lòng nhập tên thẻ",
+        "saveEdit": "Lưu chỉnh sửa"
       },
-      "tableInvitation": {
-        "loading": "Đang tải...",
-        "confirmAccept": "Bạn có chắc chắn muốn chấp nhận lời mời này?",
-        "confirmReject": "Bạn có chắc chắn muốn từ chối lời mời này?",
-        "failedAccept": "Không thể chấp nhận lời mời",
-        "failedReject": "Không thể từ chối lời mời",
-        "unknownBranch": "Chi nhánh không xác định",
-        "accept": "Chấp nhận",
-        "reject": "Từ chối",
-        "noInvitations": "Chưa có lời mời nào",
-        "status": {
-          "accepted": "Đã chấp nhận",
-          "pending": "Đang chờ"
-        },
+      "manage": {
+        "title": "Thẻ hội thoại",
+        "tags": "Thẻ",
+        "confirmDelete": "Bạn có chắc muốn xoá thẻ này?",
         "table": {
-          "no": "STT",
-          "branchName": "Tên Chi Nhánh",
-          "role": "Vai Trò",
-          "status": "Trạng Thái",
-          "date": "Ngày",
-          "expiryDate": "Ngày Hết Hạn",
-          "actions": "Hành Động"
-        }
-      },
-      "notificationTable": {
-        "title": "Thông Báo Hệ Thống",
-        "loading": "Đang tải thông báo...",
-        "showing": "Hiển thị {{start}} - {{end}} trong tổng số {{total}}",
-        "system": "Hệ Thống",
-        "unknown": "Không xác định",
-        "noNotifications": "Không tìm thấy thông báo",
-        "type": {
-          "info": "Thông Tin",
-          "warning": "Cảnh Báo",
-          "success": "Thành Công",
-          "danger": "Nguy Hiểm",
-          "order": "Đơn Hàng",
-          "task": "Nhiệm Vụ",
-          "salary": "Lương"
-        },
-        "time": {
-          "justNow": "Vừa xong",
-          "minutesAgo": "{{count}} phút trước",
-          "hoursAgo": "{{count}} giờ trước",
-          "daysAgo": "{{count}} ngày trước"
-        },
-        "status": {
-          "read": "Đã Đọc",
-          "unread": "Chưa Đọc"
-        },
-        "pagination": {
-          "previous": "Trước",
-          "next": "Tiếp"
-        },
-        "table": {
-          "title": "Tiêu Đề",
-          "author": "Tác Giả",
-          "time": "Thời Gian",
-          "type": "Loại",
-          "status": "Trạng Thái"
-        },
-        "detail": {
-          "author": "Tác Giả",
-          "time": "Thời Gian",
-          "type": "Loại",
-          "source": "Nguồn",
-          "content": "Nội Dung",
-          "context": "Ngữ Cảnh",
-          "resource": "Tài Nguyên",
-          "id": "ID"
+          "stt": "STT",
+          "tagName": "Tên thẻ",
+          "color": "Màu sắc",
+          "action": "Hành động"
         }
       }
+    },
+    "fastMessage": {
+      "name": "Hỗ trợ trả lời",
+      "title": "Hỗ trợ trả lời",
+      "quickReply": "Trả lời nhanh",
+      "confirmDelete": "Bạn có chắc chắn muốn xóa?",
+      "addQuickReply": "Thêm câu trả lời nhanh",
+      "editQuickReply": "Chỉnh sửa câu trả lời nhanh",
+      "shortKey": "Ký tự tắt",
+      "shortKeyPlaceholder": "Nhập ký tự",
+      "imageContent": "Nội dung hình ảnh",
+      "noMediaSelected": "Chưa chọn hình ảnh / video",
+      "messageContent": "Nội dung tin nhắn",
+      "messagePlaceholder": "Nhập nội dung ... (Nhấn Shift + Enter để xuống dòng)",
+      "saveTemplate": "Lưu mẫu",
+      "button": {
+        "addMedia": "Thêm ảnh/video",
+        "saveReply": "Lưu câu trả lời",
+        "addForm": "Thêm câu trả lời nhanh"
+      },
+      "table": {
+        "stt": "STT",
+        "shortKey": "Ký tự tắt",
+        "messageContent": "Nội dung tin nhắn",
+        "media": "Ảnh/Video",
+        "action": "Hành động"
+      }
+    },
+    "mediaStore": {
+      "title": "Hình ảnh/video hay dùng",
+      "addMedia": "Thêm ảnh/video",
+      "images": "Ảnh",
+      "videos": "Video",
+      "select": "Chọn",
+      "confirmDelete": "Bạn có chắc chắn muốn xóa?",
+      "maxSelectionLimit": "Giới hạn chọn tối đa 6 ảnh/video",
+      "shopIdNotFound": "Không tìm thấy Shop ID"
+    },
+    "tableInvitation": {
+      "loading": "Đang tải...",
+      "confirmAccept": "Bạn có chắc chắn muốn chấp nhận lời mời này?",
+      "confirmReject": "Bạn có chắc chắn muốn từ chối lời mời này?",
+      "failedAccept": "Không thể chấp nhận lời mời",
+      "failedReject": "Không thể từ chối lời mời",
+      "unknownBranch": "Chi nhánh không xác định",
+      "accept": "Chấp nhận",
+      "reject": "Từ chối",
+      "noInvitations": "Chưa có lời mời nào",
+      "status": {
+        "accepted": "Đã chấp nhận",
+        "pending": "Đang chờ"
+      },
+      "table": {
+        "no": "STT",
+        "branchName": "Tên Chi Nhánh",
+        "role": "Vai Trò",
+        "status": "Trạng Thái",
+        "date": "Ngày",
+        "expiryDate": "Ngày Hết Hạn",
+        "actions": "Hành Động"
+      }
+    },
+    "notificationTable": {
+      "title": "Thông Báo Hệ Thống",
+      "loading": "Đang tải thông báo...",
+      "showing": "Hiển thị {{start}} - {{end}} trong tổng số {{total}}",
+      "system": "Hệ Thống",
+      "unknown": "Không xác định",
+      "noNotifications": "Không tìm thấy thông báo",
+      "type": {
+        "info": "Thông Tin",
+        "warning": "Cảnh Báo",
+        "success": "Thành Công",
+        "danger": "Nguy Hiểm",
+        "order": "Đơn Hàng",
+        "task": "Nhiệm Vụ",
+        "salary": "Lương"
+      },
+      "time": {
+        "justNow": "Vừa xong",
+        "minutesAgo": "{{count}} phút trước",
+        "hoursAgo": "{{count}} giờ trước",
+        "daysAgo": "{{count}} ngày trước"
+      },
+      "status": {
+        "read": "Đã Đọc",
+        "unread": "Chưa Đọc"
+      },
+      "pagination": {
+        "previous": "Trước",
+        "next": "Tiếp"
+      },
+      "table": {
+        "title": "Tiêu Đề",
+        "author": "Tác Giả",
+        "time": "Thời Gian",
+        "type": "Loại",
+        "status": "Trạng Thái"
+      },
+      "detail": {
+        "author": "Tác Giả",
+        "time": "Thời Gian",
+        "type": "Loại",
+        "source": "Nguồn",
+        "content": "Nội Dung",
+        "context": "Ngữ Cảnh",
+        "resource": "Tài Nguyên",
+        "id": "ID"
+      }
+    },
+    "assistantAI": {
+      "title": "Trợ lý AI"
+    }
+  },
+  "error404": {
+    "title": "Trang không tìm thấy",
+    "description": "Xin lỗi, trang bạn đang tìm kiếm không tồn tại hoặc đã bị di chuyển.",
+    "description2": "Vui lòng kiểm tra lại đường dẫn hoặc quay lại trang chủ.",
+    "goHome": "Về trang chủ",
+    "goBack": "Quay lại",
+    "popularPages": "Các trang phổ biến:",
+    "orders": "Đơn hàng",
+    "products": "Sản phẩm",
+    "messages": "Tin nhắn",
+    "profile": "Hồ sơ"
+  },
+  "messagePage": {
+    "sidebar": {
+      "noConversation": "Không tìm thấy cuộc trò chuyện nào.",
+      "searchPlaceholder": "Tìm kiếm theo tên khách hàng...",
+      "tagFilter": "Thẻ"
+    },
+    "chatpanel": {
+      "guideText": "Chọn cuộc trò chuyện bên trái"
+    }
   }
 }
-

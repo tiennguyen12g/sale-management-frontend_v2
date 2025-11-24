@@ -1,13 +1,11 @@
 import React, { useState, useEffect, memo } from "react";
 import classNames from "classnames/bind";
 import styles from "./ProductTableForStaff.module.scss";
-
 const cx = classNames.bind(styles);
-import { type ProductType, type ProductDetailsType } from "../../../../zustand/productStore";
+
 import { useProductStore } from "../../../../zustand/productStore";
 import { useBranchStore } from "../../../../zustand/branchStore";
-import NotificationBox_v2 from "../../../../ultilitis/NotificationBox_v2";
-import { useAuthStore } from "../../../../zustand/authStore";
+import NotificationBox_v2 from "../../../../utils/NotificationBox_v2";
 
 interface Props {}
 
@@ -18,7 +16,6 @@ function ProductTableForStaff() {
   // const startAutoFetch = useProductStore((s) => s.startAutoFetch);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [showNotification, setShowNotification] = useState(false);
-  const { logout, yourStaffId } = useAuthStore();
 
   const toggleExpand = (id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
@@ -45,19 +42,6 @@ function ProductTableForStaff() {
     GetData();
   }, [fetchProducts, selectedBranch?._id]);
 
-  // Auto-refresh products every 60 seconds
-  // useEffect(() => {
-  //   if (!selectedBranch?._id) {
-  //     return;
-  //   }
-
-  //   const timer = setInterval(() => {
-  //     fetchProducts(selectedBranch._id);
-  //     console.log("fetch products for branch:", selectedBranch._id);
-  //   }, 60 * 1000);
-
-  //   return () => clearInterval(timer); // ✅ return a cleanup function
-  // }, [fetchProducts, selectedBranch?._id]);
   useEffect(() => {
     if (selectedBranch?._id) {
       fetchProducts(selectedBranch._id);
@@ -65,16 +49,11 @@ function ProductTableForStaff() {
     }
   }, [fetchProducts, selectedBranch?._id]);
 
-  // const product = products.filter((p) => p.name === productName);
-  const handleLogout = () => {
-    logout();
-    window.location.reload();
-  };
   return (
     <div className={cx("product-table")}>
       {showNotification && statusMsg && <NotificationBox_v2 message={statusMsg} onClose={() => setShowNotification(false)} />}
 
-      <h3>Danh sách sản phẩm đang bán{selectedBranch ? ` - ${selectedBranch.display_name}` : ""}</h3>
+      <h3 className="mb-4">Danh sách sản phẩm đang bán{selectedBranch ? ` - ${selectedBranch.display_name}` : ""}</h3>
       {!selectedBranch && <div style={{ padding: "1rem", color: "#999", textAlign: "center" }}>Vui lòng chọn một chi nhánh để xem danh sách sản phẩm</div>}
       {selectedBranch && products.length === 0 && !statusMsg && (
         <div style={{ padding: "1rem", color: "#999", textAlign: "center" }}>Không có sản phẩm nào được gán cho chi nhánh này</div>
@@ -90,7 +69,6 @@ function ProductTableForStaff() {
             <th>Size có sẵn</th>
             <th>Màu có sẵn</th>
             <th>Ảnh</th>
-            {/* <th style={{width: 190}}>Action</th> */}
           </tr>
         </thead>
         <tbody>
@@ -110,7 +88,7 @@ function ProductTableForStaff() {
                     <td>{totalItem}</td>
                     <td>{p.sizeAvailable.join(", ") || "-"}</td>
                     <td>{p.colorAvailable.join(", ") || "-"}</td>
-                    <td>
+                    <td className="flex gap-2">
                       {p.imageUrl && p.imageUrl.length > 0 ? (
                         p.imageUrl.map((img, i) => (
                           <img key={i} src={img.url} alt={img.name} style={{ width: "40px", height: "40px", marginRight: "4px", objectFit: "cover" }} />

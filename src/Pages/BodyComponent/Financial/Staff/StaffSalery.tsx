@@ -11,10 +11,10 @@ import { MdModeEdit } from "react-icons/md";
 import AttendanceCalendar from "./AttendanceCalendar";
 import { useStaffStore } from "../../../../zustand/staffStore";
 import { useAuthStore } from "../../../../zustand/authStore";
-import UploadExcelBox from "../../../../ultilitis/UploadExcelBox";
+import UploadExcelBox from "../../../../utils/UploadExcelBox";
 import UpdateSalaryButton from "./UpdateSalary";
-import WhoIsOnline from "../../../../StaffPage/utilities/WhoIsOnline";
-import WhoIsOnlineSocket from "../../../../StaffPage/utilities/WhoIsOnlineSocket";
+import WhoIsOnline from "../../../StaffPage/utilities/WhoIsOnline";
+import WhoIsOnlineSocket from "../../../StaffPage/utilities/WhoIsOnlineSocket";
 // Removed direct API imports - now using store functions
 import { StaffRedistributeButton } from "./RedistributeOrder";
 import ManagerNewOrderStats from "./ManageNewOrder";

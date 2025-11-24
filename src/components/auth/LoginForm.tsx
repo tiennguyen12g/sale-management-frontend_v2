@@ -3,9 +3,13 @@ import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Login_API } from "@/config/api";
 import { useAuthStore } from "@/zustand/authStore";
-
-export default function LoginForm() {
+import { Button, useToastSeri } from "@tnbt/react-favorit-style";
+interface Props {
+  setSwitchToSignUp?: React.Dispatch<React.SetStateAction<boolean>>;
+}
+export default function LoginForm({ setSwitchToSignUp }: Props) {
   const { t } = useTranslation();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -25,45 +29,33 @@ export default function LoginForm() {
 
       const data = await res.json();
 
-      console.log('logindata', data);
+      console.log("logindata", data);
       if (!res.ok) {
         setError(data.message || t("auth.login.error.loginFailed", "Đăng nhập thất bại"));
         return;
       }
-      
+
       // 🔑 store token + user
       login(data.token, data.user, data.company, data.branches, data.list_branch_management);
-      
+
       // ✅ Redirect after login
       // Zustand updates are synchronous, so we can navigate immediately
       navigate("/initial");
-
     } catch (err) {
-      console.log('err', err);
+      console.log("err", err);
       setError(t("auth.login.error.somethingWentWrong", "Có lỗi, vui lòng thử lại"));
     }
   };
 
   return (
     <div className="flex items-center justify-center w-full px-4">
-      <form 
-        onSubmit={handleLogin} 
-        className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 space-y-6"
-      >
+      <form onSubmit={handleLogin} className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 space-y-6">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            {t("auth.login.title", "Đăng nhập")}
-          </h2>
-          <p className="text-sm text-gray-600">
-            {t("auth.login.subtitle", "Chọn phương thức đăng nhập bên dưới")}
-          </p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t("auth.login.title", "Đăng nhập")}</h2>
+          <p className="text-sm text-gray-600">{t("auth.login.subtitle", "Chọn phương thức đăng nhập bên dưới")}</p>
         </div>
 
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm text-center">
-            {error}
-          </div>
-        )}
+        {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm text-center">{error}</div>}
 
         <div className="space-y-4">
           <div>
@@ -107,12 +99,23 @@ export default function LoginForm() {
 
         <p className="text-center text-sm text-gray-600">
           {t("auth.login.noAccount", "Bạn chưa có tài khoản?")}{" "}
-          <Link
+          {/* <Link
             to="/register"
             className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
           >
             {t("auth.login.registerLink", "Đăng kí")}
-          </Link>
+          </Link> */}
+          <Button
+            variant="link"
+            className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
+            onClick={() => {
+              if (setSwitchToSignUp) {
+                setSwitchToSignUp(false);
+              }
+            }}
+          >
+            {t("auth.login.registerLink", "Đăng kí")}
+          </Button>
         </p>
       </form>
     </div>

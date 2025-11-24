@@ -3,16 +3,22 @@ import classNames from "classnames/bind";
 import styles from "./PageMessage.module.scss";
 const cx = classNames.bind(styles);
 
+// Hooks
+import { useBranchStore } from "@/zustand/branchStore";
+import { useMessagingStore } from "@/zustand/messagingStore";
+import { useAuthStore } from "@/zustand/authStore";
+// Types
+import type { ChatMessageType } from "@/zustand/messagingStore";
+// Components
+import InitialMessageShow from "./InitialMessageShow";
 import Sidebar from "./SideBar";
 import ChatPanel from "./ChatPanel";
-
-import type { ConversationType, ChatMessageType } from "../../../zustand/messagingStore";
-import CallPagePermission from "./CallPagePermission";
-import { useAuthStore } from "../../../zustand/authStore";
 import PageSelect from "./PageSelect";
-import { useMessagingStore } from "../../../zustand/messagingStore";
-import InitialMessageShow from "./InitialMessageShow";
-import { useBranchStore } from "../../../zustand/branchStore";
+// Libraries
+// Icons
+// Utils
+
+
 export default function PageMessage() {
   const [showListPage, setShowListPage] = useState(false);
   const {
@@ -82,7 +88,7 @@ export default function PageMessage() {
             <div>
               {/* <button onClick={() => }>Create Tag</button> */}
             </div>
-            <div className={cx("shop-name")}>TNBT Shop</div>
+            <div className={cx("shop-name")}>{selectedBranch.display_name || "No name"}</div>
             <div> </div>
           </div>
 
@@ -100,7 +106,7 @@ export default function PageMessage() {
             {/* Right Info Panel */}
             <aside className={cx("info-panel")}>
               <div>
-                <button className={cx("btn-decor")}>Tạo đơn hàng</button>
+                The new feature will implement in here
               </div>
             </aside>
           </div>

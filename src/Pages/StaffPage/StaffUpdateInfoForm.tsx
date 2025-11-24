@@ -1,16 +1,15 @@
 import React, { useState, useEffect, type Dispatch } from "react";
 import classNames from "classnames/bind";
-import styles from "./AddUserInfo.module.scss";
+import styles from "./StaffUpdateInfoForm.module.scss";
 const cx = classNames.bind(styles);
 
-import { AddStaff_API, EditStaffInfo_API } from "../config/api";
-import { useStaffStore, type IStaff } from "../zustand/staffStore";
-import { useAuthStore, type UserInfoType } from "../zustand/authStore";
-import { SalaryByPosition } from "../zustand/staffStore";
-import type { ListBankType, BankInfoType } from "../assets/fullVietNamBanks";
-import CustomSelectGlobal from "../utils/CustomSelectGlobal";
+import { AddStaff_API, EditStaffInfo_API } from "@/config/api";
+import { useStaffStore, type IStaff } from "@/zustand/staffStore";
+import { useAuthStore, type UserInfoType } from "@/zustand/authStore";
+import { SalaryByPosition } from "@/zustand/staffStore";
+import type { ListBankType, BankInfoType } from "@/assets/fullVietNamBanks";
 import Select from "react-select";
-import { fullVietNamBanks } from "../assets/fullVietNamBanks";
+
 interface AddUserInfoProps {
   fullUserData: IStaff; // optional (empty when creating)
   setIsOpenAddForm: Dispatch<React.SetStateAction<boolean>>;
@@ -18,7 +17,7 @@ interface AddUserInfoProps {
   listBanks: ListBankType;
 }
 
-export default function AddUserInfo({ setIsOpenAddForm, fullUserData, setFullUserData, listBanks }: AddUserInfoProps) {
+export default function StaffUpdateInfoForm({ setIsOpenAddForm, fullUserData, setFullUserData, listBanks }: AddUserInfoProps) {
   const { updateYourStaffProfile } = useStaffStore();
   const { getAuthHeader } = useAuthStore();
   const [selectBank, setSelectBank] = useState<string | null>(null);

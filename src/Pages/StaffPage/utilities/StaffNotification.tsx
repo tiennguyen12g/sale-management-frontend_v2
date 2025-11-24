@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { socketAPI } from "../../config/api";
-import bellNotification from "../../ManagementOrders/icons/bell.gif";
-import { useShopOrderStore } from "../../zustand/shopOrderStore";
+import { socketAPI } from "../../../config/api";
+import bellNotification from "@components/ui/icons/gifs/bell.gif"
+import { useShopOrderStore } from "@/zustand/shopOrderStore";
 
 export default function StaffNotification({ staffID, menuCollapsed }: { staffID: string; menuCollapsed: boolean }) {
   const [status, setStatus] = useState("disconnected");
@@ -13,7 +13,7 @@ export default function StaffNotification({ staffID, menuCollapsed }: { staffID:
     let worker: Worker;
     try {
       // Try the worker import - Vite should handle this
-      worker = new Worker(new URL("../../workers/orderWorker.js", import.meta.url), {
+      worker = new Worker(new URL("../../../workers/orderWorker.js", import.meta.url), {
         type: "classic",
       });
     } catch (error) {

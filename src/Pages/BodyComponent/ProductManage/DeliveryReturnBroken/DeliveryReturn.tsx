@@ -12,10 +12,10 @@ import EditOrder from "./EditOrder";
 import { useShopOrderStore } from "../../../../zustand/shopOrderStore";
 import { useProductStore } from "../../../../zustand/productStore";
 import ProductSummaryTable from "./ProductSummaryTable";
-import AllOrdersForOwner from "../../../../ManagementOrders/AllOrdersForOwner";
+import AllOrdersForOwner from "../../../ManagementOrders/AllOrdersForOwner";
 import ProductSummaryTable_v2 from "./ProductSummaryTable_v2";
-import UploadExcelBox from "../../../../ultilitis/UploadExcelBox";
-import UploadDeliveryStatus from "../../../../ultilitis/UploadDeliveryStatus";
+import UploadExcelBox from "../../../../utils/UploadExcelBox";
+import UploadDeliveryStatus from "../../../../utils/UploadDeliveryStatus";
 // Utility to format date (YYYY-MM-DD)
 const formatDate = (dateStr: string) => new Date(dateStr).toISOString().slice(0, 10);
 

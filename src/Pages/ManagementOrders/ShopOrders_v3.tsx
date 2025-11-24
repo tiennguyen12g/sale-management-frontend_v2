@@ -7,33 +7,34 @@ const cx = classNames.bind(styles);
 import { MdDelete } from "react-icons/md";
 import { IoIosCopy } from "react-icons/io";
 import { MdModeEditOutline } from "react-icons/md";
-import deliveryTruck from "./icons/delivery-truck.gif";
-import atm from "./icons/atm.gif";
-import dislike from "./icons/dislike.gif";
-import hourglass from "./icons/hourglass.gif";
-import conveyorBelt from "./icons/conveyor-belt.gif";
-import phone from "./icons/phone.gif";
-import outOfStock from "./icons/sold.png";
-import courier from "./icons/courier.gif";
-import dollarIcon from "./icons/dollar.gif";
 import { HiMinusSmall } from "react-icons/hi2";
 import { HiPlusSmall } from "react-icons/hi2";
-import { HiSearch } from "react-icons/hi";
 import { FcFilledFilter } from "react-icons/fc";
 
+import deliveryTruck from "@/components/ui/icons/gifs/delivery-truck.gif"
+import atm from "@/components/ui/icons/gifs/atm.gif";
+import dislike from "@/components/ui/icons/gifs/dislike.gif";
+import hourglass from "@/components/ui/icons/gifs/hourglass.gif";
+import conveyorBelt from "@/components/ui/icons/gifs/conveyor-belt.gif";
+import phone from "@/components/ui/icons/gifs/phone.gif";
+import outOfStock from "@/components/ui/icons/gifs/sold.png";
+import courier from "@/components/ui/icons/gifs/courier.gif";
+import dollarIcon from "@/components/ui/icons/gifs/dollar.gif";
+
+
 // Hooks and type
-import { useAuthStore } from "../zustand/authStore";
-import { useBranchStore } from "../zustand/branchStore";
-import { useStaffStore, type StaffRole } from "../zustand/staffStore";
-import { useShopOrderStore, type OrderDataFromServerType, type OriginalOrder, type FinalOrder } from "../zustand/shopOrderStore";
-import { type ProductType, type ProductDetailsType, useProductStore } from "../zustand/productStore";
+import { useAuthStore } from "../../zustand/authStore";
+import { useBranchStore } from "../../zustand/branchStore";
+import { useStaffStore, type StaffRole } from "../../zustand/staffStore";
+import { useShopOrderStore, type OrderDataFromServerType, type OriginalOrder, type FinalOrder } from "../../zustand/shopOrderStore";
+import { type ProductType, type ProductDetailsType, useProductStore } from "../../zustand/productStore";
 
 // Components
 
-import VnAddressSelect_Old from "../ultilitis/VnAddress/VnAddressOld";
-import { StaffRedistributeButton } from "../pages/BodyComponent/Financial/Staff/RedistributeOrder";
+import VnAddressSelect_Old from "../../utils/VnAddress/VnAddressOld";
+import { StaffRedistributeButton } from "../BodyComponent/Financial/Staff/RedistributeOrder";
 import { ClaimMorningButton } from "./ClaimOrderMorning";
-import NotificationBox_v2 from "../ultilitis/NotificationBox_v2";
+import NotificationBox_v2 from "../../utils/NotificationBox_v2";
 import FreeShipAnimate from "./PromotionTags/FreeShipAnimate";
 import Coupon from "./PromotionTags/Coupon";
 import {
@@ -52,7 +53,7 @@ import {
   UploadBox,
 } from "@tnbt/react-favorit-style";
 // Ultilitys
-import CustomSelectGlobal from "../ultilitis/CustomSelectGlobal";
+import CustomSelectGlobal from "../../utils/CustomSelectGlobal";
 import { icons } from "@/components/ui/icons/Icons";
 
 type VirtualCartType = ProductDetailsType & { quantity: number; isSelected: boolean };

@@ -22,7 +22,6 @@
     "expand": "Expand",
     "collapse": "Collapse",
     "logout": "Logout"
-    
   },
   "profile": {
     "title": "Profile Settings",
@@ -199,8 +198,6 @@
     "remove": "Remove",
     "revoke": "Revoke",
     "send": "Send"
-
-
   },
   "content": {
     "deleteOrders": "Delete {{count}} orders",
@@ -252,165 +249,190 @@
         "selectBranchPlaceholder": "Select a branch"
       }
     },
-          "notification": {
+    "notification": {
       "name": "Notification",
       "title": "Notification Settings",
-        "systemNotifications": "System Notifications",
-        "invitations": "Invitations"
-      },
-      "tags": {
-        "name": "Tags conversation",
-        "title": "Tag Management",
-        "addTag": "Add Tag",
-        "create": {
-          "title": "Add New Tag",
-          "tagName": "Tag Name",
-          "tagNamePlaceholder": "Enter tag name...",
-          "colorPicker": "Color Picker",
-          "colorPreview": "Preview - Theme color will be displayed",
-          "tagNameAndColor": "Tag name and color",
-          "noTagsAdded": "No tags added.",
-          "confirmDelete": "Are you sure you want to delete this tag?",
+      "systemNotifications": "System Notifications",
+      "invitations": "Invitations"
+    },
+    "tags": {
+      "name": "Tags conversation",
+      "title": "Tag Management",
+      "addTag": "Add Tag",
+      "create": {
+        "title": "Add New Tag",
+        "tagName": "Tag Name",
+        "tagNamePlaceholder": "Enter tag name...",
+        "colorPicker": "Color Picker",
+        "colorPreview": "Preview - Theme color will be displayed",
+        "tagNameAndColor": "Tag name and color",
+        "noTagsAdded": "No tags added.",
+        "confirmDelete": "Are you sure you want to delete this tag?",
 
-          "table": {
-            "stt": "No",
-            "tagName": "Tag Name",
-            "color": "Color",
-            "action": "Action"
-          }
-        },
-        "edit": {
-          "title": "Edit Tag",
-          "tagName": "Tag Name",
-          "tagNamePlaceholder": "Enter tag name...",
-          "colorPicker": "Color Picker",
-          "colorPreview": "Preview - Theme color will be displayed",
-          "newTag": "New Tag",
-          "disableTag": "Disable this tag",
-          "enterTagName": "Please enter tag name",
-          "saveEdit": "Save Changes"
-        },
-        "manage": {
-          "title": "Conversation Tags",
-          "tags": "Tags",
-          "confirmDelete": "Are you sure you want to delete this tag?",
-          "table": {
-            "stt": "No",
-            "tagName": "Tag Name",
-            "color": "Color",
-            "action": "Action"
-          }
-        }
-      },
-      "fastMessage": {
-        "name": "Reply Support",
-        "title": "Reply Support",
-        "quickReply": "Quick Reply",
-        "confirmDelete": "Are you sure you want to delete?",
-        "addQuickReply": "Add Quick Reply",
-        "editQuickReply": "Edit Quick Reply",
-        "shortKey": "Short Key",
-        "shortKeyPlaceholder": "Enter key",
-        "imageContent": "Image Content",
-        "noMediaSelected": "No images/videos selected",
-        "messageContent": "Message Content",
-        "messagePlaceholder": "Enter content... (Press Shift + Enter for new line)",
-        "saveTemplate": "Save Template",
-        "button": {
-          "addMedia": "Add Image/Video",
-          "saveReply": "Save Reply",
-          "addForm": "Add Quick Reply"
-        },
         "table": {
           "stt": "No",
-          "shortKey": "Short Key",
-          "messageContent": "Message Content",
-          "media": "Image/Video",
+          "tagName": "Tag Name",
+          "color": "Color",
           "action": "Action"
         }
       },
-      "mediaStore": {
-        "title": "Frequently Used Images/Videos",
-        "addMedia": "Add Image/Video",
-        "images": "Images",
-        "videos": "Videos",
-        "select": "Select",
-        "confirmDelete": "Are you sure you want to delete?",
-        "maxSelectionLimit": "Maximum selection limit: 6 images/videos",
-        "shopIdNotFound": "Shop ID not found"
+      "edit": {
+        "title": "Edit Tag",
+        "tagName": "Tag Name",
+        "tagNamePlaceholder": "Enter tag name...",
+        "colorPicker": "Color Picker",
+        "colorPreview": "Preview - Theme color will be displayed",
+        "newTag": "New Tag",
+        "disableTag": "Disable this tag",
+        "enterTagName": "Please enter tag name",
+        "saveEdit": "Save Changes"
       },
-      "tableInvitation": {
-        "loading": "Loading...",
-        "confirmAccept": "Are you sure you want to accept this invitation?",
-        "confirmReject": "Are you sure you want to reject this invitation?",
-        "failedAccept": "Failed to accept invitation",
-        "failedReject": "Failed to reject invitation",
-        "unknownBranch": "Unknown Branch",
-        "accept": "Accept",
-        "reject": "Reject",
-        "noInvitations": "No invitations received",
-        "status": {
-          "accepted": "Accepted",
-          "pending": "Pending"
-        },
+      "manage": {
+        "title": "Conversation Tags",
+        "tags": "Tags",
+        "confirmDelete": "Are you sure you want to delete this tag?",
         "table": {
-          "no": "No",
-          "branchName": "Branch Name",
-          "role": "Role",
-          "status": "Status",
-          "date": "Date",
-          "expiryDate": "Expiry Date",
-          "actions": "Actions"
-        }
-      },
-      "notificationTable": {
-        "title": "System Notifications",
-        "loading": "Loading notifications...",
-        "showing": "Showing {{start}} - {{end}} of {{total}}",
-        "system": "System",
-        "unknown": "Unknown",
-        "noNotifications": "No notifications found",
-        "type": {
-          "info": "Info",
-          "warning": "Warning",
-          "success": "Success",
-          "danger": "Danger",
-          "order": "Order",
-          "task": "Task",
-          "salary": "Salary"
-        },
-        "time": {
-          "justNow": "Just now",
-          "minutesAgo": "{{count}} minute(s) ago",
-          "hoursAgo": "{{count}} hour(s) ago",
-          "daysAgo": "{{count}} day(s) ago"
-        },
-        "status": {
-          "read": "Read",
-          "unread": "Unread"
-        },
-        "pagination": {
-          "previous": "Previous",
-          "next": "Next"
-        },
-        "table": {
-          "title": "Title",
-          "author": "Author",
-          "time": "Time",
-          "type": "Type",
-          "status": "Status"
-        },
-        "detail": {
-          "author": "Author",
-          "time": "Time",
-          "type": "Type",
-          "source": "Source",
-          "content": "Content",
-          "context": "Context",
-          "resource": "Resource",
-          "id": "ID"
+          "stt": "No",
+          "tagName": "Tag Name",
+          "color": "Color",
+          "action": "Action"
         }
       }
+    },
+    "fastMessage": {
+      "name": "Reply Support",
+      "title": "Reply Support",
+      "quickReply": "Quick Reply",
+      "confirmDelete": "Are you sure you want to delete?",
+      "addQuickReply": "Add Quick Reply",
+      "editQuickReply": "Edit Quick Reply",
+      "shortKey": "Short Key",
+      "shortKeyPlaceholder": "Enter key",
+      "imageContent": "Image Content",
+      "noMediaSelected": "No images/videos selected",
+      "messageContent": "Message Content",
+      "messagePlaceholder": "Enter content... (Press Shift + Enter for new line)",
+      "saveTemplate": "Save Template",
+      "button": {
+        "addMedia": "Add Image/Video",
+        "saveReply": "Save Reply",
+        "addForm": "Add Quick Reply"
+      },
+      "table": {
+        "stt": "No",
+        "shortKey": "Short Key",
+        "messageContent": "Message Content",
+        "media": "Image/Video",
+        "action": "Action"
+      }
+    },
+    "mediaStore": {
+      "title": "Frequently Used Images/Videos",
+      "addMedia": "Add Image/Video",
+      "images": "Images",
+      "videos": "Videos",
+      "select": "Select",
+      "confirmDelete": "Are you sure you want to delete?",
+      "maxSelectionLimit": "Maximum selection limit: 6 images/videos",
+      "shopIdNotFound": "Shop ID not found"
+    },
+    "tableInvitation": {
+      "loading": "Loading...",
+      "confirmAccept": "Are you sure you want to accept this invitation?",
+      "confirmReject": "Are you sure you want to reject this invitation?",
+      "failedAccept": "Failed to accept invitation",
+      "failedReject": "Failed to reject invitation",
+      "unknownBranch": "Unknown Branch",
+      "accept": "Accept",
+      "reject": "Reject",
+      "noInvitations": "No invitations received",
+      "status": {
+        "accepted": "Accepted",
+        "pending": "Pending"
+      },
+      "table": {
+        "no": "No",
+        "branchName": "Branch Name",
+        "role": "Role",
+        "status": "Status",
+        "date": "Date",
+        "expiryDate": "Expiry Date",
+        "actions": "Actions"
+      }
+    },
+    "notificationTable": {
+      "title": "System Notifications",
+      "loading": "Loading notifications...",
+      "showing": "Showing {{start}} - {{end}} of {{total}}",
+      "system": "System",
+      "unknown": "Unknown",
+      "noNotifications": "No notifications found",
+      "type": {
+        "info": "Info",
+        "warning": "Warning",
+        "success": "Success",
+        "danger": "Danger",
+        "order": "Order",
+        "task": "Task",
+        "salary": "Salary"
+      },
+      "time": {
+        "justNow": "Just now",
+        "minutesAgo": "{{count}} minute(s) ago",
+        "hoursAgo": "{{count}} hour(s) ago",
+        "daysAgo": "{{count}} day(s) ago"
+      },
+      "status": {
+        "read": "Read",
+        "unread": "Unread"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next"
+      },
+      "table": {
+        "title": "Title",
+        "author": "Author",
+        "time": "Time",
+        "type": "Type",
+        "status": "Status"
+      },
+      "detail": {
+        "author": "Author",
+        "time": "Time",
+        "type": "Type",
+        "source": "Source",
+        "content": "Content",
+        "context": "Context",
+        "resource": "Resource",
+        "id": "ID"
+      }
+    },
+    "assistantAI": {
+      "title": "AI assistant"
+    }
+
+  },
+  "error404": {
+    "title": "Page Not Found",
+    "description": "Sorry, the page you are looking for does not exist or has been moved.",
+    "description2": "Please check the URL or return to the home page.",
+    "goHome": "Go to Home",
+    "goBack": "Go Back",
+    "popularPages": "Popular Pages:",
+    "orders": "Orders",
+    "products": "Products",
+    "messages": "Messages",
+    "profile": "Profile"
+  },
+  "messagePage": {
+    "sidebar": {
+      "noConversation": "No conversation found.",
+      "searchPlaceholder": "Search by customer name...",
+      "tagFilter": "Tag"
+    },
+    "chatpanel": {
+      "guideText": "Choose the conversation in the left"
+    }
   }
 }
-

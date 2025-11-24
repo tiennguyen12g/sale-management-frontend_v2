@@ -8,9 +8,9 @@ import type { OrderStatusType, OrderType, } from "./DeliveryReturnType";
 import { CarrierFee, VoucherValue, ordersData } from "./DeliveryReturnType";
 import { useShopOrderStore } from "../../../../zustand/shopOrderStore";
 import { useProductStore } from "../../../../zustand/productStore";
-import AllOrdersForOwner from "../../../../ManagementOrders/AllOrdersForOwner";
+import AllOrdersForOwner from "../../../ManagementOrders/AllOrdersForOwner";
 import ProductSummaryTable_v2 from "./ProductSummaryTable_v2";
-import UploadDeliveryStatus from "../../../../ultilitis/UploadDeliveryStatus";
+import UploadDeliveryStatus from "../../../../utils/UploadDeliveryStatus";
 import PlatformSummaryTable_v2 from "../ProductDetails/PlatformSummaryTable_v2";
 // Utility to format date (YYYY-MM-DD)
 const formatDate = (dateStr: string) => new Date(dateStr).toISOString().slice(0, 10);

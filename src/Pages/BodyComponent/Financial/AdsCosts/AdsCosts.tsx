@@ -16,7 +16,7 @@ import ReturnFeeChart from "../Charts/ReturnFeeChart";
 import DeliveriedReturnedChart from "../Charts/DeliveriedReturnedChart";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import UploadExcelBox from "../../../../ultilitis/UploadExcelBox";
+import UploadExcelBox from "../../../../utils/UploadExcelBox";
 import { AddAdsCosts_API, GetAdsCosts_API, UploadAdsCosts_API } from "../../../../config/api";
 import { useAuthStore } from "../../../../zustand/authStore";
 import { useAdsCostStore } from "../../../../zustand/adsCostStore";

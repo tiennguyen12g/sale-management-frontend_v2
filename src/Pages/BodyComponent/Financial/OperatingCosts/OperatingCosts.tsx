@@ -10,7 +10,7 @@ import { AddOperatingCost_API, UploadOperatingCost_API } from "../../../../confi
 import { useOperatingCostsStore } from "../../../../zustand/operatingCostsStore";
 import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
-import UploadExcelBox from "../../../../ultilitis/UploadExcelBox";
+import UploadExcelBox from "../../../../utils/UploadExcelBox";
 import { useAuthStore } from "../../../../zustand/authStore";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";

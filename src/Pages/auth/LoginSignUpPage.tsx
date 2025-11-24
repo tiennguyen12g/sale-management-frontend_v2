@@ -33,7 +33,7 @@ export default function LoginSignUpPage() {
 
         {/* Form Container */}
         <div className={cx("form-container")}>
-          {isLogin ? <LoginForm /> : <SignUpForm />}
+          {isLogin ? <LoginForm setSwitchToSignUp={setIsLogin}/> : <SignUpForm setSwitchToLogin={setIsLogin}/>}
         </div>
       </div>
     </AuthLayout>

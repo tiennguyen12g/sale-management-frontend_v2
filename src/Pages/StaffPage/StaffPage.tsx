@@ -3,17 +3,29 @@ import classNames from "classnames/bind";
 import styles from "./StaffPage.module.scss";
 const cx = classNames.bind(styles);
 
-import AddUserInfo from "../AuthPage/AddUserInfo";
-import { useStaffStore } from "../zustand/staffStore";
-import type { IStaff, StaffRole, IAttendance } from "../zustand/staffStore";
-import { useAuthStore, type UserInfoType } from "../zustand/authStore";
-import AttendanceCalendar from "../pages/BodyComponent/Financial/Staff/AttendanceCalendar";
-import { deligenceBonus } from "../config/DefaultData";
-import StaffHeartbeat from "./utilities/StaffHeartBeat";
+
+// Configs and contants
+import { deligenceBonus } from "@/config/DefaultData";
+import { fullVietNamBanks } from "@/assets/fullVietNamBanks";
+
+// Libraries
 import { VietQR } from "vietqr";
-import type { ListBankType } from "../assets/fullVietNamBanks";
-import { fullVietNamBanks } from "../assets/fullVietNamBanks";
-import { useBranchStore } from "../zustand/branchStore";
+
+// Components
+import StaffUpdateInfoForm from "@/pages/StaffPage/StaffUpdateInfoForm";
+import AttendanceCalendar from "@/pages/BodyComponent/Financial/Staff/AttendanceCalendar";
+import StaffHeartbeat from "./utilities/StaffHeartBeat";
+
+// Types
+import type { IStaff, StaffRole, IAttendance } from "@/zustand/staffStore";
+import type { UserInfoType } from "@/zustand/authStore";
+import type { ListBankType } from "@/assets/fullVietNamBanks";
+
+// Hooks
+import { useStaffStore } from "@/zustand/staffStore";
+import { useAuthStore } from "@/zustand/authStore";
+import { useBranchStore } from "@/zustand/branchStore";
+
 export interface FormGetUserInfo {
   name: string;
   birthday: string;
@@ -474,7 +486,7 @@ export default function StaffPage() {
 
           {isOpenForm && (
             <div className={cx("wrap-add-form")}>
-              <AddUserInfo fullUserData={fullUserData} setFullUserData={setFullUserData} setIsOpenAddForm={setIsOpenForm} listBanks={listBanks} />
+              <StaffUpdateInfoForm fullUserData={fullUserData} setFullUserData={setFullUserData} setIsOpenAddForm={setIsOpenForm} listBanks={listBanks} />
             </div>
           )}
         </React.Fragment>

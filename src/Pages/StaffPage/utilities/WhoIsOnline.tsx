@@ -3,7 +3,7 @@ import classNames from "classnames/bind";
 import styles from "./WhoIsOnline.module.scss";
 const cx = classNames.bind(styles);
 
-import { HeartBeat_Result_API } from "../../config/api";
+import { HeartBeat_Result_API } from "../../../config/api";
 // import StaffHeartbeat from "./StaffHeartbeat"; // usually used by staff clients, not manager UI
 
 type StaffStatus = {

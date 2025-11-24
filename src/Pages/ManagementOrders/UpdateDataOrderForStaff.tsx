@@ -3,8 +3,8 @@ import classNames from "classnames/bind";
 import styles from "./UpdateDataOrderForStaff.module.scss";
 const cx = classNames.bind(styles);
 
-import { useAuthStore } from "../zustand/authStore";
-import { UpdateDataOrderForStaff_API } from "../config/api";
+import { useAuthStore } from "../../zustand/authStore";
+import { UpdateDataOrderForStaff_API } from "../../config/api";
 interface Props {
   setOpenUpdateDataForStaff: Dispatch<SetStateAction<boolean>>;
 }

@@ -7,7 +7,7 @@ import { FaArrowUpLong } from "react-icons/fa6";
 import { MdEdit, MdDelete } from "react-icons/md";
 
 import useFilterAndPagination from "./useFilterAndPagination";
-import UploadExcelBox from "../../../../ultilitis/UploadExcelBox";
+import UploadExcelBox from "../../../../utils/UploadExcelBox";
 import AddManualForm from "./AddManualForm";
 
 import EditExportForm from "./EditExportForm";

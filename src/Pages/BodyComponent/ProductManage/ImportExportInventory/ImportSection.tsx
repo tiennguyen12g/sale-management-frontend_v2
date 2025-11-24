@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import classNames from 'classnames/bind'
 import styles from './ImportExportInventort_v2.module.scss'
 const cx = classNames.bind(styles)
-import UploadExcelBox from "../../../../ultilitis/UploadExcelBox";
+import UploadExcelBox from "../../../../utils/UploadExcelBox";
 import AddManualForm from "./AddManualForm";
 import AddImportModal from "./AddImportModal";
 import ImportTable from "./ImportTable";

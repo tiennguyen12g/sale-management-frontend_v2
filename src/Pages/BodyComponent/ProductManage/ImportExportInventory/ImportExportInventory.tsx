@@ -9,7 +9,7 @@ import { MdEdit, MdDelete } from "react-icons/md";
 // import type { ImportType, ExportType, InventoryType, OtherFeesType } from "./Dataset/ImportExportInventoryType";
 import { imports, exports, inventory } from "./Dataset/ImportExportInventoryType";
 import useFilterAndPagination from "./useFilterAndPagination";
-import UploadExcelBox from "../../../../ultilitis/UploadExcelBox";
+import UploadExcelBox from "../../../../utils/UploadExcelBox";
 import AddManualForm from "./AddManualForm";
 
 import EditExportForm from "./EditExportForm";

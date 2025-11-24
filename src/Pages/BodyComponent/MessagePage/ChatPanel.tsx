@@ -4,18 +4,16 @@ import styles from "./ChatPanel.module.scss";
 const cx = classNames.bind(styles);
 
 // Icons
-import { FaRegSmile, FaPaperclip } from "react-icons/fa";
+import { FaRegSmile} from "react-icons/fa";
 import { FaImage } from "react-icons/fa6";
 import { LuReply } from "react-icons/lu";
 import { RiCloseCircleFill } from "react-icons/ri";
 import { IoIosCloseCircle } from "react-icons/io";
-import { IoVideocam } from "react-icons/io5";
 import { FaVideo } from "react-icons/fa6";
 import { AiFillLike } from "react-icons/ai";
 import { FcLike } from "react-icons/fc";
 import { FaPhoneSquare } from "react-icons/fa";
 import { FaAddressCard } from "react-icons/fa6";
-import { IoIosCheckmarkCircle } from "react-icons/io";
 import { PiSealCheckFill } from "react-icons/pi";
 import { FaTimesCircle } from "react-icons/fa";
 import { FaShippingFast } from "react-icons/fa";
@@ -24,13 +22,14 @@ import { IoSend } from "react-icons/io5";
 // Components and Types
 import MessageEmoji from "./ultility/MessageEmoji";
 import FastAnswer from "./ultility/FastAnswer";
-import CustomSelect from "../../../ultilitis/CustomSelect";
+import CustomSelect from "../../../utils/CustomSelect";
 
 // Hooks
-import { type ConversationType, type ChatMessageType, useMessagingStore } from "../../../zustand/messagingStore";
-import { useAuthStore } from "../../../zustand/authStore";
-import { type TagType, type MediaLinkedType, useBranchStore } from "../../../zustand/branchStore";
+import { useTranslation } from "react-i18next";
 
+// Types
+import { type ConversationType, type ChatMessageType, useMessagingStore } from "../../../zustand/messagingStore";
+import { type TagType, type MediaLinkedType, useBranchStore } from "../../../zustand/branchStore";
 // Libraries
 import { v4 as uuidv4 } from "uuid";
 
@@ -42,6 +41,7 @@ interface Props {
 }
 
 export default function ChatPanel({ messagesByConversation, onSendMessage, conversationInfo, branchId }: Props) {
+  const {t} = useTranslation();
   const {
     messageList,
     selectedConversationId,
@@ -405,7 +405,7 @@ export default function ChatPanel({ messagesByConversation, onSendMessage, conve
   return (
     <React.Fragment>
       {!selectedConversationId ? (
-        <div className={cx("chat-empty")}>Chọn cuộc trò chuyện bên trái</div>
+        <div className={cx("chat-empty")}>{t("messagePage.chatpanel.guideText", "Chọn cuộc trò chuyện bên trái")}</div>
       ) : (
         <section className={cx("chat")}>
           <header className={cx("chat-header")}>

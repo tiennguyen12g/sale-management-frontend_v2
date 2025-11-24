@@ -1,27 +1,35 @@
 import React, { useState, useEffect } from "react";
 import classNames from "classnames/bind";
 import styles from "./InitialPage.module.scss";
-import { useAuthStore } from "../../zustand/authStore";
-import { useFacebookStore } from "../../zustand/facebookStore";
-import { useStaffStore } from "../../zustand/staffStore";
-import { useBranchStore, type IBranch, type IBranchForStaff } from "../../zustand/branchStore";
+const cx = classNames.bind(styles);
+// Hooks
+import { useAuthStore } from "@/zustand/authStore";
+import { useFacebookStore } from "@/zustand/facebookStore";
+import { useStaffStore } from "@/zustand/staffStore";
+import { useBranchStore } from "@/zustand/branchStore";
+import { useMainMenuStore } from "@/zustand/mainMenuCollapsed";
+// Types
+import { type IBranch, type IBranchForStaff } from "@/zustand/branchStore";
+// Components
+import CombineShop from "./CombineShop";
+import TableInvitation from "../SettingPage/TableInvitation";
+// Libraries
+import { useNavigate } from "react-router-dom";
+// Icons
 import { FaSquareFacebook, FaShop, FaBuilding } from "react-icons/fa6";
 import { SiShopee } from "react-icons/si";
 import { AiFillTikTok } from "react-icons/ai";
 import { TbWorldPlus } from "react-icons/tb";
 import { FaEdit } from "react-icons/fa";
-import CombineShop from "./CombineShop";
-import { useNavigate } from "react-router-dom";
-import TableInvitation from "../SettingPage/TableInvitation";
-import { useMainMenuStore } from "../../zustand/mainMenuCollapsed";
-const cx = classNames.bind(styles);
+// Utils
+
 
 export default function InitialPage() {
   const { user, company, logout, yourStaffId, accessRole, setUpdateAccessRole } = useAuthStore();
   const { user: facebookUser, setUser, setPages, clearFacebookData, saveFacebookUser } = useFacebookStore();
   const { fetchYourStaffProfileInWorkplace } = useStaffStore();
   const { branches, list_branch_management, fetchBranchSettings, setUpdateSelectedBranch, fetchBranches } = useBranchStore();
-    const {  setOpenMenu, } = useMainMenuStore();
+  const { setOpenMenu } = useMainMenuStore();
 
   const [ownedShops, setOwnedShops] = useState<IBranch[]>([]);
   const [staffShops, setStaffShops] = useState<IBranchForStaff[]>([]);
@@ -74,8 +82,8 @@ export default function InitialPage() {
     fetchBranchSettings(branch._id, branch.company_id);
     // TODO: Navigate based on user role
     console.log("Selected branch:", branch);
-    navigate("/ho-so-ca-nhan");
-    setOpenMenu("user-page")
+    navigate("/profile-in-company");
+    setOpenMenu("user-page");
   };
 
   const handleSocialConnect = (platform: "facebook" | "shopee" | "tiktok") => {

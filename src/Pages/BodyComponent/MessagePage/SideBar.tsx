@@ -2,13 +2,20 @@ import React, { useState, useMemo } from "react";
 import classNames from "classnames/bind";
 import styles from "./SideBar.module.scss";
 const cx = classNames.bind(styles);
-import type { ConversationType } from "../../../zustand/messagingStore";
-import { useMessagingStore } from "../../../zustand/messagingStore";
-import { useBranchStore } from "../../../zustand/branchStore";
+
+// Hooks
+import { useMessagingStore } from "@/zustand/messagingStore";
+import { useBranchStore } from "@/zustand/branchStore";
+import { useTranslation } from "react-i18next";
+// Types
+import type { ConversationType } from "@/zustand/messagingStore";
+// Components
+import CustomSelectGlobal from "@/utils/CustomSelectGlobal";
+// Libraries
+// Icons
 import { IoCamera } from "react-icons/io5";
 import { BiSolidVideos } from "react-icons/bi";
-import CustomSelect from "../../../ultilitis/CustomSelect";
-import CustomSelectGlobal from "../../../ultilitis/CustomSelectGlobal";
+// Utils
 interface SidebarProps {
   conversationData: ConversationType[];
 }
@@ -17,9 +24,9 @@ type FilterType = "all" | "unread" | "read";
 type TagFilterType = "all" | string; // "all" or tag id
 
 export default function Sidebar({ conversationData }: SidebarProps) {
-  console.log("conversationData ", conversationData);
   const { fetchMessages, selectedConversationId, setConversationId } = useMessagingStore();
   const { selectedBranch, branchSettings } = useBranchStore();
+  const {t} = useTranslation();
 
   // Search and filter state
   const [searchQuery, setSearchQuery] = useState("");
@@ -81,15 +88,10 @@ export default function Sidebar({ conversationData }: SidebarProps) {
     return obj;
   });
   convertToOptionsType.unshift({
-          name: "Tất cả",
+      name: "Tất cả",
       key: "all",
       color: "black",
   })
-  // convertToOptionsType.push({
-  //         name: "Khách mới",
-  //     key: "Khánh mới",
-  //     color: "rgb(238, 121, 25)",
-  // })
 
   const optionForStatus = [
     {
@@ -109,28 +111,14 @@ export default function Sidebar({ conversationData }: SidebarProps) {
     <aside className={cx("sidebar")}>
       <div className={cx("filter-search-box")}>
         <div className={cx("search")}>
-          <input type="text" placeholder="Tìm kiếm theo tên khách hàng..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+          <input type="text" placeholder={t("messagePage.sidebar.searchPlaceholder", "Tìm kiếm theo tên khách hàng...")} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
         </div>
         <div className={cx("filters")}>
           <div className={cx("filter-group")}>
-            {/* <label htmlFor="read-filter">Trạng thái:</label> */}
-            {/* <select id="read-filter" value={readFilter} onChange={(e) => setReadFilter(e.target.value as FilterType)}>
-              <option value="all">Tất cả</option>
-              <option value="unread">Chưa đọc</option>
-              <option value="read">Đã đọc</option>
-            </select> */}
             <CustomSelectGlobal options={optionForStatus} onChange={(id) => setReadFilter(id as FilterType)} dropdownPosition="bottom" isUseBorder={true} isUsePlaceHolder={false}/>
           </div>
           <div className={cx("filter-group", "group-2")}>
-            <label htmlFor="tag-filter">Thẻ:</label>
-            {/* <select id="tag-filter" value={tagFilter} onChange={(e) => setTagFilter(e.target.value as TagFilterType)}>
-              <option value="all">Tất cả</option>
-              {availableTags.map((tag) => (
-                <option key={tag.id} value={tag.id}>
-                  {tag.tagName}
-                </option>
-              ))}
-            </select> */}
+            <label htmlFor="tag-filter">{t("messagePage.sidebar.tagFilter","Thẻ")}:</label>
             <CustomSelectGlobal
               isUsePlaceHolder={false}
               options={convertToOptionsType}
@@ -144,7 +132,7 @@ export default function Sidebar({ conversationData }: SidebarProps) {
 
       <div className={cx("conversation-list")}>
         {filteredConversations.length === 0 ? (
-          <div className={cx("no-result")}>Không tìm thấy cuộc trò chuyện nào</div>
+          <div className="px-2.5 py-2.5">{t("messagePage.sidebar.noConversation", "Không tìm thấy cuộc trò chuyện nào")}</div>
         ) : (
           filteredConversations.map((c) => {
             if (c) {

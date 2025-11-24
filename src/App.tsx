@@ -7,13 +7,13 @@ import "@i18n/i18next";
 import { I18nProvider } from "@/i18n";
 // Components
 import MainPage from "./pages/MainPage";
-import ProtectedRoute from "./AuthPage/ProtectedRoute";
-import UserPage from "./StaffPage/StaffPage";
-import GlobalSocket from "./ultilitis/GlobalSocket";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import StaffPage from "@/pages/StaffPage/StaffPage";
+import GlobalSocket from "./utils/GlobalSocket";
 import ProductTableForStaff from "./pages/BodyComponent/ProductManage/ProductDetails/ProductTableForStaff";
 import Error404 from "@/components/common/Error404";
-import PageMessage from "./pages/BodyComponent/FacebookAPI/PageMessage";
-import { FacebookSDKLoader } from "./pages/BodyComponent/FacebookAPI/FacebookSDKLoader";
+import PageMessage from "./pages/BodyComponent/MessagePage/PageMessage";
+import { FacebookSDKLoader } from "./lib/SDKs/FacebookSDKLoader";
 import AdsAccountManagement from "./pages/BodyComponent/Financial/AdsCosts/AdsAccountManagement";
 import SettingPage from "./pages/SettingPage/SettingPage";
 import InitialPage from "./pages/InitialPage/InitialPage";
@@ -26,8 +26,8 @@ import LayoutWithSubmenu from "./layout/LayoutWithSubmenu";
 import CreateShopModal from "./TestAPI/createShop";
 
 import LoginSignUpPage from "@/pages/auth/LoginSignUpPage";
-import LoginPage from "@/pages/auth/LoginPage";
-import SignUpPage from "@/pages/auth/SignUpPage";
+import { ToastContainer } from "@tnbt/react-favorit-style";
+import ToastExample from "@/playground/examples/TestToast";
 function AppContent() {
   const location = useLocation();
   // Routes where StaffMenu should NOT appear
@@ -52,10 +52,9 @@ function AppContent() {
       <Routes>
         {/* Public routes */}
         <Route path="/auth" element={<LoginSignUpPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<SignUpPage />} />
+        <Route path="/test" element={<ToastExample />} />
 
-        {/* Initial Page - Shop Selection */}
+        {/* //-- Initial Page - Shop Selection */}
         <Route
           path="/initial"
           element={
@@ -65,7 +64,7 @@ function AppContent() {
           }
         />
 
-        {/* Protected routes */}
+        {/* //-- Protected routes */}
         <Route
           path="/home/*"
           element={
@@ -75,7 +74,7 @@ function AppContent() {
           }
         />
         <Route
-          path="/quan-li-don-hang/*"
+          path="/order-management/*"
           element={
             <ProtectedRoute>
               <Layout1>
@@ -86,18 +85,18 @@ function AppContent() {
         />
 
         <Route
-          path="/ho-so-ca-nhan"
+          path="/profile-in-company"
           element={
             <ProtectedRoute>
               <Layout1>
-                <UserPage />
+                <StaffPage />
               </Layout1>
             </ProtectedRoute>
           }
         />
 
         <Route
-          path="/danh-sach-san-pham"
+          path="/product-list"
           element={
             <ProtectedRoute>
               <Layout1>
@@ -108,7 +107,7 @@ function AppContent() {
         />
 
         <Route
-          path="/tin-nhan-page"
+          path="/messages"
           element={
             <ProtectedRoute>
               <Layout1>
@@ -119,7 +118,7 @@ function AppContent() {
         />
 
         <Route
-          path="/tai-khoan-ads"
+          path="/ads-account"
           element={
             <ProtectedRoute>
               <Layout1>
@@ -129,7 +128,7 @@ function AppContent() {
           }
         />
         <Route
-          path="/cai-dat"
+          path="/settings"
           element={
             <ProtectedRoute>
               <Layout1>
@@ -149,6 +148,7 @@ function App() {
   return (
     <I18nProvider>
       <AppContent />
+      <ToastContainer />
     </I18nProvider>
   );
 }
