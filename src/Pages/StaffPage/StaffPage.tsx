@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import classNames from "classnames/bind";
 import styles from "./StaffPage.module.scss";
 const cx = classNames.bind(styles);
@@ -46,6 +47,7 @@ export interface FormGetUserInfo {
 
 export default function StaffPage() {
   // fake initial user data (can be fetched from server later)
+  const { t } = useTranslation();
 
   // const { yourStaffProfile, fetchYourStaffProfile } = useStaffStore();
   const { company_id, accessRole, yourStaffId } = useAuthStore();
@@ -246,112 +248,112 @@ export default function StaffPage() {
   }, [isOpenForm, listBanks]);
   return (
     <div className={cx("user-page-main")}>
-      {accessRole === "Director" && <div className={cx('notify-header')}>Bạn là chủ sở hữu, không có hồ sơ nhân viên.</div>}
+      {accessRole === "Director" && <div className={cx('notify-header')}>{t("staffPage.ownerNotice", "Bạn là chủ sở hữu, không có hồ sơ nhân viên.")}</div>}
       {accessRole !== "Director" && (
         <React.Fragment>
           <StaffHeartbeat />
           <div className={cx("header-logout")}>
             <div>
-              <h4 style={{ color: "#005fec" }}>Hồ sơ cá nhân</h4>
+              <h4 style={{ color: "#005fec" }}>{t("staffPage.personalProfile", "Hồ sơ cá nhân")}</h4>
             </div>
           </div>
 
           <div className={cx("wrap-info-account")}>
             <div className={cx("profile-card", "card2")}>
               <div className={cx("header")}>
-                <div className={cx("title")}>Thông tin cá nhân</div>
+                <div className={cx("title")}>{t("staffPage.personalInfo", "Thông tin cá nhân")}</div>
                 <button className={cx("btn-edit")} onClick={() => setIsOpenForm(true)}>
-                  ✏️ Sửa thông tin
+                  ✏️ {t("staffPage.editInfo", "Sửa thông tin")}
                 </button>
               </div>
               <div className={cx("row")}>
                 <div className={cx("part")}>
-                  <strong>Họ tên:</strong> <span>{userData.name}</span>
+                  <strong>{t("staffPage.fullName", "Họ tên")}:</strong> <span>{userData.name}</span>
                 </div>
                 <div className={cx("part")}>
-                  <strong>SĐT:</strong> {userData.phone}
+                  <strong>{t("staffPage.phone", "SĐT")}:</strong> {userData.phone}
                 </div>
               </div>
 
               <div className={cx("row")}>
                 <div>
-                  <strong>CCCD:</strong> {userData.identityId}
+                  <strong>{t("staffPage.identityId", "CCCD")}:</strong> {userData.identityId}
                 </div>
                 <div>
-                  <strong>Lương cơ bản:</strong> {fullUserData?.salary?.toLocaleString("vi-VN")} đ
+                  <strong>{t("staffPage.baseSalary", "Lương cơ bản")}:</strong> {fullUserData?.salary?.toLocaleString("vi-VN")} đ
                 </div>
               </div>
 
               <div className={cx("row")}>
                 <div className={cx("part")}>
-                  <strong>Ngày sinh:</strong> <span>{userData.birthday}</span>
+                  <strong>{t("staffPage.birthday", "Ngày sinh")}:</strong> <span>{userData.birthday}</span>
                 </div>
                 <div>
-                  <strong>Ngày vào làm:</strong> {fullUserData.joinedDate}
+                  <strong>{t("staffPage.joinedDate", "Ngày vào làm")}:</strong> {fullUserData.joinedDate}
                 </div>
               </div>
               <div className={cx("row")}>
                 <div>
-                  <strong>Địa chỉ:</strong> {userData.address}
+                  <strong>{t("staffPage.address", "Địa chỉ")}:</strong> {userData.address}
                 </div>
                 <div className={cx("description")}>
-                  <strong>Mô tả:</strong> {userData.description}
+                  <strong>{t("staffPage.description", "Mô tả")}:</strong> {userData.description}
                 </div>
               </div>
               <div className={cx("row")}>
                 <div>
-                  <strong>TK ngân hàng:</strong> {fullUserData.bankInfos.bankAccountNumber} - {fullUserData.bankInfos.bankOwnerName}
+                  <strong>{t("staffPage.bankAccount", "TK ngân hàng")}:</strong> {fullUserData.bankInfos.bankAccountNumber} - {fullUserData.bankInfos.bankOwnerName}
                 </div>
                 <div>
-                  <strong>Ngân hàng:</strong> {fullUserData.bankInfos.bankCode} - {fullUserData.bankInfos.bankShortName}
+                  <strong>{t("staffPage.bank", "Ngân hàng")}:</strong> {fullUserData.bankInfos.bankCode} - {fullUserData.bankInfos.bankShortName}
                 </div>
               </div>
             </div>
             <div className={cx("performance-card")}>
               <div className={cx("header")}>
-                <div className={cx("title")}>Hiệu suất tháng {currentMonthNumber + 1}</div>
+                <div className={cx("title")}>{t("staffPage.monthPerformance", "Hiệu suất tháng")} {currentMonthNumber + 1}</div>
               </div>
               <div className={cx("row")}>
                 <div>
-                  <strong>Đơn chốt:</strong> {saleStaffData[0]?.totalClose || 0}
+                  <strong>{t("staffPage.closedOrders", "Đơn chốt")}:</strong> {saleStaffData[0]?.totalClose || 0}
                 </div>
                 <div>
-                  <strong>Đơn nhận:</strong> {saleStaffData[0]?.totalDist || 0}
+                  <strong>{t("staffPage.receivedOrders", "Đơn nhận")}:</strong> {saleStaffData[0]?.totalDist || 0}
                 </div>
                 <div>
-                  <strong>Tỷ lệ chốt:</strong> {(saleStaffData[0]?.closingRate * 100).toFixed(1) || 0}%
-                </div>
-              </div>
-
-              <div className={cx("row")}>
-                <div>
-                  <strong>Đi muộn:</strong> {saleStaffData[0]?.workLate || 0}
-                </div>
-                <div>
-                  <strong>Vắng:</strong> {saleStaffData[0]?.workAbsent || 0}
-                </div>
-                <div>
-                  <strong>Đúng giờ:</strong> {saleStaffData[0]?.diligence || 0}/26
+                  <strong>{t("staffPage.closingRate", "Tỷ lệ chốt")}:</strong> {(saleStaffData[0]?.closingRate * 100).toFixed(1) || 0}%
                 </div>
               </div>
 
               <div className={cx("row")}>
                 <div>
-                  <strong>Chuyên cần:</strong> {saleStaffData && saleStaffData[0]?.diligence > 24 ? deligenceBonus.toLocaleString("vi-VN") : 0} ₫
+                  <strong>{t("staffPage.late", "Đi muộn")}:</strong> {saleStaffData[0]?.workLate || 0}
                 </div>
                 <div>
-                  <strong>Thưởng:</strong> {(bonus || 0).toLocaleString("vi-VN")} đ
+                  <strong>{t("staffPage.absent", "Vắng")}:</strong> {saleStaffData[0]?.workAbsent || 0}
                 </div>
                 <div>
-                  <strong>Giảm trừ:</strong> {(fine || 0).toLocaleString("vi-VN")} đ
+                  <strong>{t("staffPage.onTime", "Đúng giờ")}:</strong> {saleStaffData[0]?.diligence || 0}/26
+                </div>
+              </div>
+
+              <div className={cx("row")}>
+                <div>
+                  <strong>{t("staffPage.diligence", "Chuyên cần")}:</strong> {saleStaffData && saleStaffData[0]?.diligence > 24 ? deligenceBonus.toLocaleString("vi-VN") : 0} ₫
+                </div>
+                <div>
+                  <strong>{t("staffPage.bonus", "Thưởng")}:</strong> {(bonus || 0).toLocaleString("vi-VN")} đ
+                </div>
+                <div>
+                  <strong>{t("staffPage.fine", "Giảm trừ")}:</strong> {(fine || 0).toLocaleString("vi-VN")} đ
                 </div>
               </div>
               <div className={cx("row")}>
                 <div>
-                  <strong>Tăng ca:</strong> {overtimeHours || 0} giờ
+                  <strong>{t("staffPage.overtime", "Tăng ca")}:</strong> {overtimeHours || 0} {t("staffPage.hours", "giờ")}
                 </div>
                 <div>
-                  <strong>Tạm tính:</strong> -
+                  <strong>{t("staffPage.temporary", "Tạm tính")}:</strong> -
                 </div>
                 <div>
                   <strong></strong> --
@@ -359,7 +361,7 @@ export default function StaffPage() {
               </div>
               <div className={cx("horizontal-line")}></div>
               <div>
-                <strong>Lương tạm tính:</strong> {(Math.round(estPaidSalary / 1000) * 1000).toLocaleString("vi-VN")} đ
+                <strong>{t("staffPage.estimatedSalary", "Lương tạm tính")}:</strong> {(Math.round(estPaidSalary / 1000) * 1000).toLocaleString("vi-VN")} đ
               </div>
             </div>
           </div>
@@ -367,18 +369,18 @@ export default function StaffPage() {
           <div className={cx("staff-list-info")}>
             <div className={cx("table")}>
               <div className={cx("row", "header")}>
-                <div>Vai trò</div>
-                <div>Tên</div>
+                <div>{t("staffPage.role", "Vai trò")}</div>
+                <div>{t("staffPage.name", "Tên")}</div>
                 {/* <div>ID</div> */}
-                <div>Thâm niên</div>
-                <div>Tổng đơn chốt</div>
-                <div>Tổng đơn phân phối</div>
-                <div>Tỷ lệ chốt</div>
+                <div>{t("staffPage.seniority", "Thâm niên")}</div>
+                <div>{t("staffPage.totalClosedOrders", "Tổng đơn chốt")}</div>
+                <div>{t("staffPage.totalDistributedOrders", "Tổng đơn phân phối")}</div>
+                <div>{t("staffPage.closingRate", "Tỷ lệ chốt")}</div>
                 {/* <div>Total Revenue</div> */}
-                <div>Tổng thưởng</div>
-                <div>Tổng giảm trừ</div>
-                <div>Tổng tăng ca</div>
-                <div>Tổng lương nhận</div>
+                <div>{t("staffPage.totalBonus", "Tổng thưởng")}</div>
+                <div>{t("staffPage.totalFine", "Tổng giảm trừ")}</div>
+                <div>{t("staffPage.totalOvertime", "Tổng tăng ca")}</div>
+                <div>{t("staffPage.totalSalary", "Tổng lương nhận")}</div>
                 {/* <div>Edit</div> */}
               </div>
 
@@ -390,15 +392,13 @@ export default function StaffPage() {
                       <div className={cx("row")} onClick={() => setExpandedStaff(expandedStaff === staff.staffID ? null : staff.staffID)}>
                         <div className={cx("role", `${staff.role.toLocaleLowerCase()}`)}>{staff.role}</div>
                         <div className={cx("name")}>{staff.staffInfo.name}</div>
-                        {/* <div>{staff.id}</div> */}
                         <div>{calcSeniority(staff.joinedDate)}</div>
                         <div>{summary.totalCloseOrder}</div>
                         <div>{summary.totalDistributionOrder}</div>
                         <div>{summary.rate}</div>
-                        {/* <div>{summary.totalRevenue.toLocaleString()} ₫</div> */}
                         <div>{summary.totalBonus.toLocaleString()} ₫</div>
                         <div>{summary.totalFine.toLocaleString()} ₫</div>
-                        <div>{summary.totalOvertimeHours} giờ</div>
+                        <div>{summary.totalOvertimeHours} {t("staffPage.hours", "giờ")}</div>
                         <div>{summary.totalSalary.toLocaleString()} ₫</div>
                         {/* <div className={cx("edit-btn")}>
                       <MdModeEdit size={22} />
@@ -414,41 +414,39 @@ export default function StaffPage() {
 
                           {/* //-- Box 2: Salary History */}
                           <div className={cx("salary-history-box")}>
-                            <h5>💰 Nhật kí lương</h5>
+                            <h5>💰 {t("staffPage.salaryJournal", "Nhật kí lương")}</h5>
                             <div className={cx("filter-mode")}>
-                              <button onClick={() => setFilterMode("all")}>All Time</button>
-                              <div>
-                                <select value={selectedMonth} onChange={(e) => setSelectedMonth(Number(e.target.value))}>
+                              <button onClick={() => setFilterMode("all")}>{t("staffPage.allTime", "All Time")}</button>
+                              <div className="flex gap-2.5">
+                                <select  value={selectedMonth} onChange={(e) => setSelectedMonth(Number(e.target.value))}>
                                   {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
                                     <option key={m} value={m}>
                                       {new Date(0, m - 1).toLocaleString("default", { month: "long" })}
                                     </option>
                                   ))}
                                 </select>
-                                <select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))}>
+                                <select  value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))}>
                                   {Array.from({ length: 6 }, (_, i) => selectedYear - 3 + i).map((y) => (
                                     <option key={y} value={y}>
                                       {y}
                                     </option>
                                   ))}
                                 </select>
-                                <button onClick={() => setFilterMode("month")}>Apply</button>
+                                <button  onClick={() => setFilterMode("month")}>{t("staffPage.apply", "Apply")}</button>
                               </div>
                             </div>
                             <div className={cx("history-list")}>
                               <div className={cx("history-row", "header")}>
-                                <div>Thời gian</div>
-
-                                <div>Đơn chốt</div>
-                                <div>Đơn phân phối</div>
-                                <div>Tỷ lệ chốt</div>
+                                <div>{t("staffPage.time", "Thời gian")}</div>
+                                <div>{t("staffPage.closedOrders", "Đơn chốt")}</div>
+                                <div>{t("staffPage.distributedOrders", "Đơn phân phối")}</div>
+                                <div>{t("staffPage.closingRate", "Tỷ lệ chốt")}</div>
                                 {/* <div>Revenue</div> */}
-                                <div>Thưởng</div>
-                                <div>Giảm trừ</div>
-                                <div>Lương CB</div>
-                                <div>Tăng ca</div>
-                                <div>Lương lĩnh</div>
-                                {/* <div>Edit</div> */}
+                                <div>{t("staffPage.bonus", "Thưởng")}</div>
+                                <div>{t("staffPage.fine", "Giảm trừ")}</div>
+                                <div>{t("staffPage.baseSalary", "Lương CB")}</div>
+                                <div>{t("staffPage.overtime", "Tăng ca")}</div>
+                                <div>{t("staffPage.paidSalary", "Lương lĩnh")}</div>
                               </div>
                               {getFilteredHistory(staff)
                                 .slice()
@@ -469,7 +467,7 @@ export default function StaffPage() {
                                       <div>{bonusVal ? bonusVal.toLocaleString() + " ₫" : "-"}</div>
                                       <div>{fineVal ? fineVal.toLocaleString() + " ₫" : "-"}</div>
                                       <div>{h.baseSalary.toLocaleString()} ₫</div>
-                                      <div>{h.overtimeHours} giờ</div>
+                                      <div>{h.overtimeHours} {t("staffPage.hours", "giờ")}</div>
                                       <div>{paidSalary.toLocaleString("vi-VN")} ₫</div>
                                     </div>
                                   );

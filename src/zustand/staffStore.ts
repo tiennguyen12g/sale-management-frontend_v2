@@ -6,7 +6,6 @@ import {
   GetStaffProfile_API,
   EditStaffInfo_API,
   DeleteStaff_API,
-  AddStaff_API,
   UploadStaffSalary_API,
   UploadStaffAttendance_API,
   UploadStaffDailyRecord_API,
@@ -124,7 +123,7 @@ interface StaffState {
   attendance: IAttendance[] | [];
   dailyRecords: IDailyRecord[] | [];
   fetchYourStaffProfileInWorkplace: (staffID: string, company_id: string) => Promise<{ status: string; message: string } | undefined>;
-  updateYourStaffProfile: (staffID: string, company_id: string, data: Partial<IStaff>) => Promise<{ status: string; message: string } | undefined>;
+  updateYourStaffProfile: (staffID: string, company_id: string, data: Partial<IStaff>) => Promise<{ status: string; message: string }>;
 
   // For company owners - manage all staff
   staffList: IStaff[] | null;
@@ -207,7 +206,9 @@ export const useStaffStore = create<StaffState>()(
           });
           if (!res.ok) {
             const errorData = await res.json();
-            throw new Error(errorData.message || `Failed to update staff: ${res.status}`);
+            // throw new Error(errorData.message || `Failed to update staff: ${res.status}`);
+            console.log('Error', errorData.message);
+             return { status: "failes", message: `Failed to update staff: ${res.status}` };
           }
           const updated = await res.json();
           if (res.status === 401) {

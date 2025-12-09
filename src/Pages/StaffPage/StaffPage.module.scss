@@ -201,7 +201,7 @@
     .row {
       display: grid;
       // grid-template-columns: repeat(10, 1fr);
-      grid-template-columns: 120px 200px 120px 120px 180px 140px 140px 140px 140px auto;
+      grid-template-columns: 120px 200px 120px 140px 180px 140px 140px 140px 140px auto;
 
       align-items: center;
       padding: 8px 12px;
@@ -348,7 +348,7 @@
   border-radius: 10px;
   padding: 20px;
   margin-bottom: 20px;
-  min-width: 600px;
+  min-width: 630px;
   .header {
     display: flex;
     gap: 10px;
@@ -376,9 +376,9 @@
     display: flex;
     justify-content: space-between;
     div {
-           display: grid;
-flex: 1;
-      grid-template-columns: 100px 1fr;
+      display: grid;
+      flex: 1;
+      grid-template-columns: 120px 1fr;
       gap: 8px;
     }
   }
@@ -392,7 +392,7 @@ flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.notify-header{
+.notify-header {
   position: relative;
   font-size: 20px;
   font-weight: 600;

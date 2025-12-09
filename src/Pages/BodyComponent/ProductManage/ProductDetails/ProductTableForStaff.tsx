@@ -6,10 +6,11 @@ const cx = classNames.bind(styles);
 import { useProductStore } from "../../../../zustand/productStore";
 import { useBranchStore } from "../../../../zustand/branchStore";
 import NotificationBox_v2 from "../../../../utils/NotificationBox_v2";
-
+import { useTranslation } from "react-i18next";
 interface Props {}
 
 function ProductTableForStaff() {
+  const {t} = useTranslation();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const { products, fetchProducts } = useProductStore();
   const { selectedBranch } = useBranchStore();
@@ -53,22 +54,22 @@ function ProductTableForStaff() {
     <div className={cx("product-table")}>
       {showNotification && statusMsg && <NotificationBox_v2 message={statusMsg} onClose={() => setShowNotification(false)} />}
 
-      <h3 className="mb-4">Danh sách sản phẩm đang bán{selectedBranch ? ` - ${selectedBranch.display_name}` : ""}</h3>
-      {!selectedBranch && <div style={{ padding: "1rem", color: "#999", textAlign: "center" }}>Vui lòng chọn một chi nhánh để xem danh sách sản phẩm</div>}
+      <h3 className="mb-4">{t("productTableForStaff.title", "Products for Sale")} {selectedBranch ? ` - ${selectedBranch.display_name}` : ""}</h3>
+      {!selectedBranch && <div style={{ padding: "1rem", color: "#999", textAlign: "center" }}>{t("productTableForStaff.selectBranch","Please select a branch to view the product list")}</div>}
       {selectedBranch && products.length === 0 && !statusMsg && (
-        <div style={{ padding: "1rem", color: "#999", textAlign: "center" }}>Không có sản phẩm nào được gán cho chi nhánh này</div>
+        <div style={{ padding: "1rem", color: "#999", textAlign: "center" }}>{t("productTableForStaff.noProducts","No products assigned to this branch")}</div>
       )}
       <table>
         <thead>
           <tr>
-            <th>No</th>
-            <th>Mã SP</th>
-            <th>Tên SP</th>
-            <th>Loại</th>
-            <th>Hàng trong kho</th>
-            <th>Size có sẵn</th>
-            <th>Màu có sẵn</th>
-            <th>Ảnh</th>
+            <th>{t("productTableForStaff.no","No")}</th>
+            <th>{t("productTableForStaff.productCode","Product Code")}</th>
+            <th>{t("productTableForStaff.productName","Product Name")}</th>
+            <th>{t("productTableForStaff.type","Type")}</th>
+            <th>{t("productTableForStaff.stock","Stock")}</th>
+            <th>{t("productTableForStaff.availableSizes","Available Sizes")}</th>
+            <th>{t("productTableForStaff.availableColors","Available Colors")}</th>
+            <th>{t("productTableForStaff.image","Image")}</th>
           </tr>
         </thead>
         <tbody>
@@ -102,18 +103,18 @@ function ProductTableForStaff() {
                     <tr className={cx("details-row")}>
                       <td colSpan={8}>
                         <div className={cx("details-box")}>
-                          <h4>Chi tiết sản phẩm</h4>
+                          <h4>{t("productTableForStaff.productDetails","Product Details")}</h4>
                           <table className={cx("details-table")}>
                             <thead>
                               <tr>
-                                <th>No</th>
-                                <th>Tên</th>
-                                <th>Màu</th>
-                                <th>Size</th>
-                                <th>Số lượng</th>
-                                <th>Giá (VND)</th>
-                                <th>Trọng lượng (g)</th>
-                                <th>Giá vốn (VND)</th>
+                                <th>{t("productTableForStaff.no","No")}</th>
+                                <th>{t("productTableForStaff.name","Name")}</th>
+                                <th>{t("productTableForStaff.color","Color")}</th>
+                                <th>{t("productTableForStaff.size","Size")}</th>
+                                <th>{t("productTableForStaff.quantity","Quantity")}</th>
+                                <th>{t("productTableForStaff.price","Price")}</th>
+                                <th>{t("productTableForStaff.weight","Weight (g)")} (g)</th>
+                                <th>{t("productTableForStaff.costPrice","Cost Price")}</th>
                               </tr>
                             </thead>
                             <tbody>

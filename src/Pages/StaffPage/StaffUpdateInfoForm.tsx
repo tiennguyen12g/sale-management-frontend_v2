@@ -1,15 +1,16 @@
 import React, { useState, useEffect, type Dispatch } from "react";
+import { useTranslation } from "react-i18next";
 import classNames from "classnames/bind";
 import styles from "./StaffUpdateInfoForm.module.scss";
 const cx = classNames.bind(styles);
 
-import { AddStaff_API, EditStaffInfo_API } from "@/config/api";
+import { AddStaff_API } from "@/config/api";
 import { useStaffStore, type IStaff } from "@/zustand/staffStore";
 import { useAuthStore, type UserInfoType } from "@/zustand/authStore";
 import { SalaryByPosition } from "@/zustand/staffStore";
-import type { ListBankType, BankInfoType } from "@/assets/fullVietNamBanks";
+import type { ListBankType} from "@/assets/fullVietNamBanks";
 import Select from "react-select";
-
+import { useToastSeri, SelectGray } from "@tnbt/react-favorit-style";
 interface AddUserInfoProps {
   fullUserData: IStaff; // optional (empty when creating)
   setIsOpenAddForm: Dispatch<React.SetStateAction<boolean>>;
@@ -18,6 +19,8 @@ interface AddUserInfoProps {
 }
 
 export default function StaffUpdateInfoForm({ setIsOpenAddForm, fullUserData, setFullUserData, listBanks }: AddUserInfoProps) {
+  const { t } = useTranslation();
+  const { notificationToasts, successToast, errorToast, warningToast, infoToast, loadingToast, removeToast, setNotificationToasts, addToast } = useToastSeri();
   const { updateYourStaffProfile } = useStaffStore();
   const { getAuthHeader } = useAuthStore();
   const [selectBank, setSelectBank] = useState<string | null>(null);
@@ -51,37 +54,19 @@ export default function StaffUpdateInfoForm({ setIsOpenAddForm, fullUserData, se
     }));
   };
 
-  useEffect(() => {
-    if (staffForm.staffInfo.name !== "" && staffForm.staffInfo.phone !== "") {
-      const staffID = `${toSlug(staffForm.staffInfo.name)}-${staffForm.staffInfo.phone}`;
-      // console.log('staffID', staffID);
-      setStaffForm((prev) => ({
-        ...prev,
-        staffID: staffID,
-      }));
-    }
-  }, [staffForm.staffInfo.name, staffForm.staffInfo.phone]);
-
   // ✅ submit handler (create vs update)
   const handleSubmit = async () => {
     try {
       if (fullUserData) {
         // --- update existing staff ---
         console.log("update");
-        const res = await fetch(`${EditStaffInfo_API}/${fullUserData.staffID}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json", ...getAuthHeader() },
-          body: JSON.stringify(staffForm),
-        });
-
-        const data = await res.json();
-        if (res.ok) {
-          updateYourStaffProfile(fullUserData.staffID, fullUserData.company_id, data); // Zustand update
-          setFullUserData(data); // update parent state
-          alert("Cập nhật hồ sơ thành công!");
+        const res = await updateYourStaffProfile(fullUserData.staffID, fullUserData.company_id, staffForm); // Zustand update
+        if (res.status === "success") {
+         
+          successToast(t("staffUpdateInfoForm.updateSuccess", "Cập nhật hồ sơ thành công!"));
           setIsOpenAddForm(false);
         } else {
-          alert("Error: " + data.message);
+          errorToast(t("staffUpdateInfoForm.updateError", "Lỗi:") + " " + (res.message || t("staffUpdateInfoForm.unknownError", "Lỗi không xác định")));
         }
       } else {
         // --- create new staff ---
@@ -95,19 +80,20 @@ export default function StaffUpdateInfoForm({ setIsOpenAddForm, fullUserData, se
         if (res.ok) {
           setFullUserData(data);
           staffForm;
-          alert("Tạo hồ sơ thành công!");
+          successToast(t("staffUpdateInfoForm.createSuccess", "Tạo hồ sơ thành công!"));
           setIsOpenAddForm(false);
         } else {
-          alert("Error: " + data.message);
+          errorToast(t("staffUpdateInfoForm.createError", "Lỗi:") + " " + (data.message || t("staffUpdateInfoForm.unknownError", "Lỗi không xác định")));
         }
       }
     } catch (error) {
       console.error(error);
-      alert("Lỗi khi lưu hồ sơ");
+      errorToast(t("staffUpdateInfoForm.saveError", "Lỗi khi lưu hồ sơ"));
     }
   };
 
   const handleChangeBankInfo = (bankShortName: string) => {
+    console.log('bank', bankShortName);
     const bankInfo = listBanks.data.find((bank) => bank.shortName === bankShortName);
     if (bankInfo) {
       handleBankChange("bankCode", bankInfo.code);
@@ -118,7 +104,7 @@ export default function StaffUpdateInfoForm({ setIsOpenAddForm, fullUserData, se
   };
 
   const bankOptions = listBanks.data.map((b) => ({
-    value: b.shortName,
+    key: b.shortName,
     label: (
       <div style={{ display: "flex", alignItems: "center" }}>
         <img src={b.logo} width={45} style={{ marginRight: 8 }} />
@@ -127,102 +113,96 @@ export default function StaffUpdateInfoForm({ setIsOpenAddForm, fullUserData, se
     ),
   }));
 
+  const religionOptions = [
+    {key: "No Religion", label: t("staffUpdateInfoForm.noReligion", "Không")},
+    {key: "Catholic", label: t("staffUpdateInfoForm.catholic", "Thiên chúa")},
+    {key: "Buddhist", label: t("staffUpdateInfoForm.buddhist", "Phật giáo")},
+    {key: "Muslim", label: t("staffUpdateInfoForm.muslim", "Hồi giáo")},
+  ];
+
+  const relationshipOptions = [
+    {key: "single", label: t("staffUpdateInfoForm.single", "Độc thân")},
+    {key: "married", label: t("staffUpdateInfoForm.married", "Đã cưới")},
+    {key: "divorced", label: t("staffUpdateInfoForm.divorced", "Ly hôn")},
+    {key: "complicated", label: t("staffUpdateInfoForm.complicated", "Phức tạp")},
+  ];
+
   return (
     <div className={cx("add-staff-form")}>
-      <h4>{fullUserData ? "Sửa hồ sơ" : "Tạo hồ sơ mới"}</h4>
+      <h4>{fullUserData ? t("staffUpdateInfoForm.editProfile", "Sửa hồ sơ") : t("staffUpdateInfoForm.createNewProfile", "Tạo hồ sơ mới")}</h4>
 
       <div className={cx("form-row")}>
         <div className={cx("field")}>
-          <label>Họ và tên:</label>
+          <label>{t("staffUpdateInfoForm.fullName", "Họ và tên")}:</label>
           <input type="text" value={staffForm.staffInfo.name} onChange={(e) => handleInfoChange("name", e.target.value)} />
         </div>
         <div className={cx("field")}>
-          <label>Ngày sinh:</label>
+          <label>{t("staffUpdateInfoForm.birthday", "Ngày sinh")}:</label>
           <input type="date" value={staffForm.staffInfo.birthday} onChange={(e) => handleInfoChange("birthday", e.target.value)} />
         </div>
       </div>
 
       <div className={cx("form-row")}>
         <div className={cx("field")}>
-          <label>Số CCCD:</label>
+          <label>{t("staffUpdateInfoForm.identityId", "Số CCCD")}:</label>
           <input type="text" value={staffForm.staffInfo.identityId} onChange={(e) => handleInfoChange("identityId", e.target.value)} />
         </div>
         <div className={cx("field")}>
-          <label>Số điện thoại:</label>
+          <label>{t("staffUpdateInfoForm.phone", "Số điện thoại")}:</label>
           <input type="text" value={staffForm.staffInfo.phone} onChange={(e) => handleInfoChange("phone", e.target.value)} />
         </div>
       </div>
 
       <div className={cx("form-row2")}>
-        <label>Địa chỉ:</label>
-        <input type="text" value={staffForm.staffInfo.address} onChange={(e) => handleInfoChange("address", e.target.value)} />
+        <label>{t("staffUpdateInfoForm.address", "Địa chỉ")}:</label>
+        <input className="w-full" type="text" value={staffForm.staffInfo.address} onChange={(e) => handleInfoChange("address", e.target.value)} />
       </div>
 
       <div className={cx("form-row")}>
         <div className={cx("field")}>
-          <label>Số tài khoản ngân hàng:</label>
+          <label>{t("staffUpdateInfoForm.bankAccountNumber", "Số tài khoản ngân hàng")}:</label>
           <input type="text" value={staffForm.bankInfos.bankAccountNumber} onChange={(e) => handleBankChange("bankAccountNumber", e.target.value)} />
         </div>
         <div className={cx("field")}>
-          <label>Tên chủ tài khoản:</label>
+          <label>{t("staffUpdateInfoForm.bankOwnerName", "Tên chủ tài khoản")}:</label>
           <input type="text" value={staffForm.bankInfos.bankOwnerName} onChange={(e) => handleBankChange("bankOwnerName", e.target.value)} />
         </div>
       </div>
 
       <div className={cx("form-row")}>
         <div className={cx("field")}>
-          <label>Tên ngân hàng:</label>
-          {/* <select  onChange={(e) => handleChangeBankInfo(e.target.value)}>
-            <option>Chọn ngân hàng</option>
-            {listBanks &&
-              listBanks.data.map((bankInfo, i) => {
-                return (
-                  <option key={i} className={cx("option-bank")} value={bankInfo.shortName}>
-                    {bankInfo.code} - {bankInfo.shortName}
-                  </option>
-                );
-              })}
-          </select> */}
-          <Select placeholder="Chọn ngân hàng" options={bankOptions} onChange={(e) => handleChangeBankInfo(e!.value)} />
+          <label>{t("staffUpdateInfoForm.bankName", "Tên ngân hàng")}:</label>
+          {/* <Select placeholder={t("staffUpdateInfoForm.selectBank", "Chọn ngân hàng")} options={bankOptions} onChange={(e) => handleChangeBankInfo(e!.value)} /> */}
+          <SelectGray value={staffForm.bankInfos.bankShortName} placeHolder={t("staffUpdateInfoForm.selectBank", "Chọn ngân hàng")} options={bankOptions} onChange={(e) => handleChangeBankInfo(e)}/>
         </div>
         <div className={cx("field")}>
-          <label>Lương:</label>
+          <label>{t("staffUpdateInfoForm.salary", "Lương")}:</label>
           <input type="number" value={staffForm.salary} disabled />
         </div>
       </div>
 
       <div className={cx("form-row")}>
         <div className={cx("field")}>
-          <label>Tôn giáo:</label>
-          <select value={staffForm.staffInfo.religion} onChange={(e) => handleInfoChange("religion", e.target.value)}>
-            <option value="No Religion">Không</option>
-            <option value="Catholic">Thiên chúa</option>
-            <option value="Buddhist">Phật giáo</option>
-            <option value="Muslim">Hồi giáo</option>
-          </select>
+          <label>{t("staffUpdateInfoForm.religion", "Tôn giáo")}:</label>
+          <SelectGray value={staffForm.staffInfo.religion} onChange={(e) => handleInfoChange("religion", e)} options={religionOptions}/>
         </div>
         <div className={cx("field")}>
-          <label>Hôn nhân:</label>
-          <select value={staffForm.staffInfo.relationshipStatus} onChange={(e) => handleInfoChange("relationshipStatus", e.target.value)}>
-            <option value="single">Độc thân</option>
-            <option value="married">Đã cưới</option>
-            <option value="divorced">Ly hôn</option>
-            <option value="complicated">Phức tạp</option>
-          </select>
+          <label>{t("staffUpdateInfoForm.relationshipStatus", "Hôn nhân")}:</label>
+          <SelectGray value={staffForm.staffInfo.relationshipStatus} onChange={(e) => handleInfoChange("relationshipStatus", e)} options={relationshipOptions}/>
         </div>
       </div>
 
       <div className={cx("form-row2")}>
-        <label>Giới thiệu bản thân:</label>
+        <label>{t("staffUpdateInfoForm.description", "Giới thiệu bản thân")}:</label>
         <textarea value={staffForm.staffInfo.description} onChange={(e) => handleInfoChange("description", e.target.value)} />
       </div>
 
       <div className={cx("form-actions")}>
         <button className={cx("btn", "primary")} onClick={handleSubmit}>
-          {fullUserData ? "Lưu thay đổi" : "Tạo mới"}
+          {fullUserData ? t("staffUpdateInfoForm.saveChanges", "Lưu thay đổi") : t("staffUpdateInfoForm.create", "Tạo mới")}
         </button>
         <button className={cx("btn", "secondary")} onClick={() => setIsOpenAddForm(false)}>
-          Đóng
+          {t("staffUpdateInfoForm.close", "Đóng")}
         </button>
       </div>
     </div>
