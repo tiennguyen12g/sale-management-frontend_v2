@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo, type Dispatch, type SetStateAction, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import classNames from "classnames/bind";
 import styles from "./ShopOrders_v3.module.scss";
 const cx = classNames.bind(styles);
@@ -11,7 +12,7 @@ import { HiMinusSmall } from "react-icons/hi2";
 import { HiPlusSmall } from "react-icons/hi2";
 import { FcFilledFilter } from "react-icons/fc";
 
-import deliveryTruck from "@/components/ui/icons/gifs/delivery-truck.gif"
+import deliveryTruck from "@/components/ui/icons/gifs/delivery-truck.gif";
 import atm from "@/components/ui/icons/gifs/atm.gif";
 import dislike from "@/components/ui/icons/gifs/dislike.gif";
 import hourglass from "@/components/ui/icons/gifs/hourglass.gif";
@@ -20,7 +21,6 @@ import phone from "@/components/ui/icons/gifs/phone.gif";
 import outOfStock from "@/components/ui/icons/gifs/sold.png";
 import courier from "@/components/ui/icons/gifs/courier.gif";
 import dollarIcon from "@/components/ui/icons/gifs/dollar.gif";
-
 
 // Hooks and type
 import { useAuthStore } from "../../zustand/authStore";
@@ -51,6 +51,7 @@ import {
   GroupButton,
   ButtonCommon,
   UploadBox,
+  useToastSeri,
 } from "@tnbt/react-favorit-style";
 // Ultilitys
 import CustomSelectGlobal from "../../utils/CustomSelectGlobal";
@@ -67,6 +68,8 @@ interface ShopOrdersProps {
 const iconSize = 20;
 
 export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = [] }: ShopOrdersProps) {
+  const { t } = useTranslation();
+  const { successToast, errorToast, warningToast } = useToastSeri();
   // -- Hooks
   const {
     updateOrder,
@@ -84,7 +87,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
   const { selectedBranch } = useBranchStore();
   const { products: allProducts, fetchProducts } = useProductStore();
 
-  const [staffName, setStaffName] = useState<string[]>([yourStaffProfileInWorkplace?.staffInfo.name || "Không"]);
+  const [staffName, setStaffName] = useState<string[]>([yourStaffProfileInWorkplace?.staffInfo.name || t("shopOrders.none", "Không")]);
   const [staffID, setStaffID] = useState(yourStaffId || "none");
   const [userId, setUserId] = useState("none");
   const staffRole: StaffRole | "none" = yourStaffProfileInWorkplace?.role || "none";
@@ -156,7 +159,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
   }, [syncedDataOrders]);
 
   // -- Create key for filter order by product
-  let orderProductCodes_KeyFilter: { key: string; label: string }[] = [{ key: "all", label: "Tất cả" }];
+  let orderProductCodes_KeyFilter: { key: string; label: string }[] = [{ key: "all", label: t("shopOrders.all", "Tất cả") }];
   orderProductCodes.forEach((code) => {
     if (!code) return;
     const product = availableProducts.find((p) => p.product_code === code);
@@ -253,17 +256,17 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
     if (!newOrder) return;
 
     if (!selectedBranch?._id) {
-      alert("🚨 Vui lòng chọn chi nhánh trước khi tạo đơn hàng.");
+      warningToast(t("shopOrders.selectBranchBeforeCreate", "🚨 Vui lòng chọn chi nhánh trước khi tạo đơn hàng."));
       return;
     }
 
     if (selectedProductsForOrder.length === 0) {
-      alert("🚨 Vui lòng chọn ít nhất một sản phẩm trước khi tạo đơn hàng.");
+      warningToast(t("shopOrders.selectAtLeastOneProduct", "🚨 Vui lòng chọn ít nhất một sản phẩm trước khi tạo đơn hàng."));
       return;
     }
 
     if (!newOrder.customerName || !newOrder.phone || !newOrder.address || newOrder.orderInfo.length === 0 || newOrder.total <= 0) {
-      alert("🚨 Vui lòng điền đầy đủ thông tin.");
+      warningToast(t("shopOrders.fillAllInformation", "🚨 Vui lòng điền đầy đủ thông tin."));
       return;
     }
 
@@ -285,7 +288,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
     const res = await addOrder(newFinalForSend);
 
     if (res?.status === "success") {
-      alert(" ✅ Tạo đơn hàng thành công!");
+      successToast(t("shopOrders.createOrderSuccess", "✅ Tạo đơn hàng thành công!"));
       // Refresh orders
       if (selectedBranch?._id) {
         await fetchOrders(selectedBranch.company_id, selectedBranch._id);
@@ -294,7 +297,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
       setSelectedProductsForOrder([]);
       setVirtualCart([]);
     } else {
-      alert(" 🚨 Tạo đơn hàng lỗi.");
+      errorToast(t("shopOrders.createOrderError", "🚨 Tạo đơn hàng lỗi."));
     }
   };
 
@@ -323,7 +326,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
         product.productDetailed.forEach((p: ProductDetailsType) => {
           // Check if this item already exists in cart (don't duplicate)
           const exists = cart.some((item) => item.color === p.color && item.size === p.size && (item as any).productCode === product.product_code);
-          console.log('existed', exists);
+          console.log("existed", exists);
           if (!exists) {
             cart.push({
               ...p,
@@ -333,7 +336,6 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
               productName: product.name,
             } as VirtualCartType & { productCode?: string; productName?: string });
           }
-          // console.log('cart', cart);
         });
       }
     });
@@ -389,11 +391,11 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
 
       // Small delay to ensure store update is processed, then show success
       setTimeout(() => {
-        alert("Cập nhật thành công");
+        successToast(t("shopOrders.updateSuccess", "Cập nhật thành công"));
       }, 50);
     } else {
       console.log("Editing failed");
-      alert("Sửa đơn bị lỗi, không thành công.");
+      errorToast(t("shopOrders.updateError", "Sửa đơn bị lỗi, không thành công."));
     }
   };
 
@@ -466,12 +468,8 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
   };
 
   //-- Handle search
-
-  const handleSearchChange = (searchText: string) => {
-    // setSearchOrderCode(searchText || null);
-    // write logic
-    console.log("search", searchText);
-  };
+  // Note: The actual filtering is done via searchOrderCode state which is updated by onChange
+  // We don't need onSearch because filtering happens automatically when searchOrderCode changes
 
   const countByStatus = () => {
     const counts: Record<string, number> = {};
@@ -520,11 +518,11 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
   // -- Function handle order change
   const UpdateMultipleDeliveryStatus = async (newStatus: string) => {
     if (DeliveryStatusCountsResult["Đã chốt"] === 0) {
-      alert("Không có đơn hàng nào để cập nhật. Vui lòng kiểm tra lại.");
+      warningToast(t("shopOrders.noOrdersToUpdate", "Không có đơn hàng nào để cập nhật. Vui lòng kiểm tra lại."));
       return;
     }
     if (newStatus === "Chưa gửi hàng") {
-      alert("Vui lòng chọn trạng thái vận chuyển hợp lệ để cập nhật.");
+      warningToast(t("shopOrders.selectValidDeliveryStatus", "Vui lòng chọn trạng thái vận chuyển hợp lệ để cập nhật."));
       return;
     }
 
@@ -541,9 +539,9 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
 
     const res = await updateMultipleOrders(idsToUpdate, { deliveryStatus: newStatus });
     if (res?.status === "success") {
-      alert("✅ Cập nhật trạng chuyển thành công");
+      successToast(t("shopOrders.updateDeliveryStatusSuccess", "✅ Cập nhật trạng chuyển thành công"));
     } else {
-      alert("🚨 Cập nhật lỗi.");
+      errorToast(t("shopOrders.updateDeliveryStatusError", "🚨 Cập nhật lỗi."));
     }
   };
   const handleNumberProduct = (action: "decrease" | "increase", index: number) => {
@@ -688,7 +686,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
 
   const handleUploadOrderExcel = async (file: File) => {
     if (!selectedBranch?._id) {
-      alert("🚨 Vui lòng chọn chi nhánh trước khi upload đơn hàng.");
+      warningToast(t("shopOrders.selectBranchBeforeUpload", "🚨 Vui lòng chọn chi nhánh trước khi upload đơn hàng."));
       return;
     }
 
@@ -696,7 +694,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
     // You can add a checkbox in the UI to let users choose if needed
     const result = await uploadOrdersExcel(file, selectedBranch._id, true);
     if (result.status === "success") {
-      alert(`✅ Cập nhật ${result.count} đơn thành công`);
+      successToast(t("shopOrders.uploadOrdersSuccess", "✅ Cập nhật {{count}} đơn thành công", { count: result.count }));
       // Refresh orders
       await fetchOrders(selectedBranch.company_id, selectedBranch._id);
     }
@@ -720,15 +718,18 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
   const handleDeleteOrder = async (orderCode: string) => {
     const orderRootData = syncedDataOrders.find((item: OrderDataFromServerType) => item.orderCode === orderCode);
     const idOrder = orderRootData?._id;
-    if (!idOrder) return alert(`Không tìm thấy đơn có mã đơn này.`);
-    let userChoice = confirm("Bạn chắc chắn muốn xóa?");
+    if (!idOrder) {
+      errorToast(t("shopOrders.orderNotFound", "Không tìm thấy đơn có mã đơn này."));
+      return;
+    }
+    let userChoice = confirm(t("shopOrders.confirmDelete", "Bạn chắc chắn muốn xóa?"));
 
     if (!userChoice) return;
     const res = await deleteOrder(idOrder);
     if (res?.status === "success") {
-      alert("Delete success!");
+      successToast(t("shopOrders.deleteSuccess", "Delete success!"));
     } else {
-      alert("Detele failed!");
+      errorToast(t("shopOrders.deleteFailed", "Delete failed!"));
     }
   };
 
@@ -748,16 +749,16 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
   };
   const DeleteAllSelectOrder = async () => {
     if (arrayDelete.length > 0) {
-      let userConfirmed = confirm(`Are you sure you want to delete ${arrayDelete.length} orders?`);
+      let userConfirmed = confirm(t("shopOrders.confirmDeleteMultiple", "Are you sure you want to delete {{count}} orders?", { count: arrayDelete.length }));
 
       if (userConfirmed) {
         const res = await deleteManyOrder(arrayDelete);
         if (res && res.status === "success") {
           setArrayDelete([]);
-          setStatusMsg("✅ Delete success!");
+          setStatusMsg(t("shopOrders.deleteSuccess", "✅ Delete success!"));
           setShowNotification(true);
         } else {
-          setStatusMsg("❌ Delete failed");
+          setStatusMsg(t("shopOrders.deleteFailed", "❌ Delete failed"));
         }
         console.log("User clicked OK.");
       } else {
@@ -766,6 +767,9 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
     }
   };
 
+  const handleTest = () => {
+    successToast(t("shopOrders.deleteSuccess", "Delete success!"), undefined, 100000);
+  };
   return (
     <div className={cx("landing-orders-main")}>
       {showNotification && <NotificationBox_v2 message={statusMsg} onClose={() => setShowNotification(false)} />}
@@ -773,44 +777,38 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
         <div className={cx("header-left")}>
           <div className={cx("header-tabs")}>
             <div className="">
-              {/* <HiSearch size={20} />
-              <input
-                type="text"
-                placeholder="Nhập mã đơn shop hoặc nhập mã đơn nhà vận chuyển"
-                className={cx("input-search")}
-                onChange={(e) => handleSearchChange(e.target.value)}
-              /> */}
               <Search
                 value={searchOrderCode}
                 onChange={setSearchOrderCode as any}
-                onSearch={handleSearchChange}
-                placeholder="Nhập mã đơn shop hoặc nhập mã đơn nhà vận chuyển"
+                onSearch={undefined}
+                placeholder={t("shopOrders.searchPlaceholder", "Nhập mã đơn shop hoặc nhập mã đơn nhà vận chuyển")}
                 debounceMs={300}
                 className="w-[400px]"
               />
             </div>
             {/* Product Filter */}
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 10 }}>
-              <div style={{ fontSize: 14, fontWeight: 500, width: "fit-content" }}>Lọc theo sản phẩm:</div>
+              <div style={{ fontSize: 14, fontWeight: 500, width: "fit-content" }}>{t("shopOrders.filterByProduct", "Lọc theo sản phẩm")}:</div>
               <div style={{ minWidth: 250 }}>
                 {/* <CustomSelectGlobal options={orderProductCodes_KeyFilter} onChange={(id) => setSelectedProductCode(id)} isUseBorder={true} /> */}
-                  <SelectGray options={orderProductCodes_KeyFilter} onChange={(id) => setSelectedProductCode(id)} value={selectedProductCode}/>
+                <SelectGray options={orderProductCodes_KeyFilter} onChange={(id) => setSelectedProductCode(id)} value={selectedProductCode} />
               </div>
             </div>
           </div>
         </div>
         <div className={cx("header-right")}>
           <div className={cx("header-actions")}>
+            {/* <ButtonCommon onClick={() => handleTest()}>Test</ButtonCommon> */}
             <GradientButton variant="orange" onClick={() => setCreateNewOrderBox(true)} className="flex gap-2 items-center group">
               {" "}
-              {<icons.bag_add size={16} className="group-hover:scale-[1.2]" />} Tạo đơn mới
+              {<icons.bag_add size={16} className="group-hover:scale-[1.2]" />} {t("shopOrders.createNewOrder", "Tạo đơn mới")}
             </GradientButton>
             <GradientButton variant="orange" onClick={() => setOpenUpdateDeliveryBox(true)}>
-              Cập nhật vận chuyển hàng loạt
+              {t("shopOrders.bulkUpdateDelivery", "Cập nhật vận chuyển hàng loạt")}
             </GradientButton>
             {staffRole === "Director" && (
               <ButtonCommon variant="delete" onClick={() => DeleteAllSelectOrder()}>
-                Delete all select order
+                {t("shopOrders.deleteAllSelected", "Delete all select order")}
               </ButtonCommon>
             )}
             <ButtonCommon
@@ -820,7 +818,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
               icon={icons.upload}
               iconClass="mr-2 w-4 h-4"
             >
-              Tải excel
+              {t("shopOrders.uploadExcel", "Tải excel")}
             </ButtonCommon>{" "}
             <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
               <ClaimMorningButton staffID={staffID} userId={userId} />
@@ -836,7 +834,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
               <FcFilledFilter size={24} />
               <CustomSelectGlobal
                 options={filterOptions}
-                placeholder="-- Chọn lọc --"
+                placeholder={t("shopOrders.selectFilter", "-- Chọn lọc --")}
                 onChange={(key) => {
                   setSortBy(key as SortOrder);
                   console.log("1");
@@ -854,7 +852,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                       setDeliveryStatuses("All");
                     }}
                   />
-                  Tất cả
+                  {t("shopOrders.all", "Tất cả")}
                 </label>
                 {STATUS_OPTIONS.map((status) => (
                   <label key={status}>
@@ -863,7 +861,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                     <span style={{ color: "red", fontWeight: 600 }}>{statusCounts[status]}</span>
                     {status === "Chốt" && selectedStatuses.includes(status) && (
                       <select value={deliveryStatuses} onChange={(e) => setDeliveryStatuses(e.target.value)}>
-                        <option value="All">Tất cả</option>
+                        <option value="All">{t("shopOrders.all", "Tất cả")}</option>
                         {DeliveryOptions.map((status) => (
                           <option key={status} value={status}>
                             {status}
@@ -889,22 +887,22 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
               <table className={cx("orders-table")}>
                 <thead>
                   <tr>
-                    <th>Box</th>
-                    <th>Sửa</th>
-                    <th>Thời gian</th>
-                    <th>Mã đơn</th>
-                    <th>Trạng thái</th>
-                    <th>Tên khách hàng</th>
-                    <th>Số điện thoại</th>
-                    <th>Địa chỉ</th>
+                    <th>{t("shopOrders.box", "Box")}</th>
+                    <th>{t("shopOrders.edit", "Sửa")}</th>
+                    <th>{t("shopOrders.time", "Thời gian")}</th>
+                    <th>{t("shopOrders.orderCode", "Mã đơn")}</th>
+                    <th>{t("shopOrders.status", "Trạng thái")}</th>
+                    <th>{t("shopOrders.customerName", "Tên khách hàng")}</th>
+                    <th>{t("shopOrders.phone", "Số điện thoại")}</th>
+                    <th>{t("shopOrders.address", "Địa chỉ")}</th>
                     <th>
-                      <div>Sản phẩm - Màu - Size - Số lượng</div>
+                      <div>{t("shopOrders.productInfo", "Sản phẩm - Màu - Size - Số lượng")}</div>
                     </th>
-                    <th>Tổng tiền</th>
-                    <th>Vận chuyển</th>
-                    <th>Ghi chú</th>
-                    <th>Nguồn</th>
-                    <th>Nhân viên</th>
+                    <th>{t("shopOrders.totalAmount", "Tổng tiền")}</th>
+                    <th>{t("shopOrders.delivery", "Vận chuyển")}</th>
+                    <th>{t("shopOrders.note", "Ghi chú")}</th>
+                    <th>{t("shopOrders.source", "Nguồn")}</th>
+                    <th>{t("shopOrders.staff", "Nhân viên")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1062,7 +1060,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                             {o.orderCode} <IoIosCopy style={{ cursor: "pointer" }} onClick={() => handleCopyOrderCode(o.orderCode, i)} />
                             {copied && copyIndex === i && (
                               <span className={cx("copied-text")} key={`copy-${i}`}>
-                                Đã sao chép
+                                {t("shopOrders.copied", "Đã sao chép")}
                               </span>
                             )}
                           </div>
@@ -1115,8 +1113,10 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
               {finalData.length === 0 && (
                 <div style={{ padding: 40, textAlign: "center", color: "#999" }}>
                   {selectedProductCode === "all"
-                    ? "Không có đơn hàng nào trong chi nhánh này"
-                    : `Không có đơn hàng nào cho sản phẩm ${orderProductCodes.find((c) => c === selectedProductCode) || selectedProductCode}`}
+                    ? t("shopOrders.noOrdersInBranch", "Không có đơn hàng nào trong chi nhánh này")
+                    : t("shopOrders.noOrdersForProduct", "Không có đơn hàng nào cho sản phẩm {{productCode}}", {
+                        productCode: orderProductCodes.find((c) => c === selectedProductCode) || selectedProductCode,
+                      })}
                 </div>
               )}
             </div>
@@ -1131,32 +1131,32 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
             {/* Show original Data - only show if originOrder exists and has data */}
             {originOrder && originOrder.orderInfo && originOrder.orderInfo.length > 0 && (
               <div className={cx("modal-original")}>
-                <h2>Thông tin gốc</h2>
+                <h2>{t("shopOrders.originalInfo", "Thông tin gốc")}</h2>
                 <div className={cx("form")}>
                   <div className={cx("group-item")}>
                     <label>
-                      Tên khách hàng:
+                      {t("shopOrders.customerName", "Tên khách hàng")}:
                       <input disabled value={originOrder.customerName || ""} />
                     </label>
                     <label>
-                      Số điện thoại:
+                      {t("shopOrders.phone", "Số điện thoại")}:
                       <input disabled value={originOrder.phone ? formatPhone(originOrder.phone) : ""} />
                     </label>
                   </div>
 
                   <label>
-                    Địa chỉ:
+                    {t("shopOrders.address", "Địa chỉ")}:
                     <input disabled value={originOrder.address || ""} />
                   </label>
                   {/* Order Info (array of products) */}
                   <div className={cx("order-info-edit")}>
-                    <h3>Thông tin sản phẩm</h3>
+                    <h3>{t("shopOrders.productInfo", "Thông tin sản phẩm")}</h3>
                     <div className={cx("order-item-row")}>
-                      <div className={cx("input-1", "header-order")}>Tên sản phẩm</div>
-                      <div className={cx("input-2", "header-order")}>Màu</div>
-                      <div className={cx("input-3", "header-order")}>Size</div>
-                      <div className={cx("input-4", "header-order")}>Số lượng</div>
-                      <div className={cx("input-5", "header-order")}>Giá</div>
+                      <div className={cx("input-1", "header-order")}>{t("shopOrders.productName", "Tên sản phẩm")}</div>
+                      <div className={cx("input-2", "header-order")}>{t("shopOrders.color", "Màu")}</div>
+                      <div className={cx("input-3", "header-order")}>{t("shopOrders.size", "Size")}</div>
+                      <div className={cx("input-4", "header-order")}>{t("shopOrders.quantity", "Số lượng")}</div>
+                      <div className={cx("input-5", "header-order")}>{t("shopOrders.price", "Giá")}</div>
                     </div>
                     {originOrder.orderInfo && originOrder.orderInfo.length > 0 ? (
                       originOrder.orderInfo.map((item, index) => {
@@ -1174,33 +1174,36 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                         );
                       })
                     ) : (
-                      <div style={{ padding: 20, textAlign: "center", color: "#999" }}>Không có thông tin sản phẩm gốc</div>
+                      <div style={{ padding: 20, textAlign: "center", color: "#999" }}>
+                        {t("shopOrders.noOriginalProductInfo", "Không có thông tin sản phẩm gốc")}
+                      </div>
                     )}
                   </div>
                   <div className={cx("btn-total-add")}>
                     <div></div>
                     <label style={{ fontWeight: "550", fontSize: "17px", textAlign: "right", color: "#ff0958" }}>
-                      Tổng tiền {`( ${originOrder.totalProduct || 0} sản phẩm)`}:&nbsp; {Number(originOrder.total || 0).toLocaleString()} ₫
+                      {t("shopOrders.totalAmount", "Tổng tiền")} {`( ${originOrder.totalProduct || 0} ${t("shopOrders.products", "sản phẩm")})`}:&nbsp;{" "}
+                      {Number(originOrder.total || 0).toLocaleString()} ₫
                     </label>
                   </div>
                   <div className={cx("group-item")}>
                     <label>
-                      Ghi chú:
+                      {t("shopOrders.note", "Ghi chú")}:
                       <input disabled value={originOrder.note || ""} />
                     </label>
                     <label>
-                      Nguồn:
+                      {t("shopOrders.source", "Nguồn")}:
                       <input
                         value={originOrder.website || ""}
                         onChange={(e) => setEditing({ ...editing, website: e.target.value })}
-                        placeholder="link website hoặc link facebook khách..."
+                        placeholder={t("shopOrders.sourcePlaceholder", "link website hoặc link facebook khách...")}
                         disabled
                       />
                     </label>
                   </div>
                   <div className={cx("group-item")}>
                     <label>
-                      Nhân viên:
+                      {t("shopOrders.staff", "Nhân viên")}:
                       <input disabled value={originOrder.staff_name || ""} />
                     </label>
                   </div>
@@ -1210,17 +1213,19 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
 
             {/* Show Final Data */}
             <div className={cx("modal")}>
-              <h2>Sửa đơn hàng: {editing.orderCode}</h2>
+              <h2>
+                {t("shopOrders.editOrder", "Sửa đơn hàng")}: {editing.orderCode}
+              </h2>
 
               <div className={cx("form")}>
-                <div style={{ fontSize: 16, fontWeight: 550, marginTop: 15 }}>1. Thông tin khách hàng</div>
+                <div style={{ fontSize: 16, fontWeight: 550, marginTop: 15 }}>1. {t("shopOrders.customerInfo", "Thông tin khách hàng")}</div>
                 <div className={cx("group-item")}>
                   <label>
-                    Tên khách hàng:
+                    {t("shopOrders.customerName", "Tên khách hàng")}:
                     <input value={editing.customerName} onChange={(e) => setEditing({ ...editing, customerName: e.target.value })} />
                   </label>
                   <label>
-                    Số điện thoại:
+                    {t("shopOrders.phone", "Số điện thoại")}:
                     <input value={editing.phone} onChange={(e) => setEditing({ ...editing, phone: e.target.value })} disabled />
                   </label>
                 </div>
@@ -1228,12 +1233,12 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                 <div className={cx("address-edit-group")}>
                   <label>
                     <div style={{ marginBottom: 10 }}>
-                      Địa chỉ: <span style={{ fontSize: 14, fontWeight: 500, color: "#e94343" }}>{editing.address}</span>
+                      {t("shopOrders.address", "Địa chỉ")}: <span style={{ fontSize: 14, fontWeight: 500, color: "#e94343" }}>{editing.address}</span>
                     </div>
                     <input
                       value={correctedAddress === null ? editing.address : correctedAddress}
                       onChange={(e) => setCorrectedAddress(e.target.value)}
-                      placeholder="Số nhà, tên đường hoặc tên tòa nhà..."
+                      placeholder={t("shopOrders.addressPlaceholder", "Số nhà, tên đường hoặc tên tòa nhà...")}
                     />
                   </label>
                   <VnAddressSelect_Old onChange={(addr) => handleAddressChange_Old("edit-form", addr)} />
@@ -1242,7 +1247,9 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                 {/* Order Info (array of products) */}
                 <div className={cx("order-info-edit")}>
                   <div style={{ display: "flex", gap: 20, marginBottom: 10, marginTop: 10 }}>
-                    <div style={{ fontSize: 16, fontWeight: 550, display: "flex", alignItems: "center" }}>2. Thông tin sản phẩm</div>
+                    <div style={{ fontSize: 16, fontWeight: 550, display: "flex", alignItems: "center" }}>
+                      2. {t("shopOrders.productInfo", "Thông tin sản phẩm")}
+                    </div>
                     <ButtonCommon
                       className="bg-gradient-to-tr from-orange-400 via-orange-500 to-red-500 text-white group [&>span]:transition-transform group-hover:[&>span]:scale-[1.2]"
                       icon={icons.cart_add}
@@ -1250,25 +1257,15 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                       onClick={() => setShowListProduct(true)}
                       isTextHover={true}
                     >
-                      Thêm sản phẩm
+                      {t("shopOrders.addProduct", "Thêm sản phẩm")}
                     </ButtonCommon>
                   </div>
                   <div className={cx("order-item-row")}>
-                    <div className={cx("input-1")} style={{ textDecoration: "underline" }}>
-                      Tên sản phẩm
-                    </div>
-                    <div className={cx("input-2")} style={{ textDecoration: "underline" }}>
-                      Màu
-                    </div>
-                    <div className={cx("input-3")} style={{ textDecoration: "underline" }}>
-                      Size
-                    </div>
-                    <div className={cx("input-4")} style={{ textDecoration: "underline" }}>
-                      Số lượng
-                    </div>
-                    <div className={cx("input-5")} style={{ textDecoration: "underline" }}>
-                      Giá 1 SP
-                    </div>
+                    <div className={cx("input-1", "header-order")}>{t("shopOrders.productName", "Tên sản phẩm")}</div>
+                    <div className={cx("input-2", "header-order")}>{t("shopOrders.color", "Màu")}</div>
+                    <div className={cx("input-3", "header-order")}>{t("shopOrders.size", "Size")}</div>
+                    <div className={cx("input-4", "header-order")}>{t("shopOrders.quantity", "Số lượng")}</div>
+                    <div className={cx("input-5", "header-order")}>{t("shopOrders.pricePerItem", "Giá 1 SP")}</div>
                   </div>
                   {editing.orderInfo.map((item, index) => {
                     return (
@@ -1286,7 +1283,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                   })}
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginTop: 10 }}>
-                  <div style={{ fontSize: 16, fontWeight: 550, marginTop: 0 }}>3. Phí vận chuyển:</div>
+                  <div style={{ fontSize: 16, fontWeight: 550, marginTop: 0 }}>3. {t("shopOrders.shippingFee", "Phí vận chuyển")}:</div>
                   {editing.totalProduct >= 2 && (
                     <div style={{ display: "flex", gap: 15, justifyContent: "space-between", flex: 1 }}>
                       <div>
@@ -1307,7 +1304,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                 </div>
 
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginTop: 10 }}>
-                  <div style={{ fontSize: 16, fontWeight: 550, marginTop: 0 }}>4. Ưu đãi:</div>
+                  <div style={{ fontSize: 16, fontWeight: 550, marginTop: 0 }}>4. {t("shopOrders.promotion", "Ưu đãi")}:</div>
 
                   {editing.totalProduct >= 2 && (
                     <div style={{ display: "flex", gap: 15, justifyContent: "space-between", flex: 1 }}>
@@ -1316,7 +1313,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                         <input
                           type="number"
                           style={{ marginTop: 0 }}
-                          placeholder="Tối đa 50.000đ"
+                          placeholder={t("shopOrders.maxDiscount", "Tối đa 50.000đ")}
                           value={discountValue}
                           onChange={(e) => handleDiscountChange(+e.target.value)}
                         />
@@ -1325,15 +1322,16 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                     </div>
                   )}
                 </div>
-                {discountValue > 50000 && <div style={{ color: "red" }}>Giảm giá không quá 50.000đ</div>}
+                {discountValue > 50000 && <div style={{ color: "red" }}>{t("shopOrders.discountLimit", "Giảm giá không quá 50.000đ")}</div>}
                 <div className={cx("btn-total-add")}>
                   <label style={{ fontWeight: "550", fontSize: "17px", textAlign: "right", color: "#ff0958" }}>
-                    Tổng tiền {`( ${editing.totalProduct} sản phẩm)`}:&nbsp; {Number(editing.total).toLocaleString()} ₫
+                    {t("shopOrders.totalAmount", "Tổng tiền")} {`( ${editing.totalProduct} ${t("shopOrders.products", "sản phẩm")})`}:&nbsp;{" "}
+                    {Number(editing.total).toLocaleString()} ₫
                   </label>
                 </div>
                 <div className={cx("group-item")}>
                   <label>
-                    Trạng thái:
+                    {t("shopOrders.status", "Trạng thái")}:
                     <select
                       value={editing.status}
                       onChange={(e) => {
@@ -1341,7 +1339,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                         console.log("value", e.target.value);
                       }}
                     >
-                      <option value="">-- Chọn trạng thái --</option>
+                      <option value="">{t("shopOrders.selectStatus", "-- Chọn trạng thái --")}</option>
                       {STATUS_OPTIONS.map((s) => (
                         <option key={s} value={s}>
                           {s}
@@ -1350,7 +1348,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                     </select>
                   </label>
                   <label>
-                    Vận chuyển:
+                    {t("shopOrders.delivery", "Vận chuyển")}:
                     <select value={editing.deliveryStatus} onChange={(e) => setEditing({ ...editing, deliveryStatus: e.target.value })}>
                       {staffRole !== "Director" &&
                         DeliveryOptionsForStaffSelectManual.map((s) => (
@@ -1369,11 +1367,11 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                 </div>
                 <div className={cx("group-item")}>
                   <label>
-                    Ghi chú:
+                    {t("shopOrders.note", "Ghi chú")}:
                     <input value={editing.note} onChange={(e) => setEditing({ ...editing, note: e.target.value })} />
                   </label>
                   <label>
-                    Nhân viên:
+                    {t("shopOrders.staff", "Nhân viên")}:
                     <select value={editing.staff_name} onChange={(e) => setEditing({ ...editing, staff_name: e.target.value })}>
                       {/* <option value="Không">Không tên</option> */}
                       {staffName.map((s) => (
@@ -1386,19 +1384,19 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                 </div>
                 <div className={cx("group-item")}>
                   <label>
-                    Nguồn:
+                    {t("shopOrders.source", "Nguồn")}:
                     <input
                       value={editing.website}
                       onChange={(e) => setEditing({ ...editing, website: e.target.value })}
-                      placeholder="link website hoặc tên shop..."
+                      placeholder={t("shopOrders.sourcePlaceholder2", "link website hoặc tên shop...")}
                     />
                   </label>
                   <label>
-                    Facebook khách:
+                    {t("shopOrders.customerFacebook", "Facebook khách")}:
                     <input
                       value={editing.facebookLink || ""}
                       onChange={(e) => setEditing({ ...editing, facebookLink: e.target.value })}
-                      placeholder="link facebook khách..."
+                      placeholder={t("shopOrders.facebookPlaceholder", "link facebook khách...")}
                     />
                   </label>
                 </div>
@@ -1420,15 +1418,17 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                     setOriginOrder(null);
                   }}
                 >
-                  Hủy
+                  {t("shopOrders.cancel", "Hủy")}
                 </button>
-                <button onClick={handleSave}>Lưu</button>
+                <button onClick={handleSave}>{t("shopOrders.save", "Lưu")}</button>
               </div>
             </div>
             {showListProduct && editingSelectedProducts.length > 0 && (
               <div className={cx("show-list-product")}>
                 {/* Product Selection for Edit - Multiple products with checkboxes */}
-                <div style={{ fontSize: 16, fontWeight: 550, marginBottom: 10, marginTop: 10 }}>1. Chọn sản phẩm (có thể chọn nhiều)</div>
+                <div style={{ fontSize: 16, fontWeight: 550, marginBottom: 10, marginTop: 10 }}>
+                  1. {t("shopOrders.selectProductsMultiple", "Chọn sản phẩm (có thể chọn nhiều)")}
+                </div>
                 <div className={cx("group-products")} style={{ flexDirection: "column", alignItems: "flex-start", marginBottom: 15 }}>
                   {availableProducts.map((product) => {
                     const isSelected = editingSelectedProducts.some((p) => p.product_code === product.product_code);
@@ -1478,9 +1478,11 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                   })}
                 </div>
 
-                <div style={{ fontSize: 16, fontWeight: 550, marginBottom: 10, marginTop: 10 }}>2. Chọn sản phẩm theo màu, size</div>
+                <div style={{ fontSize: 16, fontWeight: 550, marginBottom: 10, marginTop: 10 }}>
+                  2. {t("shopOrders.selectProductsByColorSize", "Chọn sản phẩm theo màu, size")}
+                </div>
                 <div className={cx("filter-color-container")}>
-                  <div style={{ fontWeight: 550 }}>Lọc theo màu:</div>
+                  <div style={{ fontWeight: 550 }}>{t("shopOrders.filterByColor", "Lọc theo màu")}:</div>
                   <div className={cx("wrap-checkbox")}>
                     {(() => {
                       // Get all unique colors from selected products
@@ -1512,20 +1514,24 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                   </div>
                 </div>
                 <div className={cx("row")}>
-                  <div>Chọn</div>
-                  <div>Sản phẩm</div>
-                  <div>Tên</div>
-                  <div>Màu</div>
-                  <div>Size</div>
-                  <div>Giá</div>
-                  <div>Kho</div>
-                  <div>Số lượng</div>
+                  <div>{t("shopOrders.select", "Chọn")}</div>
+                  <div>{t("shopOrders.product", "Sản phẩm")}</div>
+                  <div>{t("shopOrders.name", "Tên")}</div>
+                  <div>{t("shopOrders.color", "Màu")}</div>
+                  <div>{t("shopOrders.size", "Size")}</div>
+                  <div>{t("shopOrders.price", "Giá")}</div>
+                  <div>{t("shopOrders.stock", "Kho")}</div>
+                  <div>{t("shopOrders.quantity", "Số lượng")}</div>
                 </div>
                 {virtualCart.map((p, i) => {
                   const itemWithProduct = p as VirtualCartType & { productCode?: string; productName?: string };
                   return (
                     <React.Fragment key={i}>
-                      {isExceedStock === i && <div className={cx("warning")}>⚠️ Số lượng vượt quá tồn kho ({p.stock})</div>}
+                      {isExceedStock === i && (
+                        <div className={cx("warning")}>
+                          ⚠️ {t("shopOrders.exceedStock", "Số lượng vượt quá tồn kho")} ({p.stock})
+                        </div>
+                      )}
                       {filterColorInAddProduct === "None" || p.color === filterColorInAddProduct ? (
                         <div className={cx("row")}>
                           <div>
@@ -1566,7 +1572,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
 
                 <div style={{ textAlign: "center", marginTop: 20 }}>
                   <button className={cx("btn-decor", "btn-close")} onClick={() => handleCloseAddProduct("edit-form")}>
-                    Đóng
+                    {t("shopOrders.close", "Đóng")}
                   </button>
                 </div>
               </div>
@@ -1578,12 +1584,13 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
       {/* //--Update multiple delivery status order */}
       {openUpdateDeliveryBox && (
         <div className={cx("update-delivery-box")}>
-          <h4>Cập nhật tất cả đơn đã chốt - Chưa giao hàng</h4>
+          <h4>{t("shopOrders.updateAllConfirmedOrders", "Cập nhật tất cả đơn đã chốt - Chưa giao hàng")}</h4>
           <div>
-            Đã chốt - Chưa gửi hàng: <span style={{ color: "red", fontWeight: 600 }}>{DeliveryStatusCountsResult["Đã chốt"]}</span>
+            {t("shopOrders.confirmedNotShipped", "Đã chốt - Chưa gửi hàng")}:{" "}
+            <span style={{ color: "red", fontWeight: 600 }}>{DeliveryStatusCountsResult["Đã chốt"]}</span>
           </div>
           <div>
-            <label style={{ marginRight: 10 }}>Trạng thái vận chuyển mới:</label>
+            <label style={{ marginRight: 10 }}>{t("shopOrders.newDeliveryStatus", "Trạng thái vận chuyển mới")}:</label>
             <select value={selectedDeliveryStatusForUpdate} onChange={(e) => setSelectedDeliveryStatusForUpdate(e.target.value)}>
               {DeliveryOptionsForStaffSelectManual.map((s) => (
                 <option key={s} value={s}>
@@ -1592,13 +1599,15 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
               ))}
             </select>
           </div>
-          <div style={{ fontSize: 13, color: "#555", marginTop: 10 }}>Lưu ý: Chỉ cập nhật những đơn có trạng thái vận chuyển là "Chưa gửi hàng"</div>
+          <div style={{ fontSize: 13, color: "#555", marginTop: 10 }}>
+            {t("shopOrders.updateNote", 'Lưu ý: Chỉ cập nhật những đơn có trạng thái vận chuyển là "Chưa gửi hàng"')}
+          </div>
           <div>
             <button className={cx("cancel")} onClick={() => setOpenUpdateDeliveryBox(false)}>
-              Đóng
+              {t("shopOrders.close", "Đóng")}
             </button>
             <button className={cx("update")} onClick={() => UpdateMultipleDeliveryStatus(selectedDeliveryStatusForUpdate)}>
-              Cập nhật
+              {t("shopOrders.update", "Cập nhật")}
             </button>
           </div>
         </div>
@@ -1609,16 +1618,16 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
         <div className={cx("fullfilment-bg")}>
           <div className={cx("modal-overlay")}>
             <div className={cx("modal")}>
-              <div style={{ fontSize: 20, fontWeight: 600, margin: "10px 0px", color: "#026feb" }}>Tạo đơn hàng mới</div>
+              <div style={{ fontSize: 20, fontWeight: 600, margin: "10px 0px", color: "#026feb" }}>{t("shopOrders.createNewOrder", "Tạo đơn hàng mới")}</div>
               <div className={cx("form")}>
-                <div style={{ fontSize: 16, fontWeight: 550, marginTop: 15 }}>1. Thông tin khách hàng</div>
+                <div style={{ fontSize: 16, fontWeight: 550, marginTop: 15 }}>1. {t("shopOrders.customerInfo", "Thông tin khách hàng")}</div>
                 <div className={cx("group-item")}>
                   <label>
-                    Tên khách hàng:
+                    {t("shopOrders.customerName", "Tên khách hàng")}:
                     <input value={newOrder.customerName} onChange={(e) => setNewOrder({ ...newOrder, customerName: e.target.value })} />
                   </label>
                   <label>
-                    Số điện thoại:
+                    {t("shopOrders.phone", "Số điện thoại")}:
                     <input value={newOrder.phone} onChange={(e) => setNewOrder({ ...newOrder, phone: e.target.value })} />
                   </label>
                 </div>
@@ -1626,12 +1635,12 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                 <div className={cx("address-edit-group")}>
                   <label>
                     <div style={{ marginBottom: 10 }}>
-                      Địa chỉ: <span style={{ fontSize: 14, fontWeight: 500, color: "#e94343" }}>{newOrder.address}</span>
+                      {t("shopOrders.address", "Địa chỉ")}: <span style={{ fontSize: 14, fontWeight: 500, color: "#e94343" }}>{newOrder.address}</span>
                     </div>
                     <input
                       value={correctedAddress === null ? newOrder.address : correctedAddress}
                       onChange={(e) => setCorrectedAddress(e.target.value)}
-                      placeholder="Số nhà, tên đường hoặc tên tòa nhà..."
+                      placeholder={t("shopOrders.addressPlaceholder", "Số nhà, tên đường hoặc tên tòa nhà...")}
                     />
                   </label>
                   <div className="w-full">
@@ -1641,7 +1650,9 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                 {/* Order Info (array of products) */}
                 <div className={cx("order-info-edit")}>
                   <div style={{ display: "flex", gap: 20, marginBottom: 10, marginTop: 10 }}>
-                    <div style={{ fontSize: 16, fontWeight: 550, display: "flex", alignItems: "center" }}>2. Thông tin sản phẩm</div>
+                    <div style={{ fontSize: 16, fontWeight: 550, display: "flex", alignItems: "center" }}>
+                      2. {t("shopOrders.productInfo", "Thông tin sản phẩm")}
+                    </div>
                     <ButtonCommon
                       className="bg-gradient-to-tr from-orange-400 via-orange-500 to-red-500 text-white"
                       icon={icons.cart_add}
@@ -1649,25 +1660,15 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                       onClick={() => setShowListProduct(true)}
                       isTextHover={true}
                     >
-                      Thêm sản phẩm
+                      {t("shopOrders.addProduct", "Thêm sản phẩm")}
                     </ButtonCommon>
                   </div>
                   <div className={cx("order-item-row")}>
-                    <div className={cx("input-1")} style={{ textDecoration: "underline" }}>
-                      Tên sản phẩm
-                    </div>
-                    <div className={cx("input-2")} style={{ textDecoration: "underline" }}>
-                      Màu
-                    </div>
-                    <div className={cx("input-3")} style={{ textDecoration: "underline" }}>
-                      Size
-                    </div>
-                    <div className={cx("input-4")} style={{ textDecoration: "underline" }}>
-                      Số lượng
-                    </div>
-                    <div className={cx("input-5")} style={{ textDecoration: "underline" }}>
-                      Gía 1 SP
-                    </div>
+                    <div className={cx("input-1", "header-order")}>{t("shopOrders.productName", "Tên sản phẩm")}</div>
+                    <div className={cx("input-2", "header-order")}>{t("shopOrders.color", "Màu")}</div>
+                    <div className={cx("input-3", "header-order")}>{t("shopOrders.size", "Size")}</div>
+                    <div className={cx("input-4", "header-order")}>{t("shopOrders.quantity", "Số lượng")}</div>
+                    <div className={cx("input-5", "header-order")}>{t("shopOrders.pricePerItem", "Gía 1 SP")}</div>
                   </div>
                   {newOrder.orderInfo.map((item, index) => {
                     return (
@@ -1685,7 +1686,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                   })}
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginTop: 10 }}>
-                  <div style={{ fontSize: 16, fontWeight: 550, marginTop: 0 }}>3. Phí vận chuyển:</div>
+                  <div style={{ fontSize: 16, fontWeight: 550, marginTop: 0 }}>3. {t("shopOrders.shippingFee", "Phí vận chuyển")}:</div>
                   {newOrder.totalProduct >= 2 && (
                     <div style={{ display: "flex", gap: 15, justifyContent: "space-between", flex: 1 }}>
                       <div>
@@ -1706,7 +1707,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                 </div>
 
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginTop: 10 }}>
-                  <div style={{ fontSize: 16, fontWeight: 550, marginTop: 0 }}>4. Ưu đãi:</div>
+                  <div style={{ fontSize: 16, fontWeight: 550, marginTop: 0 }}>4. {t("shopOrders.promotion", "Ưu đãi")}:</div>
 
                   {newOrder.totalProduct >= 2 && (
                     <div style={{ display: "flex", gap: 15, justifyContent: "space-between", flex: 1 }}>
@@ -1715,7 +1716,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                         <input
                           type="number"
                           style={{ marginTop: 0 }}
-                          placeholder="Tối đa 50.000đ"
+                          placeholder={t("shopOrders.maxDiscount", "Tối đa 50.000đ")}
                           value={discountValue}
                           onChange={(e) => handleDiscountChange(+e.target.value)}
                         />
@@ -1724,19 +1725,20 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                     </div>
                   )}
                 </div>
-                {discountValue > 50000 && <div style={{ color: "red" }}>Giảm giá không quá 50.000đ</div>}
+                {discountValue > 50000 && <div style={{ color: "red" }}>{t("shopOrders.discountLimit", "Giảm giá không quá 50.000đ")}</div>}
                 <div className={cx("btn-total-add")}>
                   <label style={{ fontWeight: "550", fontSize: "17px", textAlign: "right", color: "#ff0958" }}>
-                    Tổng tiền {`( ${newOrder.totalProduct} sản phẩm)`}:&nbsp; {Number(newOrder.total).toLocaleString()} ₫
+                    {t("shopOrders.totalAmount", "Tổng tiền")} {`( ${newOrder.totalProduct} ${t("shopOrders.products", "sản phẩm")})`}:&nbsp;{" "}
+                    {Number(newOrder.total).toLocaleString()} ₫
                   </label>
                 </div>
                 <div className={cx("group-item")}>
                   <label>
-                    Ghi chú:
+                    {t("shopOrders.note", "Ghi chú")}:
                     <input value={newOrder.note} onChange={(e) => setNewOrder({ ...newOrder, note: e.target.value })} />
                   </label>
                   <label>
-                    Vận chuyển:
+                    {t("shopOrders.delivery", "Vận chuyển")}:
                     <select value={newOrder.deliveryStatus} onChange={(e) => setNewOrder({ ...newOrder, deliveryStatus: e.target.value })}>
                       {staffRole !== "Director" &&
                         DeliveryOptionsForStaffSelectManual.map((s) => (
@@ -1755,7 +1757,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                 </div>
                 <div className={cx("group-item")}>
                   <label>
-                    Trạng thái:
+                    {t("shopOrders.status", "Trạng thái")}:
                     <select value={newOrder.status} onChange={(e) => setNewOrder({ ...newOrder, status: e.target.value })}>
                       {STATUS_OPTIONS.map((s) => (
                         <option key={s} value={s}>
@@ -1765,31 +1767,31 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                     </select>
                   </label>
                   <label>
-                    Nhân viên:
+                    {t("shopOrders.staff", "Nhân viên")}:
                     <select
                       disabled={true}
-                      value={yourStaffProfileInWorkplace?.staffInfo.name || "Không có tên"}
+                      value={yourStaffProfileInWorkplace?.staffInfo.name || t("shopOrders.noName", "Không có tên")}
                       onChange={(e) => setNewOrder({ ...newOrder, staff_name: e.target.value })}
                     >
-                      <option>{yourStaffProfileInWorkplace?.staffInfo.name || "Không có tên"}</option>
+                      <option>{yourStaffProfileInWorkplace?.staffInfo.name || t("shopOrders.noName", "Không có tên")}</option>
                     </select>
                   </label>
                 </div>
                 <div className={cx("group-item")}>
                   <label>
-                    Nguồn:
+                    {t("shopOrders.source", "Nguồn")}:
                     <input
                       value={newOrder.website}
                       onChange={(e) => setNewOrder({ ...newOrder, website: e.target.value })}
-                      placeholder="link website hoặc tên shop..."
+                      placeholder={t("shopOrders.sourcePlaceholder2", "link website hoặc tên shop...")}
                     />
                   </label>
                   <label>
-                    Facebook khách:
+                    {t("shopOrders.customerFacebook", "Facebook khách")}:
                     <input
                       value={newOrder.facebookLink || ""}
                       onChange={(e) => setNewOrder({ ...newOrder, facebookLink: e.target.value })}
-                      placeholder="link facebook khách..."
+                      placeholder={t("shopOrders.facebookPlaceholder", "link facebook khách...")}
                     />
                   </label>
                 </div>
@@ -1808,14 +1810,14 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                     setFilterColorInAddProduct("None");
                   }}
                 >
-                  Đóng
+                  {t("shopOrders.close", "Đóng")}
                 </button>
                 <button
                   onClick={handleCreateNewOrder}
                   disabled={discountValue > 50000 ? true : false}
                   style={{ cursor: discountValue > 50000 ? "not-allowed" : "pointer" }}
                 >
-                  Tạo đơn
+                  {t("shopOrders.createOrder", "Tạo đơn")}
                 </button>
               </div>
             </div>
@@ -1824,7 +1826,9 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                 {/* <h4>Chọn sản phẩm theo màu size</h4> */}
 
                 {/* Product Selection for Create - Multiple products with checkboxes */}
-                <div style={{ fontSize: 16, fontWeight: 550, marginBottom: 10, marginTop: 10 }}>1. Chọn sản phẩm (có thể chọn nhiều)</div>
+                <div style={{ fontSize: 16, fontWeight: 550, marginBottom: 10, marginTop: 10 }}>
+                  1. {t("shopOrders.selectProductsMultiple", "Chọn sản phẩm (có thể chọn nhiều)")}
+                </div>
                 <div className={cx("group-products")}>
                   {availableProducts.map((product) => {
                     const isSelected = selectedProductsForOrder.some((p) => p.product_code === product.product_code);
@@ -1859,10 +1863,12 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                     );
                   })}
                 </div>
-                <div style={{ fontSize: 16, fontWeight: 550, marginBottom: 10, marginTop: 10 }}>2. Chọn sản phẩm theo màu size</div>
+                <div style={{ fontSize: 16, fontWeight: 550, marginBottom: 10, marginTop: 10 }}>
+                  2. {t("shopOrders.selectProductsByColorSize", "Chọn sản phẩm theo màu size")}
+                </div>
 
                 <div className={cx("filter-color-container")}>
-                  <div style={{ fontWeight: 550 }}>Lọc theo màu:</div>
+                  <div style={{ fontWeight: 550 }}>{t("shopOrders.filterByColor", "Lọc theo màu")}:</div>
                   <div className={cx("wrap-checkbox")}>
                     {(() => {
                       // Get all unique colors from selected products
@@ -1894,22 +1900,26 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
                   </div>
                 </div>
                 <div className={cx("row")}>
-                  <div>Chọn</div>
-                  <div>Tên</div>
-                  <div>Mã sản phẩm</div>
+                  <div>{t("shopOrders.select", "Chọn")}</div>
+                  <div>{t("shopOrders.name", "Tên")}</div>
+                  <div>{t("shopOrders.productCode", "Mã sản phẩm")}</div>
 
-                  <div>Màu</div>
-                  <div>Size</div>
-                  <div>Giá</div>
-                  <div>Kho</div>
-                  <div>Số lượng</div>
+                  <div>{t("shopOrders.color", "Màu")}</div>
+                  <div>{t("shopOrders.size", "Size")}</div>
+                  <div>{t("shopOrders.price", "Giá")}</div>
+                  <div>{t("shopOrders.stock", "Kho")}</div>
+                  <div>{t("shopOrders.quantity", "Số lượng")}</div>
                 </div>
 
                 {virtualCart.map((p, i) => {
                   const itemWithProduct = p as VirtualCartType & { productCode?: string; productName?: string };
                   return (
                     <React.Fragment key={i}>
-                      {isExceedStock === i && <div className={cx("warning")}>⚠️ Số lượng vượt quá tồn kho ({p.stock})</div>}
+                      {isExceedStock === i && (
+                        <div className={cx("warning")}>
+                          ⚠️ {t("shopOrders.exceedStock", "Số lượng vượt quá tồn kho")} ({p.stock})
+                        </div>
+                      )}
                       {filterColorInAddProduct === "None" || p.color === filterColorInAddProduct ? (
                         <div className={cx("row")}>
                           <div>
@@ -1951,7 +1961,7 @@ export default function ShopOrders_v3({ dataOrders, setGetFinalData, products = 
 
                 <div style={{ textAlign: "center", marginTop: 20 }}>
                   <button className={cx("btn-decor", "btn-close")} onClick={() => handleCloseAddProduct("new-form")}>
-                    Đóng
+                    {t("shopOrders.close", "Đóng")}
                   </button>
                 </div>
               </div>
